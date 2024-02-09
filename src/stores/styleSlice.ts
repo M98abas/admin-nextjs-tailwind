@@ -52,7 +52,7 @@ export const styleSlice = createSlice({
     },
 
     setStyle: (state, action: PayloadAction<StyleKey>) => {
-      if (!styles[action.payload]) {
+      if (!styles['basic']) {
         return
       }
 
@@ -60,7 +60,7 @@ export const styleSlice = createSlice({
         localStorage.setItem(localStorageStyleKey, action.payload)
       }
 
-      const style = styles[action.payload]
+      const style = styles['basic']
 
       for (const key in style) {
         state[`${key}Style`] = style[key]

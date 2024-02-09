@@ -1,6 +1,4 @@
-import { mdiCog } from '@mdi/js'
-import React, { Children, ReactNode } from 'react'
-import BaseButton from './BaseButton'
+import React, { ReactNode } from 'react'
 import BaseIcon from './BaseIcon'
 import IconRounded from './IconRounded'
 
@@ -12,7 +10,7 @@ type Props = {
 }
 
 export default function SectionTitleLineWithButton({ icon, title, main = false, children }: Props) {
-  const hasChildren = !!Children.count(children)
+  // const hasChildren = !!Children.count(children)
 
   return (
     <section className={`${main ? '' : 'pt-6'} mb-6 flex items-center justify-between`}>
@@ -22,7 +20,6 @@ export default function SectionTitleLineWithButton({ icon, title, main = false, 
         <h1 className={`leading-tight ${main ? 'text-3xl' : 'text-2xl'}`}>{title}</h1>
       </div>
       {children}
-      {!hasChildren && <BaseButton icon={mdiCog} color="whiteDark" />}
     </section>
   )
 }

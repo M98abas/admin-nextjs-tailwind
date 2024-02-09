@@ -10,9 +10,9 @@ export default function FooterBar({ children }: Props) {
   const year = new Date().getFullYear()
 
   return (
-    <footer className={`py-2 px-6 ${containerMaxW}`}>
-      <div className="block md:flex items-center justify-between">
-        <div className="text-center md:text-left mb-6 md:mb-0">
+    <footer className={`py-2 px-6 ${containerMaxW} `}>
+      <div className="items-center justify-between block md:flex">
+        <div className="mb-6 text-center md:text-left md:mb-0">
           <b>
             &copy;{year},{` `}
             <a href="https://justboil.me/" rel="noreferrer" target="_blank">
@@ -25,7 +25,7 @@ export default function FooterBar({ children }: Props) {
         </div>
         <div className="md:py-2">
           <a href="https://justboil.me" rel="noreferrer" target="_blank">
-            <JustboilLogo className="w-auto h-8 md:h-6 mx-auto" />
+            <JustboilLogo className="w-auto h-8 mx-auto md:h-6" />
           </a>
         </div>
       </div>

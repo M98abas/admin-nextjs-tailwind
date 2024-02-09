@@ -1,16 +1,21 @@
 import {
-  mdiAccountCircle,
+  mdiAccountGroupOutline,
+  mdiAccountStarOutline,
+  mdiBankOutline,
+  mdiClipboardListOutline,
+  mdiCogs,
+  mdiCreditCardOutline,
+  mdiCurrencyUsd,
+  mdiFolderAccountOutline,
+  mdiForum,
+  mdiInboxMultipleOutline,
+  mdiLabelMultiple,
   mdiMonitor,
-  mdiGithub,
-  mdiLock,
-  mdiAlertCircle,
-  mdiSquareEditOutline,
-  mdiTable,
-  mdiViewList,
-  mdiTelevisionGuide,
-  mdiResponsive,
-  mdiPalette,
-  mdiVuejs,
+  mdiPackageVariantClosed,
+  mdiPoll,
+  mdiSale,
+  mdiShopping,
+  mdiTagMultiple,
 } from '@mdi/js'
 import { MenuAsideItem } from './interfaces'
 
@@ -21,68 +26,57 @@ const menuAside: MenuAsideItem[] = [
     label: 'Dashboard',
   },
   {
-    href: '/tables',
-    label: 'Tables',
-    icon: mdiTable,
-  },
-  {
-    href: '/forms',
-    label: 'Forms',
-    icon: mdiSquareEditOutline,
-  },
-  {
-    href: '/ui',
-    label: 'UI',
-    icon: mdiTelevisionGuide,
-  },
-  {
-    href: '/responsive',
-    label: 'Responsive',
-    icon: mdiResponsive,
-  },
-  {
-    href: '/',
-    label: 'Styles',
-    icon: mdiPalette,
-  },
-  {
-    href: '/profile',
-    label: 'Profile',
-    icon: mdiAccountCircle,
-  },
-  {
-    href: '/login',
-    label: 'Login',
-    icon: mdiLock,
-  },
-  {
-    href: '/error',
-    label: 'Error',
-    icon: mdiAlertCircle,
-  },
-  {
-    label: 'Dropdown',
-    icon: mdiViewList,
+    label: 'Administration',
+    icon: mdiAccountStarOutline,
     menu: [
       {
-        label: 'Item One',
+        icon: mdiFolderAccountOutline,
+        label: 'Super',
       },
       {
-        label: 'Item Two',
+        icon: mdiAccountGroupOutline,
+        label: 'Users',
+      },
+      {
+        icon: mdiCogs,
+        label: 'Rules',
+      },
+      {
+        icon: mdiForum,
+        label: 'Messages',
       },
     ],
   },
   {
-    href: 'https://github.com/justboil/admin-one-react-tailwind',
-    label: 'GitHub',
-    icon: mdiGithub,
-    target: '_blank',
+    label: 'Product',
+    icon: mdiInboxMultipleOutline,
+    menu: [
+      { label: 'Items', icon: mdiPackageVariantClosed },
+      { label: 'Category', icon: mdiTagMultiple },
+      { label: 'Brand', icon: mdiShopping },
+      { label: 'Product Type', icon: mdiPackageVariantClosed },
+      { label: 'Tags', icon: mdiLabelMultiple },
+      { label: 'PromoCode', icon: mdiCurrencyUsd },
+      { label: 'Discount', icon: mdiSale },
+    ],
   },
   {
-    href: 'https://github.com/justboil/admin-one-vue-tailwind',
-    label: 'Vue version',
-    icon: mdiVuejs,
-    target: '_blank',
+    label: 'Orders',
+    icon: mdiPoll,
+    menu: [
+      {
+        label: 'Orders',
+        icon: mdiClipboardListOutline,
+      },
+      {
+        label: 'Payment',
+        icon: mdiCreditCardOutline,
+      },
+      {
+        label: 'Transaction',
+        icon: mdiBankOutline,
+      },
+    ],
   },
 ]
 

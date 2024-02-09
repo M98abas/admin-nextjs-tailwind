@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { mdiMinus, mdiPlus } from '@mdi/js'
+import { mdiChevronDown, mdiChevronRight, mdiMinus, mdiPlus } from '@mdi/js'
 import BaseIcon from './BaseIcon'
 import Link from 'next/link'
 import { getButtonColor } from '../colors'
@@ -49,8 +49,8 @@ const AsideMenuItem = ({ item, isDropdownList = false }: Props) => {
       </span>
       {item.menu && (
         <BaseIcon
-          path={isDropdownActive ? mdiMinus : mdiPlus}
-          className={`flex-none ${activeClassAddon}`}
+          path={isDropdownActive ? mdiChevronDown : mdiChevronRight}
+          className={`flex-none transition-all duration-500 ${isDropdownActive ? 'rotate-180' : ''} ${activeClassAddon}`}
           w="w-12"
         />
       )}

@@ -7,7 +7,7 @@ import BaseButtons from './BaseButtons'
 import CardBoxModal from './CardBoxModal'
 import UserAvatar from './UserAvatar'
 
-const TableSampleClients = () => {
+const TableSampleClients = ({ columns }) => {
   const { clients } = useSampleClients()
 
   const perPage = 5
@@ -66,11 +66,9 @@ const TableSampleClients = () => {
         <thead>
           <tr>
             <th />
-            <th>Name</th>
-            <th>Company</th>
-            <th>City</th>
-            <th>Progress</th>
-            <th>Created</th>
+            {columns.map((col) => (
+              <th key={col}>{col}</th>
+            ))}
             <th />
           </tr>
         </thead>
@@ -85,7 +83,7 @@ const TableSampleClients = () => {
               <td data-label="City">{client.city}</td>
               <td data-label="Progress" className="lg:w-32">
                 <progress
-                  className="flex w-2/5 self-center lg:w-full"
+                  className="flex self-center w-2/5 lg:w-full"
                   max="100"
                   value={client.progress}
                 >
@@ -115,8 +113,8 @@ const TableSampleClients = () => {
           ))}
         </tbody>
       </table>
-      <div className="p-3 lg:px-6 border-t border-gray-100 dark:border-slate-800">
-        <div className="flex flex-col md:flex-row items-center justify-between py-3 md:py-0">
+      <div className="p-3 border-t border-gray-100 lg:px-6 dark:border-slate-800">
+        <div className="flex flex-col items-center justify-between py-3 md:flex-row md:py-0">
           <BaseButtons>
             {pagesList.map((page) => (
               <BaseButton

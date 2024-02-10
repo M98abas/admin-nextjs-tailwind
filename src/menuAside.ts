@@ -21,30 +21,18 @@ import { MenuAsideItem } from './interfaces'
 
 const menuAside: MenuAsideItem[] = [
   {
-    href: '/dashboard',
+    href: '/',
     icon: mdiMonitor,
-    label: 'Dashboard',
+    label: 'Main',
   },
   {
     label: 'Administration',
     icon: mdiAccountStarOutline,
     menu: [
-      {
-        icon: mdiFolderAccountOutline,
-        label: 'Super',
-      },
-      {
-        icon: mdiAccountGroupOutline,
-        label: 'Users',
-      },
-      {
-        icon: mdiCogs,
-        label: 'Rules',
-      },
-      {
-        icon: mdiForum,
-        label: 'Messages',
-      },
+      { icon: mdiFolderAccountOutline, label: 'Admin', href: '/administration/admin' },
+      { icon: mdiAccountGroupOutline, label: 'Users', href: '/administration/users' },
+      { icon: mdiCogs, label: 'Rules', href: '/administration/rules' },
+      { icon: mdiForum, label: 'Messages', href: '/administration/messages' },
     ],
   },
   {

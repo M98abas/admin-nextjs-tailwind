@@ -1,18 +1,18 @@
 import { mdiAccountMultiple, mdiCartOutline, mdiChartTimelineVariant } from '@mdi/js'
 import Head from 'next/head'
-import React, { useState } from 'react'
+import React from 'react'
 import type { ReactElement } from 'react'
 import LayoutAuthenticated from '../layouts/Authenticated'
 import SectionMain from '../components/SectionMain'
 import SectionTitleLineWithButton from '../components/SectionTitleLineWithButton'
 import CardBoxWidget from '../components/CardBoxWidget'
-import { useSampleClients } from '../hooks/sampleData'
+// import { useSampleClients } from '../hooks/sampleData'
 import { getPageTitle } from '../config'
 
 const Dashboard = () => {
-  const { clients } = useSampleClients()
+  // const { clients } = useSampleClients()
 
-  const clientsListed = clients.slice(0, 4)
+  // const clientsListed = clients.slice(0, 4)
 
   return (
     <>

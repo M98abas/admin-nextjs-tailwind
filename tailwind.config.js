@@ -3,7 +3,7 @@
 const plugin = require('tailwindcss/plugin')
 
 module.exports = {
-  content: ['./src/**/*.{js,ts,jsx,tsx}'],
+  content: ['./src/**/*.{js,ts,jsx,tsx}', './node_modules/tailwind-datepicker-react/dist/**/*.js'],
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     asideScrollbars: {

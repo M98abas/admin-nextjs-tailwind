@@ -8,7 +8,7 @@ import CardBoxModal from './CardBoxModal'
 import UserAvatar from './UserAvatar'
 
 const TableSampleClients = ({ columns }) => {
-  const { clients } = useSampleClients()
+  const { clients } = useSampleClients('admin')
 
   const perPage = 5
 

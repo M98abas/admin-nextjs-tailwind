@@ -1,46 +1,30 @@
 import { mdiPlus, mdiTableBorder } from '@mdi/js'
 import Head from 'next/head'
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement, useState } from 'react'
 import Button from '../../components/Button'
 import CardBox from '../../components/CardBox'
 import LayoutAuthenticated from '../../layouts/Authenticated'
 import SectionMain from '../../components/Section/Main'
 import SectionTitleLineWithButton from '../../components/Section/TitleLineWithButton'
-import TableSampleClients from '../../components/Table/AdminTable'
+import TableSampleClients from '../../components/Table/SideEffectTable'
 import { getPageTitle } from '../../config'
 import CardBoxModal from '../../components/CardBox/Modal'
-import { ApiAddData, ApiGetData } from '../../../api'
+import { ApiAddData } from '../../../api'
 // import axios, { AxiosRequestConfig } from 'axios'
 
 const TablesPage = () => {
-  const columns: Array<string> = ['name', 'email', 'Created at', 'actions']
-
-  const [rolesData, setRoleData] = useState([])
+  const columns: Array<string> = ['name Arabic', 'name English', 'created_at', 'actions']
   const [enabled, setEnabled] = useState(false)
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [roles, setRoles] = useState(0)
+
+  const [titleEn, setTitleAr] = useState('')
+  const [titleAr, setTitleEn] = useState('')
   const [Loading, setLoading] = useState(false)
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
-  const getData = async (route: string) => {
-    await ApiGetData(route, (data: any) => {
-      // console.log(data)
-
-      setRoleData(data)
-    })
-  }
-
-  useEffect(() => {
-    getData('permsission')
-  }, [])
 
   const handleModalAction = async () => {
     setLoading(true)
 
-    await ApiAddData('admin/register', { name, email, password, rolesId: roles }, (data) => {
-      console.log(data)
-
+    await ApiAddData('sideEffect', { titleAr, titleEn }, (data) => {
       if (data.errMsg != '')
         return (
           <>
@@ -58,26 +42,23 @@ const TablesPage = () => {
             </div>
           </>
         )
-      setEnabled(!enabled)
-      setName('')
-      setEmail('')
-      setPassword('')
-      setRoles(0)
+      setEnabled(enabled)
+      setTitleAr('')
+      setTitleEn('')
       return
     })
     setLoading(false)
     setIsModalInfoActive(false)
   }
-
   return (
     <>
       {!Loading ? (
         <>
           <Head>
-            <title>{getPageTitle('Admin')}</title>
+            <title>{getPageTitle('Tags')}</title>
           </Head>
           <SectionMain>
-            <SectionTitleLineWithButton icon={mdiTableBorder} title="Admin" main>
+            <SectionTitleLineWithButton icon={mdiTableBorder} title="Tags" main>
               <Button
                 onClick={() => setIsModalInfoActive(true)}
                 label="Add New"
@@ -91,7 +72,7 @@ const TablesPage = () => {
             <CardBox className="mb-6" hasTable>
               <TableSampleClients columns={columns} />
               <CardBoxModal
-                title="Add Course"
+                title="Add New"
                 buttonColor="info"
                 buttonLabel="Done"
                 classData="xl:w-8/12"
@@ -107,12 +88,12 @@ const TablesPage = () => {
                         htmlFor="name"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Name
+                        title Arabic
                       </label>
                       <input
                         type="text"
                         id="name"
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) => setTitleAr(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Any"
                         required
@@ -123,54 +104,16 @@ const TablesPage = () => {
                         htmlFor="email"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Email
+                        title English
                       </label>
                       <input
                         type="text"
                         id="email"
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => setTitleEn(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Any data"
                         required
                       />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="phoneNumber"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Password
-                      </label>
-                      <input
-                        type="text"
-                        onChange={(e) => setPassword(e.target.value)}
-                        id="phoneNumber"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="levelOfExperience"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Roles
-                      </label>
-                      <select
-                        data-te-select-init
-                        onChange={(e: any) => setRoles(parseInt(e.target.value))}
-                        defaultValue="none"
-                        id="countries"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      >
-                        <option value="none">Choose The target</option>
-                        {rolesData?.map((data: any) => (
-                          <option value={data.id} key={data.id}>
-                            {data.name}
-                          </option>
-                        ))}
-                      </select>
                     </div>
                   </div>
                 </form>

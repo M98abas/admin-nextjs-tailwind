@@ -6,42 +6,81 @@ import CardBox from '../../components/CardBox'
 import LayoutAuthenticated from '../../layouts/Authenticated'
 import SectionMain from '../../components/Section/Main'
 import SectionTitleLineWithButton from '../../components/Section/TitleLineWithButton'
-import TableSampleClients from '../../components/Table/AdminTable'
+import TableSampleClients from '../../components/Table/DiscountTable'
 import { getPageTitle } from '../../config'
 import CardBoxModal from '../../components/CardBox/Modal'
 import { ApiAddData, ApiGetData } from '../../../api'
-// import axios, { AxiosRequestConfig } from 'axios'
+import Datepicker from 'tailwind-datepicker-react'
 
 const TablesPage = () => {
-  const columns: Array<string> = ['name', 'email', 'Created at', 'actions']
-
-  const [rolesData, setRoleData] = useState([])
-  const [enabled, setEnabled] = useState(false)
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [roles, setRoles] = useState(0)
+  const columns: Array<string> = ['Target', 'value', 'End at', 'Created At', 'actions']
+  //   initTE({ Select })
+  const [value, setValue] = useState(0)
+  const [end_at, setEnd_at] = useState('')
+  const [target, setTarget] = useState('')
+  const [category, setCategory] = useState([])
+  const [subCategory, setSubCategory] = useState([])
+  const [ids, setIds] = useState([])
+  const [error, setError] = useState(false)
   const [Loading, setLoading] = useState(false)
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
-  const getData = async (route: string) => {
-    await ApiGetData(route, (data: any) => {
-      // console.log(data)
+  const [show, setShow] = useState(false)
 
-      setRoleData(data)
+  const getData = async () => {
+    await ApiGetData('category', (data) => {
+      setCategory(data)
     })
   }
-
   useEffect(() => {
-    getData('permsission')
+    getData()
   }, [])
 
+  const handelChange: any = (index: any) => {
+    if (index) {
+      setSubCategory(category[index].subcategory)
+      setTarget(category[index].titleEn)
+    }
+    return
+  }
+
+  // Date Picker
+  const options: any = {
+    title: 'Pick date',
+    autoHide: true,
+    todayBtn: false,
+    clearBtn: true,
+    maxDate: new Date('2030-08-01'),
+    minDate: new Date(),
+    theme: {
+      background: 'bg-white dark:bg-black-800',
+      todayBtn: '',
+      clearBtn: '',
+      icons: '',
+      text: '',
+      disabledText: 'bg-blue-100',
+      input: '',
+      inputIcon: '',
+      selected: 'bg-blue-500',
+    },
+    icons: {
+      // () => ReactElement | JSX.Element
+      prev: () => <span>Previous</span>,
+      next: () => <span>Next</span>,
+    },
+    datepickerClassNames: 'top-12',
+    defaultDate: new Date(),
+    language: 'en',
+  }
+
   const handleModalAction = async () => {
+    setError(false)
+    if (value == 0 && target == '') {
+      setError(true)
+      return
+    }
     setLoading(true)
-
-    await ApiAddData('admin/register', { name, email, password, rolesId: roles }, (data) => {
-      console.log(data)
-
-      if (data.errMsg != '')
+    await ApiAddData('discount', { value, end_at, target, ids }, (data) => {
+      if (data.error)
         return (
           <>
             <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
@@ -58,12 +97,6 @@ const TablesPage = () => {
             </div>
           </>
         )
-      setEnabled(!enabled)
-      setName('')
-      setEmail('')
-      setPassword('')
-      setRoles(0)
-      return
     })
     setLoading(false)
     setIsModalInfoActive(false)
@@ -74,16 +107,16 @@ const TablesPage = () => {
       {!Loading ? (
         <>
           <Head>
-            <title>{getPageTitle('Admin')}</title>
+            <title>{getPageTitle('Discount')}</title>
           </Head>
           <SectionMain>
-            <SectionTitleLineWithButton icon={mdiTableBorder} title="Admin" main>
+            <SectionTitleLineWithButton icon={mdiTableBorder} title="Discount" main>
               <Button
                 onClick={() => setIsModalInfoActive(true)}
                 label="Add New"
                 color="contrast"
-                icon={mdiPlus}
                 roundedFull
+                icon={mdiPlus}
                 small
               />
             </SectionTitleLineWithButton>
@@ -91,11 +124,10 @@ const TablesPage = () => {
             <CardBox className="mb-6" hasTable>
               <TableSampleClients columns={columns} />
               <CardBoxModal
-                title="Add Course"
+                title="Add Discount"
                 buttonColor="info"
                 buttonLabel="Done"
-                classData="xl:w-8/12"
-                disabled={enabled}
+                classData="h-[60vh] xl:w-8/12"
                 isActive={isModalInfoActive}
                 onConfirm={handleModalAction}
                 onCancel={() => setIsModalInfoActive(false)}
@@ -107,72 +139,93 @@ const TablesPage = () => {
                         htmlFor="name"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Name
+                        Value in %
                       </label>
                       <input
                         type="text"
                         id="name"
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) => setValue(parseInt(e.target.value))}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any"
+                        placeholder="10%, 20% ...."
                         required
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="email"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                        className="flex mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Email
+                        End at
                       </label>
-                      <input
-                        type="text"
-                        id="email"
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
-                        required
-                      />
+                      <div>
+                        <div className="relative max-w-sm">
+                          <Datepicker
+                            options={options}
+                            onChange={(dateSelected: any) => {
+                              setEnd_at(dateSelected)
+                            }}
+                            show={show}
+                            setShow={(e: boolean) => setShow(e)}
+                          />
+                        </div>
+                      </div>
                     </div>
                     <div>
                       <label
-                        htmlFor="phoneNumber"
+                        htmlFor="countries"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Password
-                      </label>
-                      <input
-                        type="text"
-                        onChange={(e) => setPassword(e.target.value)}
-                        id="phoneNumber"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="levelOfExperience"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Roles
+                        Select Category(s)
                       </label>
                       <select
                         data-te-select-init
-                        onChange={(e: any) => setRoles(parseInt(e.target.value))}
+                        onChange={(e: any) => handelChange(e.target.value)}
+                        id="countries"
                         defaultValue="none"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      >
+                        <option value="none">Choose The target</option>
+                        {category?.map((data: any) => (
+                          <option value={data.id} key={data.id}>
+                            {data.titleEn}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="countries"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Select Sub-Category(s)
+                      </label>
+                      <select
+                        data-te-select-init
+                        defaultValue="none"
+                        onChange={(e: any) => setIds(e.target.value)}
                         id="countries"
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       >
                         <option value="none">Choose The target</option>
-                        {rolesData?.map((data: any) => (
+                        {subCategory?.map((data: any) => (
                           <option value={data.id} key={data.id}>
-                            {data.name}
+                            {data.titleEn}
                           </option>
                         ))}
                       </select>
                     </div>
                   </div>
+                  {error ? (
+                    <div
+                      className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+                      role="alert"
+                    >
+                      <span className="font-medium">Danger alert!</span> Kindly fill the empty
+                      fields.
+                    </div>
+                  ) : (
+                    ''
+                  )}
                 </form>
               </CardBoxModal>
             </CardBox>

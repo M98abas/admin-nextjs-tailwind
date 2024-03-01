@@ -1,46 +1,82 @@
 import { mdiPlus, mdiTableBorder } from '@mdi/js'
 import Head from 'next/head'
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement, useState } from 'react'
 import Button from '../../components/Button'
 import CardBox from '../../components/CardBox'
 import LayoutAuthenticated from '../../layouts/Authenticated'
 import SectionMain from '../../components/Section/Main'
 import SectionTitleLineWithButton from '../../components/Section/TitleLineWithButton'
-import TableSampleClients from '../../components/Table/AdminTable'
+import TableSampleClients from '../../components/Table/ProductTypeTable'
 import { getPageTitle } from '../../config'
 import CardBoxModal from '../../components/CardBox/Modal'
-import { ApiAddData, ApiGetData } from '../../../api'
+import { ApiAddData } from '../../../api'
+import axios, { AxiosRequestConfig } from 'axios'
 // import axios, { AxiosRequestConfig } from 'axios'
 
 const TablesPage = () => {
-  const columns: Array<string> = ['name', 'email', 'Created at', 'actions']
+  const columns: Array<string> = ['Img', 'Title', 'created_at', 'actions']
 
-  const [rolesData, setRoleData] = useState([])
-  const [enabled, setEnabled] = useState(false)
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [roles, setRoles] = useState(0)
+  const [title, setTitle] = useState('')
   const [Loading, setLoading] = useState(false)
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
-  const getData = async (route: string) => {
-    await ApiGetData(route, (data: any) => {
-      // console.log(data)
+  const [uploadProgress, setUploadProgress]: any = useState(100)
+  const [imgURL, setimgURL] = useState('')
+  const [enabled, setEnabled] = useState(false)
 
-      setRoleData(data)
-    })
+  const imgbb = '807b79b03a554f95b5980b6b9d688013'
+  const uploadFile = async (file: any) => {
+    const formdata = new FormData()
+    formdata.append('image', file, file.name)
+
+    const requestOptions: AxiosRequestConfig = {
+      method: 'POST',
+      maxBodyLength: Infinity,
+      url: `https://api.imgbb.com/1/upload?key=${imgbb}`,
+      data: formdata,
+      onUploadProgress: (progressEvent) => {
+        const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+        setEnabled(progress === uploadProgress)
+        setUploadProgress(progress)
+      },
+    }
+
+    try {
+      const response = await axios(requestOptions)
+      setimgURL(response.data.data.url)
+    } catch (error) {
+      console.error(error)
+    }
   }
+  /**
+   *
+   * @param e
+   * @returns
+   */
+  const handleFileUpload = (e) => {
+    const fileInput = e.target
+    if (!fileInput.files) {
+      alert('No file was chosen')
+      return
+    }
 
-  useEffect(() => {
-    getData('permsission')
-  }, [])
+    if (!fileInput.files || fileInput.files.length === 0) {
+      alert('Files list is empty')
+      return
+    }
+
+    const file = fileInput.files[0]
+    console.log(file.type)
+
+    uploadFile(file)
+    /** Setting file state */
+    e.currentTarget.type = 'text'
+    e.currentTarget.type = 'file'
+  }
 
   const handleModalAction = async () => {
     setLoading(true)
 
-    await ApiAddData('admin/register', { name, email, password, rolesId: roles }, (data) => {
-      console.log(data)
-
+    await ApiAddData('productType', { title, url: imgURL }, (data) => {
       if (data.errMsg != '')
         return (
           <>
@@ -58,26 +94,22 @@ const TablesPage = () => {
             </div>
           </>
         )
-      setEnabled(!enabled)
-      setName('')
-      setEmail('')
-      setPassword('')
-      setRoles(0)
+      setEnabled(enabled)
+      setTitle('')
       return
     })
     setLoading(false)
     setIsModalInfoActive(false)
   }
-
   return (
     <>
       {!Loading ? (
         <>
           <Head>
-            <title>{getPageTitle('Admin')}</title>
+            <title>{getPageTitle('productType')}</title>
           </Head>
           <SectionMain>
-            <SectionTitleLineWithButton icon={mdiTableBorder} title="Admin" main>
+            <SectionTitleLineWithButton icon={mdiTableBorder} title="productType" main>
               <Button
                 onClick={() => setIsModalInfoActive(true)}
                 label="Add New"
@@ -91,86 +123,78 @@ const TablesPage = () => {
             <CardBox className="mb-6" hasTable>
               <TableSampleClients columns={columns} />
               <CardBoxModal
-                title="Add Course"
+                title="Add New"
                 buttonColor="info"
                 buttonLabel="Done"
                 classData="xl:w-8/12"
-                disabled={enabled}
+                disabled={!enabled}
                 isActive={isModalInfoActive}
                 onConfirm={handleModalAction}
                 onCancel={() => setIsModalInfoActive(false)}
               >
                 <form>
-                  <div className="grid gap-6 mb-6 md:grid-cols-2">
+                  <div className="grid gap-6 mb-6 md:grid-cols-1">
                     <div>
                       <label
                         htmlFor="name"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Name
+                        title Arabic
                       </label>
                       <input
                         type="text"
                         id="name"
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) => setTitle(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Any"
                         required
                       />
                     </div>
-                    <div>
+                    <div className="flex items-center justify-center w-full">
                       <label
-                        htmlFor="email"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                        htmlFor="dropzone-file"
+                        className="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer h-44 bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
                       >
-                        Email
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <svg
+                            className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 20 16"
+                          >
+                            <path
+                              stroke="currentColor"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                            />
+                          </svg>
+                          <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                            <span className="font-semibold">Click to upload productType Image</span>{' '}
+                            or drag and drop
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            MP3 (MAX. 800x400px)
+                          </p>
+                          <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 m-5">
+                            <div
+                              className={`bg-blue-600 h-2.5 rounded-full ${
+                                enabled ? 'bg-green-600' : ''
+                              }`}
+                              style={{ width: `${uploadProgress}%` }}
+                            ></div>
+                          </div>
+                          <p>Music Uploaded</p>
+                        </div>
+                        <input
+                          id="dropzone-file"
+                          type="file"
+                          className="hidden"
+                          onChange={handleFileUpload}
+                        />
                       </label>
-                      <input
-                        type="text"
-                        id="email"
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="phoneNumber"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Password
-                      </label>
-                      <input
-                        type="text"
-                        onChange={(e) => setPassword(e.target.value)}
-                        id="phoneNumber"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="levelOfExperience"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Roles
-                      </label>
-                      <select
-                        data-te-select-init
-                        onChange={(e: any) => setRoles(parseInt(e.target.value))}
-                        defaultValue="none"
-                        id="countries"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      >
-                        <option value="none">Choose The target</option>
-                        {rolesData?.map((data: any) => (
-                          <option value={data.id} key={data.id}>
-                            {data.name}
-                          </option>
-                        ))}
-                      </select>
                     </div>
                   </div>
                 </form>

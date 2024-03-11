@@ -1,4 +1,3 @@
-import { mdiPlus, mdiTableBorder } from '@mdi/js'
 import Head from 'next/head'
 import React, { ReactElement, useEffect, useState } from 'react'
 import Button from '../../components/Button'
@@ -6,18 +5,21 @@ import CardBox from '../../components/CardBox'
 import LayoutAuthenticated from '../../layouts/Authenticated'
 import SectionMain from '../../components/Section/Main'
 import SectionTitleLineWithButton from '../../components/Section/TitleLineWithButton'
-import TableSampleClients from '../../components/Table/RuleTable'
+import TableSampleClients from '../../components/Table/itemsTable'
 import { getPageTitle } from '../../config'
 import CardBoxModal from '../../components/CardBox/Modal'
 import { ApiAddData, ApiGetData } from '../../../api'
-import FormCheckRadio from '../../components/FormCheckRadio'
-import { Field } from 'formik'
-// import axios, { AxiosRequestConfig } from 'axios'
+import { mdiPlus, mdiTableBorder } from '@mdi/js'
+import { Select, Space } from 'antd'
+import axios, { AxiosRequestConfig } from 'axios'
+const { Option } = Select
 
 const TablesPage = () => {
-  const columns: Array<string> = ['name', 'description', 'created_at', 'actions']
-
+  const columns: Array<string> = ['img', 'titleAr', 'departmentNameAr', 'created_at', 'actions']
+  const [uploadProgress, setUploadProgress] = useState(100)
   const [enabled, setEnabled] = useState(false)
+  const [imgUrl, setImgUrl] = useState([])
+
   const [titleAr, setTitleAr] = useState('')
   const [titleEn, setTitleEn] = useState('')
   const [descriptionAr, setDescriptionAr] = useState('')
@@ -36,15 +38,18 @@ const TablesPage = () => {
   const [subCategoryId, setSubCategoryId] = useState(0)
   const [brandId, setBrandId] = useState(0)
   const [productTypeId, setProductTypeId] = useState(0)
+  const [hoursToTake, setHoursToTake] = useState(0)
   const [productType, setProductType] = useState([])
   const [Loading, setLoading] = useState(false)
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
-  const [inputs, setInputs] = useState([{ title: '', description: '', type: '' }])
   const [subCategory, setSubCategory] = useState([])
   const [category, setCategory] = useState([])
   const [brand, setBrand] = useState([])
-  
-  // TODO: Make Tags, sideEffect, and img uploading
+  const [productsTags, setProductsTags] = useState([])
+  const [sideEffects, setSideEffects] = useState([])
+  const [productsTagsId, setProductsTagsId] = useState([])
+  const [sideEffectsId, setSideEffectsId] = useState([])
+
   const handelChange: any = (index: any) => {
     if (index) {
       setSubCategory(category[index].subcategory)
@@ -61,18 +66,80 @@ const TablesPage = () => {
     await ApiGetData('productType', (data: any) => {
       setProductType(data)
     })
+    await ApiGetData('tags', (data: any) => {
+      setProductsTags(data)
+    })
+    await ApiGetData('sideEffect', (data: any) => {
+      setSideEffects(data)
+    })
   }
   useEffect(() => {
     getData()
   }, [])
+
+  const handleImageUpload = (e: any) => {
+    const fileInput = e.target
+    if (!fileInput.files) {
+      alert('No file was chosen')
+      return
+    }
+
+    if (!fileInput.files || fileInput.files.length === 0) {
+      alert('Files list is empty')
+      return
+    }
+
+    const file = fileInput.files[0]
+
+    /** File validation */
+    if (!file.type.startsWith('image')) {
+      alert('Please select a valide image')
+      return
+    }
+
+    /** Setting file state */
+    handleFileUpload(file) // we will use the file state, to send it later to the server
+    e.currentTarget.type = 'text'
+    e.currentTarget.type = 'file'
+  }
+
+  const imgbb = '807b79b03a554f95b5980b6b9d688013'
+  const handleFileUpload = async (file: any) => {
+    const formdata = new FormData()
+    formdata.append('image', file, file.name)
+
+    const requestOptions: AxiosRequestConfig = {
+      method: 'POST',
+      maxBodyLength: Infinity,
+      url: `https://api.imgbb.com/1/upload?key=${imgbb}`,
+      data: formdata,
+      onUploadProgress: (progressEvent) => {
+        const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+        setEnabled(progress === uploadProgress)
+        setUploadProgress(progress)
+      },
+    }
+
+    try {
+      const response = await axios(requestOptions)
+      console.log(response)
+      setEnabled(true)
+      setImgUrl([...imgUrl, response.data.data.url])
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   const handleModalAction = async () => {
     setLoading(true)
 
     await ApiAddData(
-      'Product',
+      'product',
       {
+        productsTagsId,
         titleAr,
         titleEn,
+        imgUrl,
         descriptionAr,
         descriptionEn,
         departmentNameAr,
@@ -83,11 +150,13 @@ const TablesPage = () => {
         mostItems,
         doses,
         barCode,
-        priceCell,
-        priceBuy,
-        quantity,
+        price_cell: priceCell,
+        price_buy: priceBuy,
+        quntity: quantity,
         brandId,
         subCategoryId,
+        sideEffectsId,
+        hoursToTake,
         productTypeId,
       },
       (data) => {
@@ -109,7 +178,29 @@ const TablesPage = () => {
             </>
           )
         setEnabled(!enabled)
-        setInputs([])
+        setProductsTagsId([])
+        setTitleAr('')
+        setTitleEn('')
+        setImgUrl([])
+        setDescriptionAr('')
+        setDescriptionEn('')
+        setDepartmentNameAr('')
+        setDepartmentNameEn('')
+        setSintificNameAR('')
+        setSintificNameEN('')
+        setHowToUse('')
+        setMostItems(false)
+        setDoses(0)
+        setBarCode('')
+        setPriceCell(0)
+        setPriceBuy(0)
+        setQuantity(0)
+        setBrandId(0)
+        setSubCategoryId(0)
+        setSideEffectsId([])
+        setHoursToTake(0)
+        setProductTypeId(0)
+
         return
       }
     )
@@ -117,21 +208,16 @@ const TablesPage = () => {
     setIsModalInfoActive(false)
   }
 
-  const handleChange = (index: any, event: any, field: any) => {
-    const values = [...inputs]
-    values[index][field] = event.target.value
-    setInputs(values)
-    console.log(inputs)
+  const handleChangeSelect = (value: number[]) => {
+    console.log(value)
+
+    setProductsTagsId(value)
+    return
   }
 
-  const handleAddInput = () => {
-    setInputs([...inputs, { title: '', description: '', type: '' }])
-  }
-
-  const handleRemoveInput = (index: any) => {
-    const values = [...inputs]
-    values.splice(index, 1)
-    setInputs(values)
+  const handleChangeSelectSideEffect = (value: number[]) => {
+    setSideEffectsId(value)
+    return
   }
 
   return (
@@ -159,8 +245,8 @@ const TablesPage = () => {
                 title="Add Course"
                 buttonColor="info"
                 buttonLabel="Done"
-                classData="h-[95vh] xl:w-8/12"
-                disabled={enabled}
+                classData="h-[97vh] xl:w-9/12 overflow-scroll"
+                disabled={!enabled}
                 isActive={isModalInfoActive}
                 onConfirm={handleModalAction}
                 onCancel={() => setIsModalInfoActive(false)}
@@ -179,7 +265,7 @@ const TablesPage = () => {
                         id="name"
                         onChange={(e) => setTitleAr(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any"
+                        placeholder="Title Arabic"
                         required
                       />
                     </div>
@@ -195,7 +281,7 @@ const TablesPage = () => {
                         id="email"
                         onChange={(e) => setTitleEn(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
+                        placeholder="Title English"
                         required
                       />
                     </div>
@@ -211,7 +297,7 @@ const TablesPage = () => {
                         id="name"
                         onChange={(e) => setDescriptionAr(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any"
+                        placeholder="Description Arabic"
                         required
                       />
                     </div>
@@ -227,7 +313,7 @@ const TablesPage = () => {
                         id="email"
                         onChange={(e) => setDescriptionEn(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
+                        placeholder="Description English"
                         required
                       />
                     </div>
@@ -243,7 +329,7 @@ const TablesPage = () => {
                         id="name"
                         onChange={(e) => setDepartmentNameAr(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any"
+                        placeholder="Department Name Arabic"
                         required
                       />
                     </div>
@@ -259,7 +345,7 @@ const TablesPage = () => {
                         id="email"
                         onChange={(e) => setDepartmentNameEn(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
+                        placeholder="Department Name English"
                         required
                       />
                     </div>
@@ -275,7 +361,7 @@ const TablesPage = () => {
                         id="name"
                         onChange={(e) => setSintificNameAR(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any"
+                        placeholder="scientific Name Arabic"
                         required
                       />
                     </div>
@@ -291,7 +377,7 @@ const TablesPage = () => {
                         id="email"
                         onChange={(e) => setSintificNameEN(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
+                        placeholder="scientific Name English"
                         required
                       />
                     </div>
@@ -300,14 +386,14 @@ const TablesPage = () => {
                         htmlFor="email"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        scientific Name English
+                        How to use
                       </label>
                       <input
                         type="text"
                         id="email"
                         onChange={(e) => setHowToUse(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
+                        placeholder="How to use"
                         required
                       />
                     </div>
@@ -328,9 +414,6 @@ const TablesPage = () => {
                           className="sr-only peer"
                         />
                         <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                        <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-                          Toggle me
-                        </span>
                       </label>
                     </div>
                     <div>
@@ -341,7 +424,7 @@ const TablesPage = () => {
                         How many doses
                       </label>
                       <input
-                        type="text"
+                        type="number"
                         id="email"
                         onChange={(e) => setDoses(parseInt(e.target.value))}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -373,7 +456,7 @@ const TablesPage = () => {
                         Price Cell
                       </label>
                       <input
-                        type="text"
+                        type="number"
                         id="email"
                         onChange={(e) => setPriceCell(parseInt(e.target.value))}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -389,7 +472,7 @@ const TablesPage = () => {
                         Price Buy
                       </label>
                       <input
-                        type="text"
+                        type="number"
                         id="email"
                         onChange={(e) => setPriceBuy(parseInt(e.target.value))}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -405,7 +488,7 @@ const TablesPage = () => {
                         Quntity
                       </label>
                       <input
-                        type="text"
+                        type="number"
                         id="email"
                         onChange={(e) => setQuantity(parseInt(e.target.value))}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -413,7 +496,26 @@ const TablesPage = () => {
                         required
                       />
                     </div>
-
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Hours To Take
+                      </label>
+                      <input
+                        type="number"
+                        id="email"
+                        onChange={(e) => setHoursToTake(parseInt(e.target.value))}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Any data"
+                        required
+                      />
+                    </div>
+                    <h3>Product Info</h3>
+                    <div></div>
+                    <div></div>
+                    <div></div>
                     <div>
                       <label
                         htmlFor="countries"
@@ -502,6 +604,94 @@ const TablesPage = () => {
                         ))}
                       </select>
                     </div>
+                    <div>
+                      <label
+                        htmlFor="countries"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Select Tags(s)
+                      </label>
+                      <Select
+                        mode="multiple"
+                        style={{ width: '100%' }}
+                        placeholder="Please select"
+                        onChange={handleChangeSelect}
+                        defaultValue={[]} // Set the default value as needed, but usually, it should be an empty array for multiple selection
+                      >
+                        {productsTags.map((option) => (
+                          <Option key={option.id} value={option.id}>
+                            {option.titleEn}
+                          </Option>
+                        ))}
+                      </Select>
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="countries"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Select Side Effect(s)
+                      </label>
+                      <Select
+                        mode="multiple"
+                        style={{ width: '100%' }}
+                        placeholder="Please select"
+                        onChange={handleChangeSelectSideEffect}
+                        defaultValue={[]} // Set the default value as needed, but usually, it should be an empty array for multiple selection
+                      >
+                        {sideEffects.map((option) => (
+                          <Option key={option.id} value={option.id}>
+                            {option.titleEn}
+                          </Option>
+                        ))}
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-center w-full">
+                    <label
+                      htmlFor="dropzone-file"
+                      className="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer h-54 bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                    >
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <svg
+                          className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 20 16"
+                        >
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                          />
+                        </svg>
+                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                          <span className="font-semibold">Click to upload category Image</span> or
+                          drag and drop
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          SVG, PNG, JPG or GIF (MAX. 800x400px)
+                        </p>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 m-5">
+                          <div
+                            className={`bg-blue-600 h-2.5 rounded-full ${
+                              enabled ? 'bg-green-600' : ''
+                            }`}
+                            style={{ width: `${uploadProgress}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      <input
+                        id="dropzone-file"
+                        type="file"
+                        className="hidden"
+                        onChange={handleImageUpload}
+                        multiple
+                      />
+                    </label>
                   </div>
                 </form>
               </CardBoxModal>

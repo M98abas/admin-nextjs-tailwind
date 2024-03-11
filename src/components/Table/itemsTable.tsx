@@ -4,26 +4,88 @@ import {
   mdiSquareEditOutline,
   mdiTrashCan,
 } from '@mdi/js'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSampleClients } from '../../hooks/sampleData'
 import Button from '../Button'
 import Buttons from '../Buttons'
 import CardBoxModal from '../CardBox/Modal'
-import { ApiAddData, ApiUpdateData } from '../../../api'
+import { ApiAddData, ApiGetData, ApiUpdateData } from '../../../api'
 import NotificationBar from '../NotificationBar'
 import Image from 'next/image'
 import axios, { AxiosRequestConfig } from 'axios'
+import { Select, Space } from 'antd'
+import MomentP from '../MomentP'
+const { Option } = Select
 
 const TableSampleClients = ({ columns }) => {
   const { clients } = useSampleClients('product')
+  console.log(clients)
+
   // const router = useRouter()
   const [id, setid] = useState()
+  const perPage = 10
+
+  const [titleAr, setTitleAr] = useState('')
+  const [titleEn, setTitleEn] = useState('')
+  const [descriptionAr, setDescriptionAr] = useState('')
+  const [descriptionEn, setDescriptionEn] = useState('')
+  const [departmentNameAr, setDepartmentNameAr] = useState('')
+  const [departmentNameEn, setDepartmentNameEn] = useState('')
+  const [mostItems, setMostItems] = useState(true)
+  const [howToUse, setHowToUse] = useState('')
+  const [sintificNameAR, setSintificNameAR] = useState('')
+  const [sintificNameEN, setSintificNameEN] = useState('')
+  const [doses, setDoses] = useState(0)
+  const [barCode, setBarCode] = useState('')
+  const [priceCell, setPriceCell] = useState(0.0)
+  const [priceBuy, setPriceBuy] = useState(0.0)
+  const [quantity, setQuantity] = useState(0)
+  const [subCategoryId, setSubCategoryId] = useState(0)
+  const [brandId, setBrandId] = useState(0)
+  const [productTypeId, setProductTypeId] = useState(0)
+  const [hoursToTake, setHoursToTake] = useState(0)
+  const [productType, setProductType] = useState([])
   const [Loading, setLoading] = useState(false)
-  const perPage = 5
+  const [subCategory, setSubCategory] = useState([])
+  const [category, setCategory] = useState([])
+  const [brand, setBrand] = useState([])
+  const [productsTags, setProductsTags] = useState([])
+  const [sideEffects, setSideEffects] = useState([])
+  const [productsTagsId, setProductsTagsId] = useState([])
+  const [sideEffectsId, setSideEffectsId] = useState([])
   const [notificationnActive, setNotificationnActive] = useState(false)
+  const [imgUrl, setImgUrl] = useState([])
+
+  const handelChange: any = (index: any) => {
+    if (index) {
+      setSubCategory(category[index].subcategory)
+    }
+    return
+  }
+  const getData = async () => {
+    await ApiGetData('category', (data: any) => {
+      setCategory(data)
+    })
+    await ApiGetData('brand', (data: any) => {
+      setBrand(data)
+    })
+    await ApiGetData('productType', (data: any) => {
+      setProductType(data)
+    })
+    await ApiGetData('tags', (data: any) => {
+      setProductsTags(data)
+    })
+    await ApiGetData('sideEffect', (data: any) => {
+      setSideEffects(data)
+    })
+  }
+  useEffect(() => {
+    getData()
+  }, [])
+
   const [currentPage, setCurrentPage] = useState(0)
   const [uploadProgress, setUploadProgress]: any = useState(100)
-  const [imgURL, setimgURL] = useState([])
+
   const [enabled, setEnabled] = useState(false)
 
   const clientsPaginated = clients.slice(perPage * currentPage, perPage * (currentPage + 1))
@@ -38,24 +100,35 @@ const TableSampleClients = ({ columns }) => {
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
   const [isModalTrashActive, setIsModalTrashActive] = useState(false)
   const [ind, setInd] = useState(0)
-  console.log(isModalInfoActive)
+  // console.log(isModalInfoActive)
+  const handleImageUpload = (e: any) => {
+    const fileInput = e.target
+    if (!fileInput.files) {
+      alert('No file was chosen')
+      return
+    }
 
-  // const handelDeleteAction = async () => {
-  //   setLoading(true)
-  //   await ApiDeleteData('product', id, (data) => {
-  //     console.log(data)
+    if (!fileInput.files || fileInput.files.length === 0) {
+      alert('Files list is empty')
+      return
+    }
 
-  //     if (data) setNotificationnActive(true)
-  //     setLoading(false)
-  //     return
-  //   })
+    const file = fileInput.files[0]
 
-  //   setIsModalInfoActive(false)
-  //   setIsModalTrashActive(false)
-  // }
+    /** File validation */
+    if (!file.type.startsWith('image')) {
+      alert('Please select a valide image')
+      return
+    }
+
+    /** Setting file state */
+    handleFileUpload(file) // we will use the file state, to send it later to the server
+    e.currentTarget.type = 'text'
+    e.currentTarget.type = 'file'
+  }
 
   const imgbb = '807b79b03a554f95b5980b6b9d688013'
-  const uploadFile = async (file: any) => {
+  const handleFileUpload = async (file: any) => {
     const formdata = new FormData()
     formdata.append('image', file, file.name)
 
@@ -73,37 +146,35 @@ const TableSampleClients = ({ columns }) => {
 
     try {
       const response = await axios(requestOptions)
-      setimgURL([...imgURL, response.data.data.url])
+      console.log(response)
+      setEnabled(true)
+      setImgUrl([...imgUrl, response.data.data.url])
     } catch (error) {
       console.error(error)
     }
   }
-  const handleFileUpload = (e) => {
-    const fileInput = e.target
-    if (!fileInput.files) {
-      alert('No file was chosen')
-      return
-    }
 
-    if (!fileInput.files || fileInput.files.length === 0) {
-      alert('Files list is empty')
-      return
-    }
+  // 45.4.172.70
 
-    const file = fileInput.files[0]
-    console.log(file.type)
-
-    uploadFile(file)
-    /** Setting file state */
-    e.currentTarget.type = 'text'
-    e.currentTarget.type = 'file'
+  const handelRemoveImage = async (id: any) => {
+    await ApiGetData(`product/imageDelete/${id}`, (data: any) => {
+      console.log(data)
+    })
+  }
+  const handleChangeSelect = (value: number[]) => {
+    setProductsTagsId(value)
+    return
   }
 
+  const handleChangeSelectSideEffect = (value: number[]) => {
+    setSideEffectsId(value)
+    return
+  }
   const handelDeleteAction = async () => {
     setLoading(true)
     console.log(id)
 
-    await ApiAddData(`admin/active/${id}`, { active: false }, (data) => {
+    await ApiAddData(`product/active/${id}`, { active: false }, (data) => {
       if (data) setNotificationnActive(true)
       setLoading(false)
     })
@@ -114,10 +185,61 @@ const TableSampleClients = ({ columns }) => {
 
   const handleModalAction = async () => {
     setLoading(true)
-    await ApiUpdateData('admin', { id, email, name, password, rolesId }, (data) => {
-      if (data) setNotificationnActive(true)
-      setLoading(false)
-    })
+    await ApiUpdateData(
+      'product',
+      {
+        id,
+        productsTagsId,
+        titleAr,
+        titleEn,
+        imgUrl,
+        descriptionAr,
+        descriptionEn,
+        departmentNameAr,
+        departmentNameEn,
+        sintificNameAR,
+        sintificNameEN,
+        howToUse,
+        mostItems,
+        doses,
+        barCode,
+        priceCell,
+        priceBuy,
+        quntity: quantity,
+        brandId,
+        subCategoryId,
+        sideEffectsId,
+        hoursToTake,
+        productTypeId,
+      },
+      (data) => {
+        if (data) setNotificationnActive(true)
+        setEnabled(!enabled)
+        setProductsTagsId([])
+        setTitleAr('')
+        setTitleEn('')
+        setImgUrl([])
+        setDescriptionAr('')
+        setDescriptionEn('')
+        setDepartmentNameAr('')
+        setDepartmentNameEn('')
+        setSintificNameAR('')
+        setSintificNameEN('')
+        setHowToUse('')
+        setMostItems(false)
+        setDoses(0)
+        setBarCode('')
+        setPriceCell(0)
+        setPriceBuy(0)
+        setQuantity(0)
+        setBrandId(0)
+        setSubCategoryId(0)
+        setSideEffectsId([])
+        setHoursToTake(0)
+        setProductTypeId(0)
+        setLoading(false)
+      }
+    )
     setIsModalInfoActive(false)
     setIsModalTrashActive(false)
   }
@@ -172,30 +294,34 @@ const TableSampleClients = ({ columns }) => {
       ) : (
         <>
           <CardBoxModal
-            title="Sample modal"
+            title="Add Course"
             buttonColor="info"
             buttonLabel="Done"
+            classData="h-[97vh] xl:w-9/12 overflow-scroll"
             disabled={!enabled}
             isActive={isModalInfoActive}
             onConfirm={handleModalAction}
-            onCancel={handleModalAction}
+            onCancel={() => {
+              setIsModalInfoActive(false)
+              setInd(0)
+            }}
           >
             <form>
-              <div className="grid gap-6 mb-6 md:grid-cols-2">
+              <div className="grid gap-6 mb-6 md:grid-cols-4">
                 <div>
                   <label
                     htmlFor="name"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Email
+                    Title Arabic
                   </label>
                   <input
                     type="text"
                     id="name"
-                    onChange={(e) => setEmail(e.target.value)}
-                    defaultValue={clients[ind]?.email}
+                    defaultValue={clients[ind]?.titleAr}
+                    onChange={(e) => setTitleAr(e.target.value)}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="John"
+                    placeholder="Title Arabic"
                     required
                   />
                 </div>
@@ -204,60 +330,450 @@ const TableSampleClients = ({ columns }) => {
                     htmlFor="email"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Name
+                    Title English
                   </label>
                   <input
                     type="text"
                     id="email"
-                    onChange={(e) => setName(e.target.value)}
-                    defaultValue={clients[ind]?.name}
+                    defaultValue={clients[ind]?.titleEn}
+                    onChange={(e) => setTitleEn(e.target.value)}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Doe"
+                    placeholder="Title English"
                     required
                   />
                 </div>
                 <div>
                   <label
-                    htmlFor="password"
+                    htmlFor="name"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Password
+                    Description Arabic
                   </label>
                   <input
-                    type="password"
-                    onChange={(e) => setPassword(e.target.value)}
-                    id="password"
+                    type="text"
+                    id="name"
+                    defaultValue={clients[ind]?.descriptionAr}
+                    onChange={(e) => setDescriptionAr(e.target.value)}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Old password not show due to security reasons"
+                    placeholder="Description Arabic"
                     required
                   />
                 </div>
                 <div>
                   <label
-                    htmlFor="role"
+                    htmlFor="email"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Role
+                    Description English
+                  </label>
+                  <input
+                    type="text"
+                    id="email"
+                    defaultValue={clients[ind]?.descriptionEn}
+                    onChange={(e) => setDescriptionEn(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Description English"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Department Name Arabic
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    defaultValue={clients[ind]?.departmentNameAr}
+                    onChange={(e) => setDepartmentNameAr(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Department Name Arabic"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Department Name English
+                  </label>
+                  <input
+                    type="text"
+                    id="email"
+                    defaultValue={clients[ind]?.descriptionEn}
+                    onChange={(e) => setDepartmentNameEn(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Department Name English"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    scientific Name Arabic
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    defaultValue={clients[ind]?.sintificNameAR}
+                    onChange={(e) => setSintificNameAR(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="scientific Name Arabic"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    scientific Name English
+                  </label>
+                  <input
+                    type="text"
+                    id="email"
+                    defaultValue={clients[ind]?.sintificNameEN}
+                    onChange={(e) => setSintificNameEN(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="scientific Name English"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    How to use
+                  </label>
+                  <input
+                    type="text"
+                    id="email"
+                    defaultValue={clients[ind]?.howToUse}
+                    onChange={(e) => setHowToUse(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="How to use"
+                    required
+                  />
+                </div>
+                {/*  */}
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Most Items
+                  </label>
+
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      value=""
+                      defaultValue={clients[ind]?.mostItems}
+                      onChange={(e) => setMostItems(Boolean(e.target.value))}
+                      className="sr-only peer"
+                    />
+                    <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    How many doses
+                  </label>
+                  <input
+                    type="number"
+                    id="email"
+                    defaultValue={clients[ind]?.doses}
+                    onChange={(e) => setDoses(parseInt(e.target.value))}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Any data"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    BarCode
+                  </label>
+                  <input
+                    type="text"
+                    id="email"
+                    defaultValue={clients[ind]?.barCode}
+                    onChange={(e) => setBarCode(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Any data"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Price Cell
+                  </label>
+                  <input
+                    type="number"
+                    id="email"
+                    defaultValue={clients[ind]?.price_cell}
+                    onChange={(e) => setPriceCell(parseInt(e.target.value))}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Any data"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Price Buy
+                  </label>
+                  <input
+                    type="number"
+                    id="email"
+                    defaultValue={clients[ind]?.price_buy}
+                    onChange={(e) => setPriceBuy(parseInt(e.target.value))}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Any data"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Quntity
+                  </label>
+                  <input
+                    type="number"
+                    id="email"
+                    defaultValue={clients[ind]?.quntity}
+                    onChange={(e) => setQuantity(parseInt(e.target.value))}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Any data"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Hours To Take
+                  </label>
+                  <input
+                    type="number"
+                    id="email"
+                    defaultValue={clients[ind]?.howToUse}
+                    onChange={(e) => setHoursToTake(parseInt(e.target.value))}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Any data"
+                    required
+                  />
+                </div>
+                <h3>Product Info</h3>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div>
+                  <label
+                    htmlFor="countries"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Select ProductType(s)
                   </label>
                   <select
                     data-te-select-init
-                    onChange={(e: any) => setRolesId(parseInt(e.target.value))}
-                    // defaultValue={clients[ind].Roles?.name}
+                    defaultValue={clients[ind]?.productTypeId}
+                    onChange={(e: any) => setProductTypeId(e.target.value)}
                     id="countries"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   >
-                    <option value="none">Choose The target</option>
-                    {rolesData?.map((data: any) => (
+                    {productType?.map((data: any) => (
                       <option value={data.id} key={data.id}>
-                        {data.name}
+                        {data.title}
                       </option>
                     ))}
                   </select>
                 </div>
+                <div>
+                  <label
+                    htmlFor="countries"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Select Brand(s)
+                  </label>
+                  <select
+                    data-te-select-init
+                    defaultValue={clients[ind]?.brandId}
+                    onChange={(e: any) => setBrandId(e.target.value)}
+                    id="countries"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  >
+                    {brand?.map((data: any) => (
+                      <option value={data.id} key={data.id}>
+                        {data.titleEn}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label
+                    htmlFor="countries"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Select Category(s)
+                  </label>
+                  <select
+                    data-te-select-init
+                    onChange={(e: any) => handelChange(e.target.value)}
+                    id="countries"
+                    defaultValue={[clients[ind]?.SubCategory?.categoryId]}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  >
+                    {category?.map((data: any) => (
+                      <option value={data.id} key={data.id}>
+                        {data.titleEn}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label
+                    htmlFor="countries"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Select Sub-Category(s)
+                  </label>
+                  <select
+                    data-te-select-init
+                    defaultValue={clients[ind]?.subCategoryId}
+                    onChange={(e: any) => setSubCategoryId(e.target.value)}
+                    id="countries"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  >
+                    {subCategory?.map((data: any) => (
+                      <option value={data.id} key={data.id}>
+                        {data.titleEn}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label
+                    htmlFor="countries"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Select Tags(s)
+                  </label>
+                  <Select
+                    mode="multiple"
+                    style={{ width: '100%' }}
+                    placeholder="Please select"
+                    onChange={handleChangeSelect}
+                    defaultValue={clients[ind]?.productsTags.map(({ tagsId }) => tagsId)} // Set the default value as needed, but usually, it should be an empty array for multiple selection
+                  >
+                    {productsTags.map((option) => (
+                      <Option key={option.id} value={option.id}>
+                        {option.titleEn}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
+                <div>
+                  <label
+                    htmlFor="countries"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Select Side Effect(s)
+                  </label>
+                  <Select
+                    mode="multiple"
+                    style={{ width: '100%' }}
+                    placeholder="Please select"
+                    onChange={handleChangeSelectSideEffect}
+                    defaultValue={clients[ind]?.sideEffect.map(({ sideEffectId }) => sideEffectId)} // Set the default value as needed, but usually, it should be an empty array for multiple selection
+                  >
+                    {sideEffects.map((option) => (
+                      <Option key={option.id} value={option.id}>
+                        {option.titleEn}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
+              </div>
+              <div className="flex items-center justify-center w-full gap-5">
+                <label
+                  htmlFor="dropzone-file"
+                  className="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer h-54 bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                >
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <svg
+                      className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 20 16"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                      />
+                    </svg>
+                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                      <span className="font-semibold">Click to upload category Image</span> or drag
+                      and drop
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      SVG, PNG, JPG or GIF (MAX. 800x400px)
+                    </p>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 m-5">
+                      <div
+                        className={`bg-blue-600 h-2.5 rounded-full ${
+                          enabled ? 'bg-green-600' : ''
+                        }`}
+                        style={{ width: `${uploadProgress}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                  <input
+                    id="dropzone-file"
+                    type="file"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                    multiple
+                  />
+                </label>
+                <div className="grid gap-6 mb-6 md:grid-cols-2">
+                  {clients[ind]?.imgUrl.map((img: any) => (
+                    <>
+                      <div key={img.id} className="w-16">
+                        <span className="close" onClick={() => handelRemoveImage(img.id)}>
+                          &times;
+                        </span>
+                        <img src={img.url} alt="Product Img" />
+                      </div>
+                    </>
+                  ))}
+                </div>
               </div>
             </form>
           </CardBoxModal>
-
           <CardBoxModal
             title="Please confirm"
             buttonColor="danger"
@@ -294,16 +810,17 @@ const TableSampleClients = ({ columns }) => {
                   <td className="border-b-0 lg:w-6 before:hidden">
                     <Image
                       width={520}
-                      src={client?.imageUrl}
+                      src={client?.imgUrl[0]?.url == '0' ? '' : client?.imgUrl[0]?.url}
                       alt="User img"
+                      height={10}
                       className="w-12 h-auto"
                     />
                   </td>
-                  <td data-label="nickName">{client.name}</td>
-                  <td data-label="Name">{client.description}</td>
+                  <td data-label="nickName">{client.titleAr}</td>
+                  <td data-label="Name">{client.descriptionAr}</td>
                   <td data-label="Created" className="lg:w-1 whitespace-nowrap">
                     <small className="text-gray-500 d ark:text-slate-400">
-                      {client.created_at}
+                    <MomentP dateValue={client.created_at} />
                     </small>
                   </td>
                   <td className="before:hidden lg:w-1 whitespace-nowrap">
@@ -314,6 +831,7 @@ const TableSampleClients = ({ columns }) => {
                             color="info"
                             icon={mdiSquareEditOutline}
                             onClick={() => {
+                              clients[index]?.productsTags.map(({ tagsId }) => tagsId)
                               setInd(index)
                               setid(client.id)
                               setIsModalInfoActive(true)

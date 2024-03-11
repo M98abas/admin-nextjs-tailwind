@@ -56,6 +56,7 @@ const menuAside: MenuAsideItem[] = [
     menu: [
       {
         label: 'Orders',
+        href: '/orders',
         icon: mdiClipboardListOutline,
       },
       {

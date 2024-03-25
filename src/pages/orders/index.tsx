@@ -1,13 +1,19 @@
 import { mdiPlus, mdiTableBorder } from '@mdi/js'
 import Head from 'next/head'
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useState, useEffect } from 'react'
 import CardBox from '../../components/CardBox'
 import LayoutAuthenticated from '../../layouts/Authenticated'
 import SectionMain from '../../components/Section/Main'
 import SectionTitleLineWithButton from '../../components/Section/TitleLineWithButton'
 import TableSampleClients from '../../components/Table/OrderTable'
 import { getPageTitle } from '../../config'
+import { ApiAddData, ApiGetData } from '../../../api'
+import CardBoxModal from '../../components/CardBox/Modal'
+import { Select } from 'antd'
+import Button from '../../components/Button'
 // import axios, { AxiosRequestConfig } from 'axios'
+
+const { Option } = Select
 
 const TablesPage = () => {
   const columns: Array<string> = [
@@ -22,7 +28,105 @@ const TablesPage = () => {
     'actions',
   ]
   const [Loading, setLoading] = useState(false)
+  const [enabled, setEnabled] = useState(!false)
+  const [isModalInfoActive, setIsModalInfoActive] = useState(false)
+  const [total_price, setTotal_price] = useState(0)
+  const [addressesId, setAddressesId] = useState(1)
+  const [error, setError] = useState(false)
+  const [basket, setBasket] = useState([])
+  const [products, setProducts] = useState([])
+  const [productId, setProductId] = useState(0)
+  const [quantity, setQuantity] = useState(0)
+  const [amount, setAmount] = useState(0)
+  const [users, setUsers] = useState([])
+  const [usersId, setUsersId] = useState(0)
+  const [descripption, setDescripption] = useState('')
+  const [receivedDate, setReceivedDate] = useState('')
+  const [Adddress_name, setAdddress_name] = useState('')
+  const [street, setStreet] = useState('')
+  const [city, setCity] = useState('')
+  const [floor, setFloor] = useState('')
+  const [apartment, setApartment] = useState('')
 
+  const getData = async () => {
+    await ApiGetData('product', (data: any) => {
+      setProducts(data)
+    })
+    await ApiGetData('clinet', (data: any) => {
+      setUsers(data)
+    })
+  }
+  useEffect(() => {
+    getData()
+  }, [])
+
+  const handleChangeSelectUsers = (selectedPhoneNumbers: string[]) => {
+    // Map selected phone numbers to user IDs
+    const selectedUserIds = selectedPhoneNumbers
+      .map((phoneNumber) => {
+        const user = users.find((user) => user.phoneNumber === phoneNumber)
+        return user ? user.id : null
+      })
+      .filter((id) => id !== null) // Filter out null values
+
+    // Update state with selected user IDs
+    setUsersId(selectedUserIds)
+  }
+
+  const handleChangeSelectProduct = (value: number) => {
+    // Map selected phone numbers to user IDs
+    const selectedUserIds: any = value
+      .map((phoneNumber) => {
+        const product = products.find((product) => product.titleEn === phoneNumber)
+        return product ? product.id : null
+      })
+      .filter((id) => id !== null) // Filter out null values
+
+    // Update state with selected user IDs
+    setProductId(selectedUserIds)
+
+    return
+  }
+
+  const handleModalAction = async () => {
+    setError(false)
+    if (quantity == 0 && productId == 0) {
+      setError(true)
+      return
+    }
+    setLoading(true)
+    await ApiAddData(
+      'order/manual',
+      {
+        total_price,
+        basket: [{ quantity, amount, descripption, productsId: productId[0] }],
+        usersId: usersId[0],
+        receivedDate: receivedDate[0],
+        address: { Adddress_name, street, city, floor, apartment },
+      },
+      (data) => {
+        if (data.error)
+          return (
+            <>
+              <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
+                <svg
+                  className="w-5 h-5"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
+                </svg>
+                <span className="sr-only">Check icon</span>
+              </div>
+            </>
+          )
+      }
+    )
+    setLoading(false)
+    setIsModalInfoActive(false)
+  }
   return (
     <>
       {!Loading ? (
@@ -31,14 +135,236 @@ const TablesPage = () => {
             <title>{getPageTitle('Orders')}</title>
           </Head>
           <SectionMain>
-            <SectionTitleLineWithButton
-              icon={mdiTableBorder}
-              title="Orders"
-              main
-            ></SectionTitleLineWithButton>
+            <SectionTitleLineWithButton icon={mdiTableBorder} title="Orders" main>
+              <Button
+                onClick={() => setIsModalInfoActive(true)}
+                label="Add New"
+                color="contrast"
+                icon={mdiPlus}
+                roundedFull
+                small
+              />
+            </SectionTitleLineWithButton>
 
             <CardBox className="mb-6" hasTable>
               <TableSampleClients columns={columns} />
+              <CardBoxModal
+                title="Add Course"
+                buttonColor="info"
+                buttonLabel="Done"
+                classData="h-[97vh] xl:w-9/12 overflow-scroll"
+                disabled={!enabled}
+                isActive={isModalInfoActive}
+                onConfirm={handleModalAction}
+                onCancel={() => setIsModalInfoActive(false)}
+              >
+                <form>
+                  <div className="grid gap-6 mb-6 md:grid-cols-4">
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Choose User
+                      </label>
+                      <Select
+                        mode="multiple"
+                        style={{ width: '100%' }}
+                        placeholder="Please select"
+                        onChange={handleChangeSelectUsers}
+                        defaultValue={1} // Set the default value as needed, but usually, it should be an empty array for multiple selection
+                      >
+                        {users.map((option) => (
+                          <Option key={option.id} value={option.phoneNumber}>
+                            {option.phoneNumber}-{option.fin_name} {option.lst_name}
+                          </Option>
+                        ))}
+                      </Select>
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Chose product
+                      </label>
+                      <Select
+                        mode="multiple"
+                        style={{ width: '100%' }}
+                        placeholder="Please select"
+                        onChange={handleChangeSelectProduct}
+                        defaultValue={1} // Set the default value as needed, but usually, it should be an empty array for multiple selection
+                      >
+                        {products.map((option) => (
+                          <Option key={option.id} value={option.titleEn}>
+                            {option.titleEn}
+                          </Option>
+                        ))}
+                      </Select>
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Total Price
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        onChange={(e) => setTotal_price(parseInt(e.target.value))}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Title Arabic"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        quantity
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        onChange={(e) => setQuantity(parseInt(e.target.value))}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Title Arabic"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Amount
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        onChange={(e) => setAmount(parseInt(e.target.value))}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Title Arabic"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        descripption
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        onChange={(e) => setDescripption(e.target.value)}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Title Arabic"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Received Date
+                      </label>
+                      <input
+                        type="date"
+                        id="name"
+                        onChange={(e) => setReceivedDate(e.target.value)}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Title Arabic"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Address Name
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        onChange={(e) => setAdddress_name(e.target.value)}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Title Arabic"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Street
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        onChange={(e) => setStreet(e.target.value)}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Title Arabic"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        City
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        onChange={(e) => setCity(e.target.value)}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Title Arabic"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Floor
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        onChange={(e) => setFloor(e.target.value)}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Title Arabic"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Apartment
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        onChange={(e) => setApartment(e.target.value)}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Title Arabic"
+                        required
+                      />
+                    </div>
+                  </div>
+                </form>
+              </CardBoxModal>
             </CardBox>
           </SectionMain>
         </>

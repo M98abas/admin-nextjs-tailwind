@@ -16,8 +16,8 @@ import Image from 'next/image'
 import axios, { AxiosRequestConfig } from 'axios'
 import MomentP from '../MomentP'
 
-const TableSampleClients = ({ columns }) => {
-  const { clients } = useSampleClients('subCategory')
+const TableSampleClients = ({ idNumber, columns }) => {
+  const { clients } = useSampleClients(`subCategory/one/${idNumber}`)
   const [enabled, setEnabled] = useState(false)
   console.log(clients)
 

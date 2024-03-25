@@ -27,7 +27,9 @@ const TablesPage = () => {
   const [departmentNameAr, setDepartmentNameAr] = useState('')
   const [departmentNameEn, setDepartmentNameEn] = useState('')
   const [mostItems, setMostItems] = useState(true)
+  const [doctorRecommmand, setDoctorRecommmand] = useState(true)
   const [howToUse, setHowToUse] = useState('')
+  const [contentProduct, setContentProduct] = useState('')
   const [sintificNameAR, setSintificNameAR] = useState('')
   const [sintificNameEN, setSintificNameEN] = useState('')
   const [doses, setDoses] = useState(0)
@@ -46,9 +48,8 @@ const TablesPage = () => {
   const [category, setCategory] = useState([])
   const [brand, setBrand] = useState([])
   const [productsTags, setProductsTags] = useState([])
-  const [sideEffects, setSideEffects] = useState([])
+  const [sideEffect, setSideEffect] = useState('')
   const [productsTagsId, setProductsTagsId] = useState([])
-  const [sideEffectsId, setSideEffectsId] = useState([])
 
   const handelChange: any = (index: any) => {
     if (index) {
@@ -69,13 +70,16 @@ const TablesPage = () => {
     await ApiGetData('tags', (data: any) => {
       setProductsTags(data)
     })
-    await ApiGetData('sideEffect', (data: any) => {
-      setSideEffects(data)
-    })
   }
   useEffect(() => {
     getData()
   }, [])
+
+  const handelRemoveImage = async (indexToRemove: any) => {
+    const newImgUrl = imgUrl.filter((_, index) => index !== indexToRemove)
+    setImgUrl(newImgUrl)
+    return
+  }
 
   const handleImageUpload = (e: any) => {
     const fileInput = e.target
@@ -140,6 +144,7 @@ const TablesPage = () => {
         titleAr,
         titleEn,
         imgUrl,
+        doctorRecommmand,
         descriptionAr,
         descriptionEn,
         departmentNameAr,
@@ -147,6 +152,7 @@ const TablesPage = () => {
         sintificNameAR,
         sintificNameEN,
         howToUse,
+        contentProduct,
         mostItems,
         doses,
         barCode,
@@ -155,7 +161,7 @@ const TablesPage = () => {
         quntity: quantity,
         brandId,
         subCategoryId,
-        sideEffectsId,
+        sideEffect,
         hoursToTake,
         productTypeId,
       },
@@ -185,6 +191,7 @@ const TablesPage = () => {
         setDescriptionAr('')
         setDescriptionEn('')
         setDepartmentNameAr('')
+        setContentProduct('')
         setDepartmentNameEn('')
         setSintificNameAR('')
         setSintificNameEN('')
@@ -197,8 +204,9 @@ const TablesPage = () => {
         setQuantity(0)
         setBrandId(0)
         setSubCategoryId(0)
-        setSideEffectsId([])
+        setSideEffect('')
         setHoursToTake(0)
+        setDoctorRecommmand(true)
         setProductTypeId(0)
 
         return
@@ -214,12 +222,6 @@ const TablesPage = () => {
     setProductsTagsId(value)
     return
   }
-
-  const handleChangeSelectSideEffect = (value: number[]) => {
-    setSideEffectsId(value)
-    return
-  }
-
   return (
     <>
       {!Loading ? (
@@ -421,7 +423,7 @@ const TablesPage = () => {
                         htmlFor="email"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        How many doses
+                        How much doses
                       </label>
                       <input
                         type="number"
@@ -516,6 +518,41 @@ const TablesPage = () => {
                     <div></div>
                     <div></div>
                     <div></div>
+
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Need to doctor Recommanded
+                      </label>
+
+                      <label className="inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          value=""
+                          onChange={(e) => setDoctorRecommmand(Boolean(e.target.value))}
+                          className="sr-only peer"
+                        />
+                        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        BarCode
+                      </label>
+                      <input
+                        type="text"
+                        id="email"
+                        onChange={(e) => setContentProduct(e.target.value)}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Any data"
+                        required
+                      />
+                    </div>
                     <div>
                       <label
                         htmlFor="countries"
@@ -630,21 +667,16 @@ const TablesPage = () => {
                         htmlFor="countries"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Select Side Effect(s)
+                        Side Effect(s)
                       </label>
-                      <Select
-                        mode="multiple"
-                        style={{ width: '100%' }}
-                        placeholder="Please select"
-                        onChange={handleChangeSelectSideEffect}
-                        defaultValue={[]} // Set the default value as needed, but usually, it should be an empty array for multiple selection
-                      >
-                        {sideEffects.map((option) => (
-                          <Option key={option.id} value={option.id}>
-                            {option.titleEn}
-                          </Option>
-                        ))}
-                      </Select>
+                      <input
+                        type="text"
+                        id="email"
+                        onChange={(e) => setSideEffect(e.target.value)}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Any data"
+                        required
+                      />
                     </div>
                   </div>
                   <div className="flex items-center justify-center w-full">
@@ -692,6 +724,18 @@ const TablesPage = () => {
                         multiple
                       />
                     </label>
+                    <div className="grid gap-6 mb-6 md:grid-cols-2">
+                      {imgUrl.map((img: any, index: number) => (
+                        <>
+                          <div key={index} className="w-16">
+                            <span className="close" onClick={() => handelRemoveImage(index)}>
+                              &times;
+                            </span>
+                            <img src={img.url} alt="Product Img" />
+                          </div>
+                        </>
+                      ))}
+                    </div>
                   </div>
                 </form>
               </CardBoxModal>

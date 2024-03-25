@@ -44,7 +44,6 @@ const menuAside: MenuAsideItem[] = [
       { label: 'Category', href: '/product/category', icon: mdiTagMultiple },
       { label: 'Brand', href: '/product/brand', icon: mdiShopping },
       { label: 'Product Type', href: '/product/productType', icon: mdiPackageVariantClosed },
-      { label: 'Side Effect', href: '/product/SideEffect', icon: mdiNeedle },
       { label: 'Tags', href: '/product/tags', icon: mdiLabelMultiple },
       { label: 'PromoCode', href: '/product/promocode', icon: mdiCurrencyUsd },
       { label: 'Discount', href: '/product/discount', icon: mdiSale },
@@ -61,10 +60,12 @@ const menuAside: MenuAsideItem[] = [
       },
       {
         label: 'Payment',
+        href: '/orders/payment',
         icon: mdiCreditCardOutline,
       },
       {
         label: 'Transaction',
+        href: '/orders/transaction',
         icon: mdiBankOutline,
       },
     ],

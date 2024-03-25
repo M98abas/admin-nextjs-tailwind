@@ -13,7 +13,7 @@ import { ApiAddData, ApiGetData, ApiUpdateData } from '../../../api'
 import NotificationBar from '../NotificationBar'
 import Image from 'next/image'
 import axios, { AxiosRequestConfig } from 'axios'
-import { Select, Space } from 'antd'
+import { Select } from 'antd'
 import MomentP from '../MomentP'
 const { Option } = Select
 
@@ -50,9 +50,10 @@ const TableSampleClients = ({ columns }) => {
   const [category, setCategory] = useState([])
   const [brand, setBrand] = useState([])
   const [productsTags, setProductsTags] = useState([])
-  const [sideEffects, setSideEffects] = useState([])
+  const [sideEffects, setSideEffects] = useState('')
+  const [doctorRecommmand, setDoctorRecommmand] = useState(true)
+  const [contentProduct, setContentProduct] = useState('')
   const [productsTagsId, setProductsTagsId] = useState([])
-  const [sideEffectsId, setSideEffectsId] = useState([])
   const [notificationnActive, setNotificationnActive] = useState(false)
   const [imgUrl, setImgUrl] = useState([])
 
@@ -74,9 +75,6 @@ const TableSampleClients = ({ columns }) => {
     })
     await ApiGetData('tags', (data: any) => {
       setProductsTags(data)
-    })
-    await ApiGetData('sideEffect', (data: any) => {
-      setSideEffects(data)
     })
   }
   useEffect(() => {
@@ -154,7 +152,6 @@ const TableSampleClients = ({ columns }) => {
     }
   }
 
-  // 45.4.172.70
 
   const handelRemoveImage = async (id: any) => {
     await ApiGetData(`product/imageDelete/${id}`, (data: any) => {
@@ -166,8 +163,18 @@ const TableSampleClients = ({ columns }) => {
     return
   }
 
-  const handleChangeSelectSideEffect = (value: number[]) => {
-    setSideEffectsId(value)
+  const handelSearchInputChanged = (e) => {
+    if (e.key == 'Enter' && e.target.value != '')
+      clients.map((client, index) => {
+        if (
+          client.id == e.target.value ||
+          client.barCode == e.target.value ||
+          client.titleEn == e.target.value
+        ) {
+          setInd(index)
+          setIsModalInfoActive(true)
+        }
+      })
     return
   }
   const handelDeleteAction = async () => {
@@ -199,6 +206,8 @@ const TableSampleClients = ({ columns }) => {
         departmentNameEn,
         sintificNameAR,
         sintificNameEN,
+        doctorRecommmand,
+        contentProduct,
         howToUse,
         mostItems,
         doses,
@@ -208,7 +217,7 @@ const TableSampleClients = ({ columns }) => {
         quntity: quantity,
         brandId,
         subCategoryId,
-        sideEffectsId,
+        sideEffects,
         hoursToTake,
         productTypeId,
       },
@@ -234,7 +243,7 @@ const TableSampleClients = ({ columns }) => {
         setQuantity(0)
         setBrandId(0)
         setSubCategoryId(0)
-        setSideEffectsId([])
+        setSideEffects('')
         setHoursToTake(0)
         setProductTypeId(0)
         setLoading(false)
@@ -584,8 +593,40 @@ const TableSampleClients = ({ columns }) => {
                   />
                 </div>
                 <h3>Product Info</h3>
-                <div></div>
-                <div></div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Need to doctor Recommanded
+                  </label>
+
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      value=""
+                      onChange={(e) => setDoctorRecommmand(Boolean(e.target.value))}
+                      className="sr-only peer"
+                    />
+                    <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    BarCode
+                  </label>
+                  <input
+                    type="text"
+                    id="email"
+                    onChange={(e) => setContentProduct(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Any data"
+                    required
+                  />
+                </div>
                 <div></div>
                 <div>
                   <label
@@ -697,21 +738,16 @@ const TableSampleClients = ({ columns }) => {
                     htmlFor="countries"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Select Side Effect(s)
+                    Side Effect(s)
                   </label>
-                  <Select
-                    mode="multiple"
-                    style={{ width: '100%' }}
-                    placeholder="Please select"
-                    onChange={handleChangeSelectSideEffect}
-                    defaultValue={clients[ind]?.sideEffect.map(({ sideEffectId }) => sideEffectId)} // Set the default value as needed, but usually, it should be an empty array for multiple selection
-                  >
-                    {sideEffects.map((option) => (
-                      <Option key={option.id} value={option.id}>
-                        {option.titleEn}
-                      </Option>
-                    ))}
-                  </Select>
+                  <input
+                    type="text"
+                    id="email"
+                    onChange={(e) => setSideEffects(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Any data"
+                    required
+                  />
                 </div>
               </div>
               <div className="flex items-center justify-center w-full gap-5">
@@ -796,6 +832,38 @@ const TableSampleClients = ({ columns }) => {
           ) : (
             ''
           )}
+
+          <div className="pb-4 mb-4 bg-white dark:bg-gray-900">
+            <label htmlFor="table-search" className="sr-only">
+              Search
+            </label>
+            <div className="relative mt-1">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg
+                  className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                  />
+                </svg>
+              </div>
+              <input
+                onKeyDown={handelSearchInputChanged}
+                type="text"
+                id="table-search"
+                className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Search for items"
+              />
+            </div>
+          </div>
           <table>
             <thead>
               <tr>
@@ -820,7 +888,7 @@ const TableSampleClients = ({ columns }) => {
                   <td data-label="Name">{client.descriptionAr}</td>
                   <td data-label="Created" className="lg:w-1 whitespace-nowrap">
                     <small className="text-gray-500 d ark:text-slate-400">
-                    <MomentP dateValue={client.created_at} />
+                      <MomentP dateValue={client.created_at} />
                     </small>
                   </td>
                   <td className="before:hidden lg:w-1 whitespace-nowrap">

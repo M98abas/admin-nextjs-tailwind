@@ -1,7 +1,7 @@
 // api.js
 import axios from 'axios'
 import Cookies from 'js-cookie'
-export const BASE_URL = 'http://localhost:4000/v1' // Replace this with your API base URL
+export const BASE_URL = 'http://api.1ccpharmacy.com/v1' // Replace this with your API base URL
 //  await Cookies.set('subCourse',client.titleEn)
 export const ApiLogin = (route, info, callback) => {
   const headers = {

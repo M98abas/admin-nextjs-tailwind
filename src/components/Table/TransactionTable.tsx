@@ -3,17 +3,15 @@ import {
   mdiMonitorCellphone,
   mdiSquareEditOutline,
   mdiTrashCan,
-  mdiDownloadCircleOutline,
 } from '@mdi/js'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSampleClients } from '../../hooks/sampleData'
 import Button from '../Button'
 import Buttons from '../Buttons'
 import CardBoxModal from '../CardBox/Modal'
-import { ApiUpdateData, ApiAddData } from '../../../api'
+import { ApiUpdateData, ApiAddData, ApiGetData } from '../../../api'
 import NotificationBar from '../NotificationBar'
 import MomentP from '../MomentP'
-import CustomInvoice from '../CustomInvoice'
 
 const TableSampleClients = ({ columns }) => {
   const { clients } = useSampleClients('order')
@@ -37,85 +35,9 @@ const TableSampleClients = ({ columns }) => {
     pagesList.push(i)
   }
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
-  const [isModalInvoActive, setIsModalInvoActive] = useState(false)
   const [isModalTrashActive, setIsModalTrashActive] = useState(false)
   const [isModalActive, setIsModalActive] = useState(false)
   const [ind, setInd] = useState(0)
-
-  /**
-   *
-   * @param orderItemId
-   */
-  const handelDeleteOrder = async (orderItemId: any) => {
-    setLoading(true)
-    console.log(orderItemId)
-
-    await ApiAddData(`order/orderItem/delete/${orderItemId}`, { active: false }, (data) => {
-      console.log(data)
-
-      if (data) setNotificationnActive(true)
-      setLoading(false)
-    })
-  }
-
-  /**
-   *
-   * @param e
-   * @returns
-   */
-  const handelSearchInputChanged = (e: any) => {
-    if (e.key == 'Enter' && e.target.value != '')
-      clients.map((client, index) => {
-        if (client.id == e.target.value) {
-          setInd(index)
-          setIsModalInfoActive(true)
-        }
-      })
-    return
-  }
-  const handelDeleteAction = async () => {
-    setLoading(true)
-    console.log(id)
-
-    await ApiAddData(`order/delete/${id}`, { active: false }, (data) => {
-      if (data) setNotificationnActive(true)
-      setLoading(false)
-    })
-    setIsModalActive(false)
-    setIsModalInfoActive(false)
-    setIsModalTrashActive(false)
-  }
-
-  const handelActiveAction = async () => {
-    setLoading(true)
-    console.log(id)
-
-    await ApiAddData(`order/active/${id}`, { active: true }, (data) => {
-      if (data) setNotificationnActive(true)
-      setLoading(false)
-    })
-    setIsModalActive(false)
-    setIsModalInfoActive(false)
-    setIsModalTrashActive(false)
-  }
-
-  const handleModalAction = async () => {
-    setLoading(true)
-    await ApiUpdateData('change', { id, status }, (data) => {
-      if (data) setNotificationnActive(true)
-      setLoading(false)
-    })
-    setIsModalInfoActive(false)
-    setIsModalTrashActive(false)
-    setIsModalActive(false)
-  }
-
-  const handleCancelAction = async () => {
-    setIsModalInfoActive(false)
-    setIsModalTrashActive(false)
-    setIsModalActive(false)
-    setIsModalInvoActive(false)
-  }
 
   return (
     <>
@@ -167,13 +89,10 @@ const TableSampleClients = ({ columns }) => {
       ) : (
         <>
           <CardBoxModal
-            title={`OId --> ${clients[ind]?.id} || ${clients[ind]?.status}`}
+            title={`Order Id --> ${clients[ind]?.id} || ${clients[ind]?.status}`}
             buttonColor="info"
             buttonLabel="Done"
-            classData="h-[97vh] xl:w-9/12 overflow-scroll"
             isActive={isModalInfoActive}
-            onConfirm={handleModalAction}
-            onCancel={handleCancelAction}
           >
             <form>
               <div className="grid gap-6 mb-6 md:grid-cols-2">
@@ -182,39 +101,12 @@ const TableSampleClients = ({ columns }) => {
                     htmlFor="name"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Name
+                    Email
                   </label>
                   <input
                     type="text"
                     id="name"
-                    defaultValue={
-                      clients[ind]?.users?.fin_name +
-                      ' ' +
-                      clients[ind]?.users?.mid_name +
-                      '' +
-                      clients[ind]?.users?.lst_name
-                    }
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="John"
-                    required
-                    disabled
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Contact
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    defaultValue={
-                      clients[ind]?.users?.email
-                        ? clients[ind]?.users?.email
-                        : clients[ind]?.users?.phoneNumber
-                    }
+                    defaultValue={clients[ind]?.users?.email}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="John"
                     required
@@ -284,128 +176,10 @@ const TableSampleClients = ({ columns }) => {
                     <MomentP dateValue={clients[ind]?.receivedDate} />
                   </span>
                 </div>
-                <div>
-                  <label
-                    htmlFor="role"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Order list
-                  </label>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th key="1">Product Name</th>
-                        <th key="2">quantity</th>
-                        <th key="3">amount</th>
-                        <th key="4">descripption</th>
-                        <th key="4">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {clients[ind]?.order_list.map((client: any, index: number) => (
-                        <tr key={index}>
-                          <td data-label="nickName">{client.Products?.titleEn}</td>
-                          <td data-label="nickName">{client.quantity}</td>
-                          <td data-label="Name">{client.amount}</td>
-                          <td data-label="Name">{client.descripption}</td>
-                          <td>
-                            <Button
-                              color="danger"
-                              icon={mdiTrashCan}
-                              onClick={() => {
-                                handelDeleteOrder(client.id)
-                              }}
-                              small
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
               </div>
             </form>
           </CardBoxModal>
 
-          <CardBoxModal
-            title={`OId --> ${clients[ind]?.id} || ${clients[ind]?.status}`}
-            buttonColor="info"
-            buttonLabel="Done"
-            classData="h-[97vh] xl:w-9/12 overflow-scroll"
-            isActive={isModalInvoActive}
-            onConfirm={handleCancelAction}
-            onCancel={handleCancelAction}
-          >
-            <CustomInvoice invoiceData={clients[ind]} />
-          </CardBoxModal>
-
-          <CardBoxModal
-            title="Please confirm"
-            buttonColor="success"
-            buttonLabel="Confirm"
-            isActive={isModalActive}
-            onConfirm={handelActiveAction}
-            onCancel={handelDeleteAction}
-          >
-            <p>
-              Are you sure you want to Activate <b>{clients[ind]?.email}</b>??
-            </p>
-          </CardBoxModal>
-
-          <CardBoxModal
-            title="Please confirm"
-            buttonColor="danger"
-            buttonLabel="Confirm"
-            isActive={isModalTrashActive}
-            onConfirm={handelDeleteAction}
-            onCancel={() => {
-              setIsModalTrashActive(false)
-              setLoading(false)
-            }}
-          >
-            <p>
-              Are you sure you want to delete this <b> {clients[ind]?.id} </b> ??
-            </p>
-          </CardBoxModal>
-          {notificationnActive ? (
-            <NotificationBar color="info" icon={mdiMonitorCellphone}>
-              All good
-            </NotificationBar>
-          ) : (
-            ''
-          )}
-
-          <div className="pb-4 mb-4 bg-white dark:bg-gray-900">
-            <label htmlFor="table-search" className="sr-only">
-              Search
-            </label>
-            <div className="relative mt-1">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <svg
-                  className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                  />
-                </svg>
-              </div>
-              <input
-                onKeyDown={handelSearchInputChanged}
-                type="text"
-                id="table-search"
-                className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Search for items"
-              />
-            </div>
-          </div>
           <table>
             <thead>
               <tr>
@@ -418,7 +192,7 @@ const TableSampleClients = ({ columns }) => {
               {clientsPaginated.map((client: any, index: number) => (
                 <tr key={client.id}>
                   <td data-label="nickName">{client.id}</td>
-                  <td data-label="nickName">{client.users?.email ?? client.users?.fin_name}</td>
+                  <td data-label="nickName">{client.users?.email}</td>
                   <td data-label="Name">{client.total_price}</td>
                   <td data-label="nickName">
                     <small className="text-gray-500 dark:text-slate-400">
@@ -426,7 +200,7 @@ const TableSampleClients = ({ columns }) => {
                     </small>
                   </td>
                   <td data-label="nickName">{client.isPaid}</td>
-                  <td data-label="Name">{client.Addresses?.city}</td>
+                  <td data-label="Name">{client.address}</td>
                   <td data-label="Name">{client.status}</td>
                   <td data-label="Created" className="lg:w-1 whitespace-nowrap">
                     <small className="text-gray-500 dark:text-slate-400">
@@ -454,15 +228,6 @@ const TableSampleClients = ({ columns }) => {
                               setInd(index)
                               setid(client.id)
                               setIsModalTrashActive(true)
-                            }}
-                            small
-                          />
-                          <Button
-                            color="info"
-                            icon={mdiDownloadCircleOutline}
-                            onClick={() => {
-                              setInd(index)
-                              setIsModalInvoActive(true)
                             }}
                             small
                           />

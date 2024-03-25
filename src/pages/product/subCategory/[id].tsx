@@ -133,10 +133,10 @@ const SubCategory = () => {
       {!Loading ? (
         <>
           <Head>
-            <title>{getPageTitle('Sub Course - OneCC')}</title>
+            <title>{getPageTitle('Sub-Category - OneCC')}</title>
           </Head>
           <SectionMain>
-            <SectionTitleLineWithButton icon={mdiTableBorder} title="Sub Course" main>
+            <SectionTitleLineWithButton icon={mdiTableBorder} title="Sub-Category" main>
               <Button
                 onClick={() => setIsModalInfoActive(true)}
                 label="Add New"
@@ -147,7 +147,7 @@ const SubCategory = () => {
             </SectionTitleLineWithButton>
 
             <CardBox className="mb-6" hasTable>
-              <TableSampleClients columns={columns} />
+              <TableSampleClients idNumber={id} columns={columns} />
               <CardBoxModal
                 title="Add New"
                 buttonColor="info"

@@ -51,11 +51,13 @@ const TableSampleClients = ({ columns }) => {
   const [brand, setBrand] = useState([])
   const [productsTags, setProductsTags] = useState([])
   const [sideEffects, setSideEffects] = useState('')
-  const [doctorRecommmand, setDoctorRecommmand] = useState(true)
   const [contentProduct, setContentProduct] = useState('')
   const [productsTagsId, setProductsTagsId] = useState([])
   const [notificationnActive, setNotificationnActive] = useState(false)
   const [imgUrl, setImgUrl] = useState([])
+  const [ind, setInd] = useState(0)
+
+  const [doctorRecommmand, setDoctorRecommmand] = useState(false)
 
   const handelChange: any = (index: any) => {
     if (index) {
@@ -97,7 +99,6 @@ const TableSampleClients = ({ columns }) => {
   }
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
   const [isModalTrashActive, setIsModalTrashActive] = useState(false)
-  const [ind, setInd] = useState(0)
   // console.log(isModalInfoActive)
   const handleImageUpload = (e: any) => {
     const fileInput = e.target
@@ -151,7 +152,6 @@ const TableSampleClients = ({ columns }) => {
       console.error(error)
     }
   }
-
 
   const handelRemoveImage = async (id: any) => {
     await ApiGetData(`product/imageDelete/${id}`, (data: any) => {
@@ -222,30 +222,32 @@ const TableSampleClients = ({ columns }) => {
         productTypeId,
       },
       (data) => {
-        if (data) setNotificationnActive(true)
-        setEnabled(!enabled)
-        setProductsTagsId([])
-        setTitleAr('')
-        setTitleEn('')
-        setImgUrl([])
-        setDescriptionAr('')
-        setDescriptionEn('')
-        setDepartmentNameAr('')
-        setDepartmentNameEn('')
-        setSintificNameAR('')
-        setSintificNameEN('')
-        setHowToUse('')
-        setMostItems(false)
-        setDoses(0)
-        setBarCode('')
-        setPriceCell(0)
-        setPriceBuy(0)
-        setQuantity(0)
-        setBrandId(0)
-        setSubCategoryId(0)
-        setSideEffects('')
-        setHoursToTake(0)
-        setProductTypeId(0)
+        if (data) {
+          setNotificationnActive(true)
+          setEnabled(!enabled)
+          setProductsTagsId([])
+          setTitleAr('')
+          setTitleEn('')
+          setImgUrl([])
+          setDescriptionAr('')
+          setDescriptionEn('')
+          setDepartmentNameAr('')
+          setDepartmentNameEn('')
+          setSintificNameAR('')
+          setSintificNameEN('')
+          setHowToUse('')
+          setMostItems(false)
+          setDoses(0)
+          setBarCode('')
+          setPriceCell(0)
+          setPriceBuy(0)
+          setQuantity(0)
+          setBrandId(0)
+          setSubCategoryId(0)
+          setSideEffects('')
+          setHoursToTake(0)
+          setProductTypeId(0)
+        }
         setLoading(false)
       }
     )
@@ -307,7 +309,7 @@ const TableSampleClients = ({ columns }) => {
             buttonColor="info"
             buttonLabel="Done"
             classData="h-[97vh] xl:w-9/12 overflow-scroll"
-            disabled={!enabled}
+            disabled={enabled}
             isActive={isModalInfoActive}
             onConfirm={handleModalAction}
             onCancel={() => {
@@ -483,8 +485,8 @@ const TableSampleClients = ({ columns }) => {
                     <input
                       type="checkbox"
                       value=""
-                      defaultValue={clients[ind]?.mostItems}
-                      onChange={(e) => setMostItems(Boolean(e.target.value))}
+                      checked={mostItems}
+                      onChange={(e) => setMostItems(!mostItems)}
                       className="sr-only peer"
                     />
                     <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
@@ -605,7 +607,8 @@ const TableSampleClients = ({ columns }) => {
                     <input
                       type="checkbox"
                       value=""
-                      onChange={(e) => setDoctorRecommmand(Boolean(e.target.value))}
+                      checked={doctorRecommmand}
+                      onChange={(e) => setDoctorRecommmand(!doctorRecommmand)}
                       className="sr-only peer"
                     />
                     <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
@@ -616,11 +619,12 @@ const TableSampleClients = ({ columns }) => {
                     htmlFor="email"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    BarCode
+                    Product containe ?
                   </label>
                   <input
                     type="text"
                     id="email"
+                    defaultValue={clients[ind]?.contentProduct}
                     onChange={(e) => setContentProduct(e.target.value)}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Any data"
@@ -743,6 +747,7 @@ const TableSampleClients = ({ columns }) => {
                   <input
                     type="text"
                     id="email"
+                    defaultValue={clients[ind]?.sideEffect}
                     onChange={(e) => setSideEffects(e.target.value)}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Any data"
@@ -903,6 +908,8 @@ const TableSampleClients = ({ columns }) => {
                               setInd(index)
                               setid(client.id)
                               setIsModalInfoActive(true)
+                              setMostItems(client[ind]?.mostItems)
+                              setDoctorRecommmand(clients[ind]?.doctorRecommmand)
                             }}
                             small
                           />

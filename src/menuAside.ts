@@ -2,6 +2,7 @@ import {
   mdiAccountGroupOutline,
   mdiAccountStarOutline,
   mdiBankOutline,
+  mdiBullhorn,
   mdiClipboardListOutline,
   mdiCogs,
   mdiCreditCardOutline,
@@ -47,6 +48,7 @@ const menuAside: MenuAsideItem[] = [
       { label: 'Tags', href: '/product/tags', icon: mdiLabelMultiple },
       { label: 'PromoCode', href: '/product/promocode', icon: mdiCurrencyUsd },
       { label: 'Discount', href: '/product/discount', icon: mdiSale },
+      { label: 'announcements', href: '/product/announcements', icon: mdiBullhorn },
     ],
   },
   {

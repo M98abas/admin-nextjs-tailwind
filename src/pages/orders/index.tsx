@@ -60,9 +60,9 @@ const TablesPage = () => {
     getData()
   }, [])
 
-  const handleChangeSelectUsers = (selectedPhoneNumbers: string[]) => {
+  const handleChangeSelectUsers: any = (selectedPhoneNumbers: string[]) => {
     // Map selected phone numbers to user IDs
-    const selectedUserIds = selectedPhoneNumbers
+    const selectedUserIds: any = selectedPhoneNumbers
       .map((phoneNumber) => {
         const user = users.find((user) => user.phoneNumber === phoneNumber)
         return user ? user.id : null
@@ -73,7 +73,7 @@ const TablesPage = () => {
     setUsersId(selectedUserIds)
   }
 
-  const handleChangeSelectProduct = (value: number) => {
+  const handleChangeSelectProduct = (value: number[]) => {
     // Map selected phone numbers to user IDs
     const selectedUserIds: any = value
       .map((phoneNumber) => {

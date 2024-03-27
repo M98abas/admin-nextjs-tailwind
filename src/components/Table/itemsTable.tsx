@@ -169,7 +169,8 @@ const TableSampleClients = ({ columns }) => {
         if (
           client.id == e.target.value ||
           client.barCode == e.target.value ||
-          client.titleEn == e.target.value
+          client.titleEn == e.target.value ||
+          client.titleAr == e.target.value
         ) {
           setInd(index)
           setIsModalInfoActive(true)

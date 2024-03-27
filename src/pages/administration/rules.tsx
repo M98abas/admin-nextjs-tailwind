@@ -193,14 +193,16 @@ const TablesPage = () => {
                             >
                               Type
                             </label>
-                            <input
-                              id="labelname"
-                              placeholder="Read, read-write or all"
-                              type="text"
-                              value={input.type}
+                            <select
+                              id="countries"
                               onChange={(event) => handleChange(index, event, 'type')}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            />
+                            >
+                              <option selected>Choose a Status</option>
+                              <option value="Read">Read</option>
+                              <option value="Read&Write">Read&Write</option>
+                              <option value="All">All</option>
+                            </select>
                           </div>
                           <button
                             type="button"

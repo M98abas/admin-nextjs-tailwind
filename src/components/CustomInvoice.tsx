@@ -57,7 +57,7 @@ const CustomInvoice = ({ invoiceData }: any) => {
                 <div>
                   <h4 className="text-base font-bold">Invoice To:</h4>
                   <p className="font-sm font-normal">
-                    {invoiceData.Addresses?.street}
+                    {invoiceData.Addresses?.street} - {invoiceData.Addresses?.closePoint}
                     <br />
                     {invoiceData.Addresses?.city}
                     <br />
@@ -93,13 +93,13 @@ const CustomInvoice = ({ invoiceData }: any) => {
                             {order.Products.titleEn}
                           </td>
                           <td className="p-5 text-base font-medium border-s-2 border-white">
-                            ${order.Products.price_cell}
+                            IQD {order.Products.price_cell}
                           </td>
                           <td className="p-5 text-base font-medium border-s-2 border-white">
                             {order.amount}
                           </td>
                           <td className="p-5 text-base font-medium border-s-2 border-white">
-                            ${parseInt(order.Products.price_cell) * parseInt(order.amount)}
+                            IQD {parseInt(order.Products.price_cell) * parseInt(order.amount)}
                           </td>
                         </tr>
                       )
@@ -107,12 +107,12 @@ const CustomInvoice = ({ invoiceData }: any) => {
 
                     <tr>
                       <td className="p-4 pb-0 border border-white text-base font-normal text-end">
-                        <span className="pe-12 font-bold">Sub Total:</span>${total}
+                        <span className="pe-12 font-bold">Sub Total:</span>IQD {total}
                       </td>
                     </tr>
                     <tr>
                       <td className="pe-5 border border-white text-base font-normal text-end">
-                        <span className="pe-12 font-bold">Total:</span>$2365.00
+                        <span className="pe-12 font-bold">Total:</span>IQD 2365.00
                       </td>
                     </tr>
                   </tbody>

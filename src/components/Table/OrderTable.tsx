@@ -20,7 +20,7 @@ const TableSampleClients = ({ columns }) => {
   console.log(clients)
 
   const [id, setid] = useState()
-  const [status, setStatus] = useState('')
+  // const [status, setStatus] = useState('')
   const [Loading, setLoading] = useState(false)
   const perPage = 10
   const [notificationnActive, setNotificationnActive] = useState(false)
@@ -38,7 +38,9 @@ const TableSampleClients = ({ columns }) => {
   }
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
   const [isModalInvoActive, setIsModalInvoActive] = useState(false)
+  const [isModalStatusActive, setIsModalStatusActive] = useState(false)
   const [isModalTrashActive, setIsModalTrashActive] = useState(false)
+  const [status, setStatus] = useState('')
   const [isModalActive, setIsModalActive] = useState(false)
   const [ind, setInd] = useState(0)
 
@@ -80,6 +82,24 @@ const TableSampleClients = ({ columns }) => {
     await ApiAddData(`order/delete/${id}`, { active: false }, (data) => {
       if (data) setNotificationnActive(true)
       setLoading(false)
+    })
+    setIsModalActive(false)
+    setIsModalInfoActive(false)
+    setIsModalTrashActive(false)
+  }
+
+  const handelChangeStatus = async () => {
+    setLoading(true)
+    console.log(id)
+
+    await ApiAddData(`order/change/${clients[ind]?.id}`, { active: false, status }, (data) => {
+      console.log(data)
+
+      if (data.status) {
+        setLoading(false)
+      }
+      setIsModalStatusActive(false)
+      setNotificationnActive(true)
     })
     setIsModalActive(false)
     setIsModalInfoActive(false)
@@ -367,6 +387,41 @@ const TableSampleClients = ({ columns }) => {
               Are you sure you want to delete this <b> {clients[ind]?.id} </b> ??
             </p>
           </CardBoxModal>
+
+          <CardBoxModal
+            title="Please confirm"
+            buttonColor="danger"
+            classData="h-[50vh] xl:w-6/12 overflow-scroll"
+            buttonLabel="Confirm"
+            isActive={isModalStatusActive}
+            onConfirm={handelChangeStatus}
+            onCancel={() => {
+              setIsModalStatusActive(false)
+              setLoading(false)
+            }}
+          >
+            <p>
+              Change status for this <b> {clients[ind]?.id} </b> to ??
+            </p>
+
+            <form className="max-w-sm mx-auto">
+              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Select an option
+              </label>
+              <select
+                id="countries"
+                onChange={(e: any) => setStatus(e.target.value)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              >
+                <option selected>Choose a Status</option>
+                <option value="طلب جديد">طلب جديد</option>
+                <option value="قيد التجهيز">قيد التجهيز</option>
+                <option value="قيد التوصيل">قيد التوصيل</option>
+                <option value="تم الاستلام">تم الاستلام</option>
+                <option value="تم الرفض">تم الرفض</option>
+              </select>
+            </form>
+          </CardBoxModal>
           {notificationnActive ? (
             <NotificationBar color="info" icon={mdiMonitorCellphone}>
               All good
@@ -463,6 +518,15 @@ const TableSampleClients = ({ columns }) => {
                             onClick={() => {
                               setInd(index)
                               setIsModalInvoActive(true)
+                            }}
+                            small
+                          />
+                          <Button
+                            color="whiteDark"
+                            icon={mdiDownloadCircleOutline}
+                            onClick={() => {
+                              setInd(index)
+                              setIsModalStatusActive(true)
                             }}
                             small
                           />

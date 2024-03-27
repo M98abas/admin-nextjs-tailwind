@@ -31,9 +31,7 @@ const TablesPage = () => {
   const [enabled, setEnabled] = useState(!false)
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
   const [total_price, setTotal_price] = useState(0)
-  const [addressesId, setAddressesId] = useState(1)
   const [error, setError] = useState(false)
-  const [basket, setBasket] = useState([])
   const [products, setProducts] = useState([])
   const [productId, setProductId] = useState(0)
   const [quantity, setQuantity] = useState(0)
@@ -41,6 +39,7 @@ const TablesPage = () => {
   const [users, setUsers] = useState([])
   const [usersId, setUsersId] = useState(0)
   const [descripption, setDescripption] = useState('')
+  const [notes, setNote] = useState('')
   const [receivedDate, setReceivedDate] = useState('')
   const [Adddress_name, setAdddress_name] = useState('')
   const [street, setStreet] = useState('')
@@ -98,11 +97,12 @@ const TablesPage = () => {
     await ApiAddData(
       'order/manual',
       {
+        productsId: productId,
         total_price,
         basket: [{ quantity, amount, descripption, productsId: productId[0] }],
         usersId: usersId[0],
         receivedDate: receivedDate[0],
-        address: { Adddress_name, street, city, floor, apartment },
+        address: { Adddress_name, street, city, district: floor, closePoint: apartment, notes },
       },
       (data) => {
         if (data.error)
@@ -282,6 +282,7 @@ const TablesPage = () => {
                         required
                       />
                     </div>
+                    <div></div>
                     <div>
                       <label
                         htmlFor="name"
@@ -335,7 +336,7 @@ const TablesPage = () => {
                         htmlFor="name"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Floor
+                        District
                       </label>
                       <input
                         type="text"
@@ -351,12 +352,28 @@ const TablesPage = () => {
                         htmlFor="name"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Apartment
+                        Close Point
                       </label>
                       <input
                         type="text"
                         id="name"
                         onChange={(e) => setApartment(e.target.value)}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Title Arabic"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Notes
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        onChange={(e) => setNote(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Title Arabic"
                         required

@@ -51,9 +51,11 @@ const TablesPage = () => {
   const [sideEffect, setSideEffect] = useState('')
   const [productsTagsId, setProductsTagsId] = useState([])
 
-  const handelChange: any = (index: any) => {
-    if (index) {
-      setSubCategory(category[index].subcategory)
+  const handelChange: any = (indexSub: any) => {
+    console.log(category[indexSub])
+
+    if (indexSub != undefined) {
+      setSubCategory(category[indexSub].subcategory)
     }
     return
   }
@@ -423,7 +425,7 @@ const TablesPage = () => {
                         htmlFor="email"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        How much doses
+                        Doses
                       </label>
                       <input
                         type="number"
@@ -499,7 +501,7 @@ const TablesPage = () => {
                       />
                     </div>
                     <div>
-                      <label
+                      {/* <label
                         htmlFor="email"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
@@ -512,7 +514,7 @@ const TablesPage = () => {
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Any data"
                         required
-                      />
+                      /> */}
                     </div>
                     <h3>Product Info</h3>
                     <div></div>
@@ -524,7 +526,7 @@ const TablesPage = () => {
                         htmlFor="email"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Need to doctor Recommanded
+                        Need to Prescription
                       </label>
 
                       <label className="inline-flex items-center cursor-pointer">
@@ -612,8 +614,8 @@ const TablesPage = () => {
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       >
                         <option value="none">Choose The target</option>
-                        {category?.map((data: any) => (
-                          <option value={data.id} key={data.id}>
+                        {category?.map((data: any, index: any) => (
+                          <option value={index} key={data.id}>
                             {data.titleEn}
                           </option>
                         ))}

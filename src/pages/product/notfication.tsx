@@ -1,58 +1,62 @@
 import { mdiPlus, mdiTableBorder } from '@mdi/js'
 import Head from 'next/head'
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement, useState } from 'react'
 import Button from '../../components/Button'
 import CardBox from '../../components/CardBox'
 import LayoutAuthenticated from '../../layouts/Authenticated'
 import SectionMain from '../../components/Section/Main'
 import SectionTitleLineWithButton from '../../components/Section/TitleLineWithButton'
-import TableSampleClients from '../../components/Table/MessageTable'
+import TableSampleClients from '../../components/Table/notficationTable'
 import { getPageTitle } from '../../config'
 import CardBoxModal from '../../components/CardBox/Modal'
-import { ApiAddData, ApiGetData } from '../../../api'
-import useSocket from '../../components/useSocket'
-// import axios, { AxiosRequestConfig } from 'axios'
+import { ApiAddData } from '../../../api'
+import axios, { AxiosRequestConfig } from 'axios'
+import DatePicker from 'tailwind-datepicker-react'
 
 const TablesPage = () => {
-  const socket = useSocket('http://chat.1ccpharmacy.com')
-  // const socket = useSocket('http://45.4.172.70:4000')
+  const columns: Array<string> = ['title', 'message', 'sendDate', 'Created at', 'actions']
 
-  useEffect(() => {
-    if (socket) {
-      console.log(socket)
-
-      // Socket.IO is connected, you can now use it
-      socket.emit('connection', 'Hello Socket.IO!')
-    }
-    console.log(socket)
-  }, [socket])
-
-  const [rolesData, setRoleData] = useState([])
   const [enabled, setEnabled] = useState(false)
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [roles, setRoles] = useState(0)
+  const [title, setTitle] = useState('')
+  const [message, setMessage] = useState('')
+  const [sendDate, setSendDate] = useState('')
+  const [show, setShow] = useState(false)
+
   const [Loading, setLoading] = useState(false)
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
-  const getData = async (route: string) => {
-    await ApiGetData(route, (data: any) => {
-      // console.log(data)
-
-      setRoleData(data)
-    })
+  // Date Picker
+  const options: any = {
+    title: 'Pick date',
+    autoHide: true,
+    todayBtn: false,
+    clearBtn: true,
+    maxDate: new Date('2030-08-01'),
+    minDate: new Date(),
+    theme: {
+      background: 'bg-white dark:bg-black-800',
+      todayBtn: '',
+      clearBtn: '',
+      icons: '',
+      text: '',
+      disabledText: 'bg-blue-100',
+      input: '',
+      inputIcon: '',
+      selected: 'bg-blue-500',
+    },
+    icons: {
+      // () => ReactElement | JSX.Element
+      prev: () => <span>Previous</span>,
+      next: () => <span>Next</span>,
+    },
+    datepickerClassNames: 'top-12',
+    defaultDate: new Date(),
+    language: 'en',
   }
-
-  useEffect(() => {
-    getData('permsission')
-  }, [])
 
   const handleModalAction = async () => {
     setLoading(true)
 
-    await ApiAddData('admin/register', { name, email, password, rolesId: roles }, (data) => {
-      console.log(data)
-
+    await ApiAddData('notification', { title, message, sendDate }, (data) => {
       if (data.errMsg != '')
         return (
           <>
@@ -70,11 +74,11 @@ const TablesPage = () => {
             </div>
           </>
         )
+
       setEnabled(!enabled)
-      setName('')
-      setEmail('')
-      setPassword('')
-      setRoles(0)
+      setTitle('')
+      setMessage('')
+      setSendDate('')
       return
     })
     setLoading(false)
@@ -86,23 +90,28 @@ const TablesPage = () => {
       {!Loading ? (
         <>
           <Head>
-            <title>{getPageTitle('Admin')}</title>
+            <title>{getPageTitle('Notification')}</title>
           </Head>
           <SectionMain>
-            <SectionTitleLineWithButton
-              icon={mdiTableBorder}
-              title="Admin"
-              main
-            ></SectionTitleLineWithButton>
+            <SectionTitleLineWithButton icon={mdiTableBorder} title="Notification" main>
+              <Button
+                onClick={() => setIsModalInfoActive(true)}
+                label="Add New"
+                color="contrast"
+                icon={mdiPlus}
+                roundedFull
+                small
+              />
+            </SectionTitleLineWithButton>
 
             <CardBox className="mb-6" hasTable>
-              <TableSampleClients socket={socket} />
+              <TableSampleClients columns={columns} />
               <CardBoxModal
-                title="Add Course"
+                title="Add Notification"
                 buttonColor="info"
                 buttonLabel="Done"
                 classData="xl:w-8/12"
-                disabled={enabled}
+                disabled={!enabled}
                 isActive={isModalInfoActive}
                 onConfirm={handleModalAction}
                 onCancel={() => setIsModalInfoActive(false)}
@@ -114,12 +123,12 @@ const TablesPage = () => {
                         htmlFor="name"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Name
+                        title
                       </label>
                       <input
                         type="text"
                         id="name"
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) => setTitle(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Any"
                         required
@@ -130,12 +139,12 @@ const TablesPage = () => {
                         htmlFor="email"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Email
+                        message
                       </label>
                       <input
                         type="text"
                         id="email"
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => setMessage(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Any data"
                         required
@@ -146,38 +155,19 @@ const TablesPage = () => {
                         htmlFor="phoneNumber"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Password
+                        sendDate
                       </label>
-                      <input
-                        type="text"
-                        onChange={(e) => setPassword(e.target.value)}
-                        id="phoneNumber"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="levelOfExperience"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Roles
-                      </label>
-                      <select
-                        data-te-select-init
-                        onChange={(e: any) => setRoles(parseInt(e.target.value))}
-                        defaultValue="none"
-                        id="countries"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      >
-                        <option value="none">Choose The target</option>
-                        {rolesData?.map((data: any) => (
-                          <option value={data.id} key={data.id}>
-                            {data.name}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="relative max-w-sm">
+                        <DatePicker
+                          options={options}
+                          onChange={(dateSelected: any) => {
+                            setSendDate(dateSelected)
+                            setEnabled(true)
+                          }}
+                          show={show}
+                          setShow={(e: boolean) => setShow(e)}
+                        />
+                      </div>
                     </div>
                   </div>
                 </form>

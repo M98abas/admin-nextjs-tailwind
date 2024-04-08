@@ -22,7 +22,6 @@ const TablesPage = () => {
 
   const [titleAr, setTitleAr] = useState('')
   const [titleEn, setTitleEn] = useState('')
-  const [descriptionAr, setDescriptionAr] = useState('')
   const [descriptionEn, setDescriptionEn] = useState('')
   const [departmentNameAr, setDepartmentNameAr] = useState('')
   const [departmentNameEn, setDepartmentNameEn] = useState('')
@@ -147,11 +146,11 @@ const TablesPage = () => {
         titleEn,
         imgUrl,
         doctorRecommmand,
-        descriptionAr,
+        descriptionAr: descriptionEn,
         descriptionEn,
         departmentNameAr,
         departmentNameEn,
-        sintificNameAR,
+        sintificNameAR: sintificNameEN,
         sintificNameEN,
         howToUse,
         contentProduct,
@@ -190,12 +189,10 @@ const TablesPage = () => {
         setTitleAr('')
         setTitleEn('')
         setImgUrl([])
-        setDescriptionAr('')
         setDescriptionEn('')
         setDepartmentNameAr('')
         setContentProduct('')
         setDepartmentNameEn('')
-        setSintificNameAR('')
         setSintificNameEN('')
         setHowToUse('')
         setMostItems(false)
@@ -262,14 +259,14 @@ const TablesPage = () => {
                         htmlFor="name"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Title Arabic
+                        medicine name in Arabic
                       </label>
                       <input
                         type="text"
                         id="name"
                         onChange={(e) => setTitleAr(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Title Arabic"
+                        placeholder="medicine name in Arabic"
                         required
                       />
                     </div>
@@ -278,30 +275,14 @@ const TablesPage = () => {
                         htmlFor="email"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Title English
+                        medicine name in English
                       </label>
                       <input
                         type="text"
                         id="email"
                         onChange={(e) => setTitleEn(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Title English"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="name"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Description Arabic
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        onChange={(e) => setDescriptionAr(e.target.value)}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Description Arabic"
+                        placeholder="medicine name in English"
                         required
                       />
                     </div>
@@ -353,22 +334,7 @@ const TablesPage = () => {
                         required
                       />
                     </div>
-                    <div>
-                      <label
-                        htmlFor="name"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        scientific Name Arabic
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        onChange={(e) => setSintificNameAR(e.target.value)}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="scientific Name Arabic"
-                        required
-                      />
-                    </div>
+                    {/* <div></div> */}
                     <div>
                       <label
                         htmlFor="email"
@@ -500,22 +466,10 @@ const TablesPage = () => {
                         required
                       />
                     </div>
-                    <div>
-                      {/* <label
-                        htmlFor="email"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Hours To Take
-                      </label>
-                      <input
-                        type="number"
-                        id="email"
-                        onChange={(e) => setHoursToTake(parseInt(e.target.value))}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
-                        required
-                      /> */}
-                    </div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+
                     <h3>Product Info</h3>
                     <div></div>
                     <div></div>
@@ -544,7 +498,7 @@ const TablesPage = () => {
                         htmlFor="email"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        BarCode
+                        Content Product
                       </label>
                       <input
                         type="text"

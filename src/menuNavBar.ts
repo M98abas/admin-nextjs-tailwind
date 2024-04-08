@@ -11,12 +11,9 @@ const menuNavBar: MenuNavBarItem[] = [
         href: '/profile',
       },
       {
-        icon: mdiCogOutline,
-        label: 'Settings',
-      },
-      {
         icon: mdiEmail,
         label: 'Messages',
+        href: '/administration/messages',
       },
       {
         isDivider: true,

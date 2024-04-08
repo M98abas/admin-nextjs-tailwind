@@ -16,7 +16,7 @@ import axios, { AxiosRequestConfig } from 'axios'
 import DatePicker from 'tailwind-datepicker-react'
 
 const Content = () => {
-  const columns: Array<string> = ['ImgURL', 'flag', 'end_at', 'Created at', 'actions']
+  const columns: Array<string> = ['ImgURL', 'flag', 'URL', 'end_at', 'Created at', 'actions']
   const [show, setShow] = useState(false)
 
   const [uploadProgress, setUploadProgress]: any = useState(100)

@@ -2,6 +2,7 @@ import {
   mdiAccountGroupOutline,
   mdiAccountStarOutline,
   mdiBankOutline,
+  mdiBellRing,
   mdiBullhorn,
   mdiClipboardListOutline,
   mdiCogs,
@@ -72,6 +73,7 @@ const menuAside: MenuAsideItem[] = [
       },
     ],
   },
+  { label: 'notification', href: '/product/notfication', icon: mdiBellRing },
 ]
 
 export default menuAside

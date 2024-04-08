@@ -1,8 +1,8 @@
 import {
   mdiAccountReactivate,
+  mdiLocationEnter,
   mdiMonitorCellphone,
   mdiSquareEditOutline,
-  mdiTableOff,
   mdiTrashCan,
 } from '@mdi/js'
 import React, { useState } from 'react'
@@ -10,20 +10,21 @@ import { useSampleClients } from '../../hooks/sampleData'
 import Button from '../Button'
 import Buttons from '../Buttons'
 import CardBoxModal from '../CardBox/Modal'
-import { ApiAddData, ApiDeleteData, ApiGetData } from '../../../api'
+import { ApiAddData, ApiDeleteData } from '../../../api'
 import NotificationBar from '../NotificationBar'
-import Image from 'next/image'
-import axios, { AxiosRequestConfig } from 'axios'
 import MomentP from '../MomentP'
+import { useRouter } from 'next/router'
+import DatePicker from 'tailwind-datepicker-react'
 
 const TableSampleClients = ({ columns }) => {
-  const { clients } = useSampleClients('annousments')
+  const { clients } = useSampleClients('notfication')
   const [enabled, setEnabled] = useState(false)
-  const [imgURL, setimgURL] = useState('')
-  const [flag, setFlag] = useState('')
-  const [url, setUrl] = useState('')
-  const [data, setData] = useState([])
-  const [end_at, setEnd_at] = useState('')
+  const router = useRouter()
+
+  const [title, setTitle] = useState('')
+  const [message, setMessage] = useState('')
+  const [sendDate, setSendDate] = useState('')
+  const [show, setShow] = useState(false)
 
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
   const [isModalTrashActive, setIsModalTrashActive] = useState(false)
@@ -34,29 +35,40 @@ const TableSampleClients = ({ columns }) => {
   const perPage = 5
   const [notificationnActive, setNotificationnActive] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
-  const [uploadProgress, setUploadProgress]: any = useState(100)
 
   const clientsPaginated = clients.slice(perPage * currentPage, perPage * (currentPage + 1))
 
   const numPages = Math.round(clients.length / perPage)
-  const handelChange: any = async (index: any) => {
-    setFlag(index)
-    if (index != 'External') {
-      await ApiGetData(index, (data: any) => {
-        setData(data)
-      })
-    }
-    return
-  }
-
-  const handelChangeInner: any = async (index: any) => {
-    setFlag(index)
-    if (index) setUrl(index)
-
-    return
-  }
 
   const pagesList = []
+  // Date Picker
+  const options: any = {
+    title: 'Pick date',
+    autoHide: true,
+    todayBtn: false,
+    clearBtn: true,
+    maxDate: new Date('2030-08-01'),
+    minDate: new Date(),
+    theme: {
+      background: 'bg-white dark:bg-black-800',
+      todayBtn: '',
+      clearBtn: '',
+      icons: '',
+      text: '',
+      disabledText: 'bg-blue-100',
+      input: '',
+      inputIcon: '',
+      selected: 'bg-blue-500',
+    },
+    icons: {
+      // () => ReactElement | JSX.Element
+      prev: () => <span>Previous</span>,
+      next: () => <span>Next</span>,
+    },
+    datepickerClassNames: 'top-12',
+    defaultDate: new Date(),
+    language: 'en',
+  }
 
   for (let i = 0; i < numPages; i++) {
     pagesList.push(i)
@@ -64,7 +76,7 @@ const TableSampleClients = ({ columns }) => {
   const handleModalAction = async () => {
     setLoading(true)
 
-    await ApiAddData(`announcements/update/${id}`, { imgURL, flag, url, end_at }, (data) => {
+    await ApiAddData(`notfication/update/${id}`, { title, message, sendDate }, (data) => {
       if (data.errMsg != '')
         return (
           <>
@@ -83,11 +95,9 @@ const TableSampleClients = ({ columns }) => {
           </>
         )
       setEnabled(!enabled)
-      setFlag('')
-      setUrl('')
-      setEnd_at('')
-      setUploadProgress(100)
-      setimgURL('')
+      setTitle('')
+      setMessage('')
+      setSendDate('')
       return
     })
     setLoading(false)
@@ -96,7 +106,7 @@ const TableSampleClients = ({ columns }) => {
 
   const handelDeleteAction = async () => {
     setLoading(true)
-    await ApiDeleteData('brand', id, (data) => {
+    await ApiDeleteData('notfication', id, (data) => {
       console.log(data)
 
       if (data) setNotificationnActive(true)
@@ -108,50 +118,12 @@ const TableSampleClients = ({ columns }) => {
     setIsModalTrashActive(false)
   }
 
-  const imgbb = '807b79b03a554f95b5980b6b9d688013'
-  const uploadFile = async (file: any) => {
-    const formdata = new FormData()
-    formdata.append('image', file, file.name)
-
-    const requestOptions: AxiosRequestConfig = {
-      method: 'POST',
-      maxBodyLength: Infinity,
-      url: `https://api.imgbb.com/1/upload?key=${imgbb}`,
-      data: formdata,
-      onUploadProgress: (progressEvent) => {
-        const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-        setEnabled(progress === uploadProgress)
-        setUploadProgress(progress)
-      },
-    }
-
-    try {
-      const response = await axios(requestOptions)
-      setimgURL(response.data.data.url)
-    } catch (error) {
-      console.error(error)
-    }
+  const handelRouteClick = (cid: any) => {
+    router.push({
+      pathname: `subCategory/${cid}`,
+    })
   }
-  const handleFileUpload = (e) => {
-    const fileInput = e.target
-    if (!fileInput.files) {
-      alert('No file was chosen')
-      return
-    }
 
-    if (!fileInput.files || fileInput.files.length === 0) {
-      alert('Files list is empty')
-      return
-    }
-
-    const file = fileInput.files[0]
-    console.log(file.type)
-
-    uploadFile(file)
-    /** Setting file state */
-    e.currentTarget.type = 'text'
-    e.currentTarget.type = 'file'
-  }
   return (
     <>
       {Loading && (
@@ -206,7 +178,7 @@ const TableSampleClients = ({ columns }) => {
               title="Add New"
               buttonColor="info"
               buttonLabel="Done"
-              classData="h-[97vh] xl:w-9/12 overflow-scroll"
+              classData="xl:w-8/12"
               isActive={isModalInfoActive}
               onConfirm={handleModalAction}
               onCancel={() => setIsModalInfoActive(false)}
@@ -218,129 +190,53 @@ const TableSampleClients = ({ columns }) => {
                       htmlFor="name"
                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                     >
-                      Flag
-                    </label>
-                    <select
-                      data-te-select-init
-                      onChange={(e: any) => handelChange(e.target.value)}
-                      id="countries"
-                      defaultValue={clients[ind]?.flag}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    >
-                      <option value="none">Choose The target</option>
-                      <option value="Category">Category</option>
-                      <option value="Brand">Brand</option>
-                      <option value="Product">Product</option>
-                      <option value="External">External</option>
-                    </select>
-                  </div>
-
-                  {clients[ind]?.flag != 'External' ? (
-                    <div>
-                      <label
-                        htmlFor="name"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Flag
-                      </label>
-                      <select
-                        data-te-select-init
-                        onChange={(e: any) => handelChangeInner(e.target.value)}
-                        id="countries"
-                        defaultValue={clients[ind]?.URL}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      >
-                        {data?.map((value: any, index: any) => (
-                          <option key={index} value={value.id}>
-                            {value.titleEn}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  ) : (
-                    <div>
-                      <label
-                        htmlFor="name"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        URL
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        onChange={(e) => setUrl(e.target.value)}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any"
-                        defaultValue={clients[ind]?.URL}
-                        required
-                      />
-                    </div>
-                  )}
-
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      End_at
+                      Title
                     </label>
                     <input
                       type="text"
                       id="name"
-                      defaultValue={clients[ind]?.end_at}
-                      onChange={(e) => setEnd_at(e.target.value)}
+                      defaultValue={clients[ind]?.setTitle}
+                      onChange={(e) => setTitle(e.target.value)}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Any"
                       required
                     />
                   </div>
-                </div>
-                <div className="flex items-center justify-center w-full gap-3">
-                  <label
-                    htmlFor="dropzone-file"
-                    className="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer h-44 bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-                  >
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <svg
-                        className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 20 16"
-                      >
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                        />
-                      </svg>
-                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                        <span className="font-semibold">Click to upload course Image</span> or drag
-                        and drop
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        MP3 (MAX. 800x400px)
-                      </p>
-                      <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 m-5">
-                        <div
-                          className={`bg-blue-600 h-2.5 rounded-full ${
-                            enabled ? 'bg-green-600' : ''
-                          }`}
-                          style={{ width: `${uploadProgress}%` }}
-                        ></div>
-                      </div>
-                      <p>Music Uploaded</p>
-                    </div>
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Message
+                    </label>
                     <input
-                      id="dropzone-file"
-                      type="file"
-                      className="hidden"
-                      onChange={handleFileUpload}
+                      type="text"
+                      id="email"
+                      defaultValue={clients[ind]?.setMessage}
+                      onChange={(e) => setMessage(e.target.value)}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="Any data"
+                      required
                     />
-                  </label>
-                  <img src={clients[ind]?.imgUrl} width={120} height={120} alt="" />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Send Date
+                    </label>
+                    <div className="relative max-w-sm">
+                      <DatePicker
+                        options={options}
+                        onChange={(dateSelected: any) => {
+                          setSendDate(dateSelected)
+                        }}
+                        show={show}
+                        setShow={(e: boolean) => setShow(e)}
+                      />
+                    </div>
+                  </div>
                 </div>
               </form>
             </CardBoxModal>
@@ -358,7 +254,7 @@ const TableSampleClients = ({ columns }) => {
             }}
           >
             <p>
-              Are you sure you want to delete this <b> {clients[ind]?.Flag} </b> ??
+              Are you sure you want to delete this <b> {clients[ind]?.titleAr} </b> ??
             </p>
           </CardBoxModal>
           {notificationnActive ? (
@@ -379,20 +275,11 @@ const TableSampleClients = ({ columns }) => {
             <tbody>
               {clientsPaginated.map((client: any, index: number) => (
                 <tr key={client.id}>
-                  <td className="border-b-0 lg:w-6 before:hidden">
-                    <Image
-                      width={10}
-                      height={10}
-                      src={client?.imgUrl}
-                      alt="Brand img"
-                      className="w-12 h-auto"
-                    />
-                  </td>
-                  <td data-label="nickName">{client.flag}</td>
-                  <td data-label="nickName">{client.URL}</td>
-                  <td data-label="Name">
+                  <td data-label="nickName">{client.title}</td>
+                  <td data-label="Name">{client.message}</td>
+                  <td data-label="Created" className="lg:w-1 whitespace-nowrap">
                     <small className="text-gray-500 d ark:text-slate-400">
-                      <MomentP dateValue={client.end_at} />
+                      <MomentP dateValue={client.sendDate} />
                     </small>
                   </td>
                   <td data-label="Created" className="lg:w-1 whitespace-nowrap">
@@ -404,6 +291,14 @@ const TableSampleClients = ({ columns }) => {
                     <Buttons type="justify-start lg:justify-end gap-1" noWrap>
                       {client.active ? (
                         <div className="flex gap-1">
+                          <Button
+                            color="whiteDark"
+                            icon={mdiLocationEnter}
+                            onClick={() => {
+                              handelRouteClick(client.id)
+                            }}
+                            small
+                          />
                           <Button
                             color="info"
                             icon={mdiSquareEditOutline}

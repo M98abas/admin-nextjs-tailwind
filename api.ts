@@ -1,8 +1,10 @@
 // api.js
 import axios from 'axios'
 import Cookies from 'js-cookie'
-export const BASE_URL = 'http://localhost:4000/v1' // Replace this with your API base URL
+// export const BASE_URL = 'http://localhost:4000/v1' // Replace this with your API base URL
 //  await Cookies.set('subCourse',client.titleEn)
+export const BASE_URL = 'http://api.1ccpharmacy.com/v1' // Replace this with your API base URL
+
 export const ApiLogin = (route, info, callback) => {
   const headers = {
     'Content-Type': 'application/json',
@@ -147,7 +149,8 @@ export const ApiDeleteData = (route: string, id: number, callback) => {
 }
 
 export const ApiGetData = (route, callback) => {
-  const token = Cookies.get('token')
+  const token =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluSk0xQGphbWFsU3RvcmUuY29tIiwicm9sZSI6IkFkbWluIiwiaWF0IjoxNzEyMTgxNjQwfQ.uSGcM2sW7bCO2I79KpByACHCppQSZZfK8O2Vx2zxpos'
   const headers = {
     token,
     'Content-Type': 'application/json',

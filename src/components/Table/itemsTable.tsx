@@ -27,7 +27,6 @@ const TableSampleClients = ({ columns }) => {
 
   const [titleAr, setTitleAr] = useState('')
   const [titleEn, setTitleEn] = useState('')
-  const [descriptionAr, setDescriptionAr] = useState('')
   const [descriptionEn, setDescriptionEn] = useState('')
   const [departmentNameAr, setDepartmentNameAr] = useState('')
   const [departmentNameEn, setDepartmentNameEn] = useState('')
@@ -201,11 +200,11 @@ const TableSampleClients = ({ columns }) => {
         titleAr,
         titleEn,
         imgUrl,
-        descriptionAr,
+        descriptionAr: descriptionEn,
         descriptionEn,
         departmentNameAr,
         departmentNameEn,
-        sintificNameAR,
+        sintificNameAR: sintificNameEN,
         sintificNameEN,
         doctorRecommmand,
         contentProduct,
@@ -230,12 +229,11 @@ const TableSampleClients = ({ columns }) => {
           setTitleAr('')
           setTitleEn('')
           setImgUrl([])
-          setDescriptionAr('')
+          // setDescriptionAr('')
           setDescriptionEn('')
           setDepartmentNameAr('')
           setDepartmentNameEn('')
-          setSintificNameAR('')
-          setSintificNameEN('')
+          // setSintificNameEN('')
           setHowToUse('')
           setMostItems(false)
           setDoses(0)
@@ -325,7 +323,7 @@ const TableSampleClients = ({ columns }) => {
                     htmlFor="name"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Title Arabic
+                    medicine name in Arabic
                   </label>
                   <input
                     type="text"
@@ -333,7 +331,7 @@ const TableSampleClients = ({ columns }) => {
                     defaultValue={clients[ind]?.titleAr}
                     onChange={(e) => setTitleAr(e.target.value)}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Title Arabic"
+                    placeholder="medicine name in Arabic"
                     required
                   />
                 </div>
@@ -342,7 +340,7 @@ const TableSampleClients = ({ columns }) => {
                     htmlFor="email"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Title English
+                    medicine name in English
                   </label>
                   <input
                     type="text"
@@ -350,24 +348,7 @@ const TableSampleClients = ({ columns }) => {
                     defaultValue={clients[ind]?.titleEn}
                     onChange={(e) => setTitleEn(e.target.value)}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Title English"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Description Arabic
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    defaultValue={clients[ind]?.descriptionAr}
-                    onChange={(e) => setDescriptionAr(e.target.value)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Description Arabic"
+                    placeholder="medicine name in English"
                     required
                   />
                 </div>
@@ -376,7 +357,7 @@ const TableSampleClients = ({ columns }) => {
                     htmlFor="email"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Description English
+                    Description
                   </label>
                   <input
                     type="text"
@@ -422,7 +403,8 @@ const TableSampleClients = ({ columns }) => {
                     required
                   />
                 </div>
-                <div>
+                {/* <div>
+                <div></div>
                   <label
                     htmlFor="name"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -438,7 +420,7 @@ const TableSampleClients = ({ columns }) => {
                     placeholder="scientific Name Arabic"
                     required
                   />
-                </div>
+                </div> */}
                 <div>
                   <label
                     htmlFor="email"
@@ -595,7 +577,14 @@ const TableSampleClients = ({ columns }) => {
                     required
                   />
                 </div>
+                <div></div>
+                <div></div>
+
                 <h3>Product Info</h3>
+                <div></div>
+                <div></div>
+                <div></div>
+
                 <div>
                   <label
                     htmlFor="email"
@@ -632,7 +621,6 @@ const TableSampleClients = ({ columns }) => {
                     required
                   />
                 </div>
-                <div></div>
                 <div>
                   <label
                     htmlFor="countries"

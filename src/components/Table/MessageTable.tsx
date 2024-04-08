@@ -1,15 +1,139 @@
-import React, { useState } from 'react'
-import { useSampleClients } from '../../hooks/sampleData'
-import { ApiUpdateData, ApiAddData } from '../../../api'
-// import SideUsersAvatar from '../MessagesUtil/sideUsersChat'
+'use client'
+import React, { useEffect, useState } from 'react'
+import { ApiGetData } from '../../../api'
 import MessageBorder from '../MessagesUtil/message'
+import axios, { AxiosRequestConfig } from 'axios'
+const TableSampleClients = ({ socket }) => {
+  const [clients, setClient]: any = useState([])
+  //console.log(clients)
+  const getData = async () => {
+    await ApiGetData('chat', (data: any) => {
+      console.log(data)
 
-const TableSampleClients = ({ columns }) => {
-  const { clients } = useSampleClients('admin')
+      setClient(data)
+    })
+  }
+  useEffect(() => {
+    getData()
+  }, [])
 
   const [ind, setInd] = useState(0)
   const [Loading, setLoading] = useState(false)
+  const [isImgUrl, setIsImgUrl] = useState(false)
+  // const [, setIsImgUrl] = useState(false)
+  const [currentMsg, setCurrentMsg] = useState('')
+  const [conversation, setConversation] = useState([])
+  const [uploadProgress, setUploadProgress]: any = useState(100)
+  const [enabled, setEnabled] = useState(false)
 
+  const handelSearchInputChanged = (e) => {
+    if (e.key == 'Enter' && e.target.value != '')
+      clients.map((client, index) => {
+        if (client.id == e.target.value || client.phoneNumber == e.target.value) {
+          setInd(index)
+          handleClick(client.id)
+          // setIsModalInfoActive(true)
+        }
+      })
+    return
+  }
+  // upload images
+
+  const imgbb = '807b79b03a554f95b5980b6b9d688013'
+  const uploadFile = async (file: any) => {
+    const formdata = new FormData()
+    formdata.append('image', file, file.name)
+
+    const requestOptions: AxiosRequestConfig = {
+      method: 'POST',
+      maxBodyLength: Infinity,
+      url: `https://api.imgbb.com/1/upload?key=${imgbb}`,
+      data: formdata,
+      onUploadProgress: (progressEvent) => {
+        const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+        setEnabled(progress === uploadProgress)
+        setUploadProgress(progress)
+      },
+    }
+
+    try {
+      const response = await axios(requestOptions)
+      setCurrentMsg(response.data.data.url)
+      setIsImgUrl(true)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  const handleFileUpload = (e) => {
+    const fileInput = e.target
+    if (!fileInput.files) {
+      alert('No file was chosen')
+      return
+    }
+
+    if (!fileInput.files || fileInput.files.length === 0) {
+      alert('Files list is empty')
+      return
+    }
+
+    const file = fileInput.files[0]
+    //console.log(file.type)
+
+    uploadFile(file)
+    /** Setting file state */
+    e.currentTarget.type = 'text'
+    e.currentTarget.type = 'file'
+  }
+
+  const sendData = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (currentMsg !== '') {
+      const msgData: any = {
+        phoneNumber: clients[ind].phoneNumber,
+        content: currentMsg,
+        receiverId: clients[ind].receiverId,
+        isAdmin: true,
+        isImgUrl,
+        conversationId: clients[ind].id,
+      }
+      setCurrentMsg('')
+      await socket.emit('sendMessage', msgData)
+      setLoading(true)
+
+      socket.on('newMessage', (data: any) => {
+        // console.log('Data----> ', [...conversation, data])
+        setLoading(!true)
+        setConversation([...conversation, data])
+      })
+      setIsImgUrl(false)
+      setEnabled(false)
+      setCurrentMsg('')
+    }
+  }
+
+  const handleClick = async (indCli) => {
+    //console.log(indCli)
+
+    setConversation([])
+    setLoading(true)
+    await socket.emit('getConversation', { conId: indCli })
+
+    await socket.on('conversationData', (data) => {
+      // console.log({ data })
+      setLoading(false)
+      setConversation([...data])
+    })
+
+    return
+  }
+
+  useEffect(() => {
+    if (socket != null)
+      socket.on('conversationData', (data: any) => {
+        // console.log(data)
+        setConversation([...data])
+      })
+  }, [socket])
   return (
     <>
       {Loading && (
@@ -59,214 +183,132 @@ const TableSampleClients = ({ columns }) => {
         </div>
       ) : (
         <>
-          <div className="flex h-[70vh] overflow-scroll">
-            <div className="w-1/4 bg-white border-r border-gray-300">
-              <div className="h-screen p-3 pb-20 overflow-y-auto mb-9">
-                {/* clients.map((client:any,index:number) =>(
-              <div onCLick=(()=>{
-                setInd(index)
-              }) className="flex items-center p-2 mb-4 rounded-md cursor-pointer hover:bg-gray-100">
-                  <div className="w-12 h-12 mr-3 bg-gray-300 rounded-full">
-                    <img
-                      src={'https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato'}
-                      alt="User Avatar"
-                      className="w-12 h-12 rounded-full"
+          <div className="flex bg-white h-[80vh] overflow-hidden">
+            <div className="w-1/4 border-r border-gray-300 overflow-y-auto">
+              <div className="p-3 pb-20 mb-9 h-[70vh] overflow-y-auto">
+                <div className="pb-4 mb-4 bg-white dark:bg-gray-900">
+                  <label htmlFor="table-search" className="sr-only">
+                    Search
+                  </label>
+                  <div className="relative mt-1">
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <svg
+                        className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                        />
+                      </svg>
+                    </div>
+                    <input
+                      onKeyDown={handelSearchInputChanged}
+                      type="text"
+                      id="table-search"
+                      className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-60 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="Search for items"
                     />
                   </div>
-                  <div className="flex-1">
-                    <h2 className="text-lg font-semibold">{clients.sender.phoneNumber}</h2>
-                    <p className="text-gray-600">{clients.content}</p>
+                </div>
+                {clients.map((client: any, index: number) => (
+                  <div
+                    key={index}
+                    className="flex items-center p-2 mb-4 rounded-md cursor-pointer hover:bg-gray-100"
+                    onClick={() => {
+                      setInd(index)
+                      setConversation([])
+                      handleClick(client.id)
+                    }}
+                  >
+                    <div className="w-12 h-12 mr-3 bg-gray-300 rounded-full">
+                      <img
+                        src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato"
+                        alt="User Avatar"
+                        className="w-12 h-12 rounded-full"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <h2 className="text-lg font-semibold">{client.phoneNumber}</h2>
+                      <p className="text-gray-800">
+                        {client.message.length > 0
+                          ? client.message[client.message.length - 1].content
+                          : ''}
+                      </p>
+                    </div>
                   </div>
-                </div>  
-                  
-                )) */}
-                {/* <div className="flex items-center p-2 mb-4 rounded-md cursor-pointer hover:bg-gray-100">
-                  <div className="w-12 h-12 mr-3 bg-gray-300 rounded-full">
-                    <img
-                      src={'https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato'}
-                      alt="User Avatar"
-                      className="w-12 h-12 rounded-full"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h2 className="text-lg font-semibold">{'name'}</h2>
-                    <p className="text-gray-600">{'lastMessage'}</p>
-                  </div>
-                </div> */}
+                ))}
               </div>
             </div>
 
-            <div className="flex-1">
+            <div className="flex-1 relative">
               <header className="p-4 text-gray-700 bg-white">
-                <h1 className="text-2xl font-semibold">Users</h1>
+                <h1 className="text-2xl font-semibold">
+                  {ind == 0 ? 'Users' : clients[ind].phoneNumber}
+                </h1>
               </header>
 
-              <div className="h-screen p-4 overflow-y-auto pb-36">
-                {/* <MessageBorder message="Hello there" />
-                <MessageBorder
-                  message="Hello there"
-                  isContainerStyleSneder={true}
-                  messageStyle="bg-indigo-500"
-                /> */}
-                {/* 
-                <div className="flex mb-4 cursor-pointer">
-                  <div className="flex items-center justify-center mr-2 rounded-full w-9 h-9">
-                    <img
-                      src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato"
-                      alt="User Avatar"
-                      className="w-8 h-8 rounded-full"
-                    />
-                  </div>
-                  <div className="flex gap-3 p-3 bg-white rounded-lg max-w-96">
-                    <p className="text-gray-700">Hey Bob, how's it going?</p>
-                  </div>
-                </div>
-
-                <div className="flex justify-end mb-4 cursor-pointer">
-                  <div className="flex gap-3 p-3 text-white bg-indigo-500 rounded-lg max-w-96">
-                    <p>Hi Alice! I'm good, just finished a great book. How about you?</p>
-                  </div>
-                  <div className="flex items-center justify-center ml-2 rounded-full w-9 h-9">
-                    <img
-                      src="https://placehold.co/200x/b7a8ff/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato"
-                      alt="My Avatar"
-                      className="w-8 h-8 rounded-full"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex mb-4 cursor-pointer">
-                  <div className="flex items-center justify-center mr-2 rounded-full w-9 h-9">
-                    <img
-                      src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato"
-                      alt="User Avatar"
-                      className="w-8 h-8 rounded-full"
-                    />
-                  </div>
-                  <div className="flex gap-3 p-3 bg-white rounded-lg max-w-96">
-                    <p className="text-gray-700">That book sounds interesting! What's it about?</p>
-                  </div>
-                </div>
-
-                <div className="flex justify-end mb-4 cursor-pointer">
-                  <div className="flex gap-3 p-3 text-white bg-indigo-500 rounded-lg max-w-96">
-                    <p>
-                      It's about an astronaut stranded on Mars, trying to survive. Gripping stuff!
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-center ml-2 rounded-full w-9 h-9">
-                    <img
-                      src="https://placehold.co/200x/b7a8ff/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato"
-                      alt="My Avatar"
-                      className="w-8 h-8 rounded-full"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex mb-4 cursor-pointer">
-                  <div className="flex items-center justify-center mr-2 rounded-full w-9 h-9">
-                    <img
-                      src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato"
-                      alt="User Avatar"
-                      className="w-8 h-8 rounded-full"
-                    />
-                  </div>
-                  <div className="flex gap-3 p-3 bg-white rounded-lg max-w-96">
-                    <p className="text-gray-700">
-                      I'm intrigued! Maybe I'll borrow it from you when you're done?
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex justify-end mb-4 cursor-pointer">
-                  <div className="flex gap-3 p-3 text-white bg-indigo-500 rounded-lg max-w-96">
-                    <p>Of course! I'll drop it off at your place tomorrow.</p>
-                  </div>
-                  <div className="flex items-center justify-center ml-2 rounded-full w-9 h-9">
-                    <img
-                      src="https://placehold.co/200x/b7a8ff/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato"
-                      alt="My Avatar"
-                      className="w-8 h-8 rounded-full"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex mb-4 cursor-pointer">
-                  <div className="flex items-center justify-center mr-2 rounded-full w-9 h-9">
-                    <img
-                      src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato"
-                      alt="User Avatar"
-                      className="w-8 h-8 rounded-full"
-                    />
-                  </div>
-                  <div className="flex gap-3 p-3 bg-white rounded-lg max-w-96">
-                    <p className="text-gray-700">Thanks, you're the best!</p>
-                  </div>
-                </div>
-
-                <div className="flex justify-end mb-4 cursor-pointer">
-                  <div className="flex gap-3 p-3 text-white bg-indigo-500 rounded-lg max-w-96">
-                    <p>Anytime! Let me know how you like it. 😊</p>
-                  </div>
-                  <div className="flex items-center justify-center ml-2 rounded-full w-9 h-9">
-                    <img
-                      src="https://placehold.co/200x/b7a8ff/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato"
-                      alt="My Avatar"
-                      className="w-8 h-8 rounded-full"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex mb-4 cursor-pointer">
-                  <div className="flex items-center justify-center mr-2 rounded-full w-9 h-9">
-                    <img
-                      src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato"
-                      alt="User Avatar"
-                      className="w-8 h-8 rounded-full"
-                    />
-                  </div>
-                  <div className="flex gap-3 p-3 bg-white rounded-lg max-w-96">
-                    <p className="text-gray-700">So, pizza next week, right?</p>
-                  </div>
-                </div>
-
-                <div className="flex justify-end mb-4 cursor-pointer">
-                  <div className="flex gap-3 p-3 text-white bg-indigo-500 rounded-lg max-w-96">
-                    <p>Absolutely! Can't wait for our pizza date. 🍕</p>
-                  </div>
-                  <div className="flex items-center justify-center ml-2 rounded-full w-9 h-9">
-                    <img
-                      src="https://placehold.co/200x/b7a8ff/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato"
-                      alt="My Avatar"
-                      className="w-8 h-8 rounded-full"
-                    />
-                  </div>
-                </div>
-                <div className="flex mb-4 cursor-pointer">
-                  <div className="flex items-center justify-center mr-2 rounded-full w-9 h-9">
-                    <img
-                      src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato"
-                      alt="User Avatar"
-                      className="w-8 h-8 rounded-full"
-                    />
-                  </div>
-                  <div className="flex gap-3 p-3 bg-white rounded-lg max-w-96">
-                    <p className="text-gray-700">Hoorayy!!</p>
-                  </div>
-                </div> */}
+              <div className="p-4 h-[60vh] overflow-y-auto pb-8">
+                {conversation.map((message: any, index: any) => (
+                  <MessageBorder
+                    key={index}
+                    imgURL={message.isImgUrl}
+                    message={message.content != '' ? message.content : message.imgUrl}
+                    isContainerStyleSneder={message.isSender}
+                  />
+                ))}
               </div>
 
-              <footer className="absolute bottom-0 w-2/4 p-4 bg-white border-t border-gray-300">
+              <footer className="absolute bottom-0 w-full p-4 bg-white border-t border-gray-300">
                 <div className="flex items-center">
-                  <input
-                    type="text"
-                    placeholder="Type a message..."
-                    className="w-full p-2 border border-gray-400 rounded-md focus:outline-none focus:border-blue-500"
-                  />
-                  <button className="px-4 py-2 ml-2 text-white bg-indigo-500 rounded-md">
-                    Send
-                  </button>
+                  <form
+                    className={`items-center ${
+                      ind != 0 ? 'flex' : 'hidden'
+                    } w-full gap-4 align-middle items-center flex`}
+                    onSubmit={(e: any) => sendData(e)}
+                  >
+                    <input
+                      type="text"
+                      value={!isImgUrl ? currentMsg : ''}
+                      placeholder="Type a message..."
+                      onChange={(e) => setCurrentMsg(e.target.value)}
+                      className="w-full p-3 border border-gray-400 rounded-md focus:outline-none focus:border-blue-500"
+                    />
+                    <button className="px-4 py-2 ml-2 text-white bg-indigo-500 rounded-md">
+                      Send
+                    </button>
+                    <label htmlFor="dropzone-file" className="file-input-label cursor-pointer">
+                      <input
+                        id="dropzone-file"
+                        type="file"
+                        className={`hidden`}
+                        onChange={handleFileUpload}
+                      />
+                      <svg
+                        className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400 hover:scale-150 transition delay-75"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 20 16"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                        />
+                      </svg>{' '}
+                    </label>
+                  </form>
                 </div>
+                {isImgUrl ?? <img src={currentMsg} alt="Img" className="w-60" />}
               </footer>
             </div>
           </div>

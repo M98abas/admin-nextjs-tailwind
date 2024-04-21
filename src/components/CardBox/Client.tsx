@@ -7,18 +7,11 @@ import UserAvatar from '../UserAvatar'
 import moment from 'moment'
 
 type Props = {
-  client: Client
+  client: any
 }
 
 const CardBoxClient = (props: Props) => {
   const pillColor = () => {
-    if (props.client.referingPoints >= 50) {
-      return 'success'
-    }
-    if (props.client.referingPoints >= 40) {
-      return 'warning'
-    }
-
     return 'danger'
   }
 
@@ -33,19 +26,17 @@ const CardBoxClient = (props: Props) => {
       <div className="flex flex-col items-center justify-between md:flex-row">
         <div className="flex flex-col items-center justify-start mb-6 md:flex-row md:mb-0">
           <img
-            src={props.client.imageUrl}
+            src={props.client.imgUrl}
             className="w-12 h-12 mr-2 rounded-full"
-            alt={props.client.imageUrl}
+            alt={props.client.imgUrl}
           />
           <div className="overflow-hidden text-center md:text-left">
             <h4 className="text-xl text-ellipsis">{props.client.name}</h4>
             <p className="text-gray-500 dark:text-slate-400">
-              {moment(props.client.created_at).format('MMM/Do/YY')} @ {props.client.nickName}
+              {moment(props.client.created).format('MMM/Do/YY')} @ {props.client.nickName}
             </p>
           </div>
         </div>
-
-        <PillTag color={pillColor()} icon={pillIcon} label={`${props.client.referingPoints}%`} />
       </div>
     </CardBox>
   )

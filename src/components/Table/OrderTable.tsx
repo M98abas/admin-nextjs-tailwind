@@ -4,6 +4,7 @@ import {
   mdiSquareEditOutline,
   mdiTrashCan,
   mdiDownloadCircleOutline,
+  mdiExportVariant,
 } from '@mdi/js'
 import React, { useState } from 'react'
 import { useSampleClients } from '../../hooks/sampleData'
@@ -14,6 +15,7 @@ import { ApiUpdateData, ApiAddData } from '../../../api'
 import NotificationBar from '../NotificationBar'
 import MomentP from '../MomentP'
 import CustomInvoice from '../CustomInvoice'
+import { CSVLink } from 'react-csv'
 
 const TableSampleClients = ({ columns }) => {
   const { clients } = useSampleClients('order')
@@ -137,6 +139,32 @@ const TableSampleClients = ({ columns }) => {
     setIsModalInvoActive(false)
   }
 
+  const flattenOrders = () => {
+    const orders: any = clients
+    const flattenedOrders = []
+    orders.forEach((order: any) => {
+      order.order_list.forEach((item: any) => {
+        flattenedOrders.push({
+          orderId: order.id,
+          customer: order.users?.phoneNumber,
+          orderDate: order.receivedDate,
+          product: item.Products?.titleEn,
+          Quantity: item.quantity,
+          amount: item.amount,
+        })
+      })
+    })
+    return flattenedOrders
+  }
+  const dataExported = flattenOrders()
+  const headers = [
+    { label: 'ID', key: 'orderId' },
+    { label: 'customer', key: 'customer' },
+    { label: 'orderDate', key: 'orderDate' },
+    { label: 'product', key: 'product' },
+    { label: 'Quantity', key: 'Quantity' },
+    { label: 'amount', key: 'amount' },
+  ]
   return (
     <>
       {Loading && (
@@ -207,13 +235,7 @@ const TableSampleClients = ({ columns }) => {
                   <input
                     type="text"
                     id="name"
-                    defaultValue={
-                      clients[ind]?.users?.fin_name +
-                      ' ' +
-                      clients[ind]?.users?.mid_name +
-                      '' +
-                      clients[ind]?.users?.lst_name
-                    }
+                    defaultValue={clients[ind]?.users?.fullName}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="John"
                     required
@@ -390,7 +412,7 @@ const TableSampleClients = ({ columns }) => {
 
           <CardBoxModal
             title="Please confirm"
-            buttonColor="danger"
+            buttonColor="info"
             classData="h-[50vh] xl:w-6/12 overflow-scroll"
             buttonLabel="Confirm"
             isActive={isModalStatusActive}
@@ -410,10 +432,11 @@ const TableSampleClients = ({ columns }) => {
               </label>
               <select
                 id="countries"
+                defaultValue={[`${clients[ind]?.status}`]}
                 onChange={(e: any) => setStatus(e.target.value)}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
-                <option selected>Choose a Status</option>
+                <option value={'Checked'}>Choose a Status</option>
                 <option value="طلب جديد">طلب جديد</option>
                 <option value="قيد التجهيز">قيد التجهيز</option>
                 <option value="قيد التوصيل">قيد التوصيل</option>
@@ -430,35 +453,42 @@ const TableSampleClients = ({ columns }) => {
             ''
           )}
 
-          <div className="pb-4 mb-4 bg-white dark:bg-gray-900">
-            <label htmlFor="table-search" className="sr-only">
-              Search
-            </label>
-            <div className="relative mt-1">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <svg
-                  className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                  />
-                </svg>
+          <div className="flex justify-between align-middle items-center p-3">
+            <div className="pb-4 mb-4 bg-white dark:bg-gray-900">
+              <label htmlFor="table-search" className="sr-only">
+                Search
+              </label>
+              <div className="relative mt-1">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <svg
+                    className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                    />
+                  </svg>
+                </div>
+                <input
+                  onKeyDown={handelSearchInputChanged}
+                  type="text"
+                  id="table-search"
+                  className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="Search for items"
+                />
               </div>
-              <input
-                onKeyDown={handelSearchInputChanged}
-                type="text"
-                id="table-search"
-                className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Search for items"
-              />
+            </div>
+            <div className="bg-blue-800 text-white p-2 rounded transition-all delay-100 hover:bg-blue-300">
+              <CSVLink data={dataExported} headers={headers} filename={'example.csv'}>
+                Export CSV
+              </CSVLink>
             </div>
           </div>
           <table>
@@ -473,7 +503,7 @@ const TableSampleClients = ({ columns }) => {
               {clientsPaginated.map((client: any, index: number) => (
                 <tr key={client.id}>
                   <td data-label="nickName">{client.id}</td>
-                  <td data-label="nickName">{client.users?.email ?? client.users?.fin_name}</td>
+                  <td data-label="nickName">{client.users?.email ?? client.users?.phoneNumber}</td>
                   <td data-label="Name">{client.total_price}</td>
                   <td data-label="nickName">
                     <small className="text-gray-500 dark:text-slate-400">

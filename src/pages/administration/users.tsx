@@ -5,7 +5,7 @@ import CardBox from '../../components/CardBox'
 import LayoutAuthenticated from '../../layouts/Authenticated'
 import SectionMain from '../../components/Section/Main'
 import SectionTitleLineWithButton from '../../components/Section/TitleLineWithButton'
-import TableSampleClients from '../../components/Table/userTable'
+import TableSampleClients from '../../components/Table/UserTable'
 import { getPageTitle } from '../../config'
 // import axios, { AxiosRequestConfig } from 'axios'
 

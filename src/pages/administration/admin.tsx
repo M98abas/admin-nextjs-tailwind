@@ -13,7 +13,7 @@ import { ApiAddData, ApiGetData } from '../../../api'
 // import axios, { AxiosRequestConfig } from 'axios'
 
 const TablesPage = () => {
-  const columns: Array<string> = ['name', 'email', 'Created at', 'actions']
+  const columns: Array<string> = ['name', 'email', 'Role','Created at', 'actions']
 
   const [rolesData, setRoleData] = useState([])
   const [enabled, setEnabled] = useState(false)

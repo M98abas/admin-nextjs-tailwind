@@ -2,7 +2,6 @@ import {
   mdiAccountReactivate,
   mdiMonitorCellphone,
   mdiSquareEditOutline,
-  mdiTableOff,
   mdiTrashCan,
 } from '@mdi/js'
 import React, { useState } from 'react'

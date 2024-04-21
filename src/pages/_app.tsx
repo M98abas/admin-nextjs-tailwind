@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Script from 'next/script'
 import type { AppProps } from 'next/app'
 import type { ReactElement, ReactNode } from 'react'
@@ -7,6 +7,7 @@ import Head from 'next/head'
 import { store } from '../stores/store'
 import { Provider } from 'react-redux'
 import '../css/main.css'
+import Cookies from 'js-cookie'
 
 export type NextPageWithLayout<P = Record<string, unknown>, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
@@ -19,6 +20,19 @@ type AppPropsWithLayout = AppProps & {
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   // Use the layout defined at the page level, if available
   const getLayout = Component.getLayout || ((page) => page)
+  useEffect(() => {
+    getAndSet()
+  }, [])
+
+  const getAndSet = async () => {
+    const token = await Cookies.get('token')
+    if (!token && window.location.pathname != '/login' && window.location.pathname != '/logins') {
+      window.location.href = '/login'
+    }
+
+    if (token && (window.location.pathname == '/login' || window.location.pathname === '/logins'))
+      window.location.href = '/'
+  }
 
   const title = `OneCC`
 

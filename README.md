@@ -1,7 +1,9 @@
 45.4.172.70 7822
 sudo kill -9 $(sudo lsof -t -i:80)
 sudo systemctl restart nginx
-
+sudo ss -ltpn | grep :80
+sudo lsof -i:80
+sudo kill -9 $(sudo lsof -t -i:80) && sudo systemctl restart nginx
 # Todo
 
 - Not history ✅

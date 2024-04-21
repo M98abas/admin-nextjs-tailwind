@@ -14,6 +14,26 @@ import { ApiAddData } from '../../../api'
 
 const TablesPage = () => {
   const columns: Array<string> = ['name', 'description', 'created_at', 'actions']
+  const routes: any = [
+    { path: 'client', name: 'Client' },
+    { path: 'admin', name: 'Admin' },
+    { path: 'sadmin', name: 'Super Admin' },
+    { path: 'notification', name: 'Notification' },
+    { path: 'announcements', name: 'Announcements' },
+    { path: 'promocode', name: 'Promo Code' },
+    { path: 'discount', name: 'Discount' },
+    { path: 'category', name: 'Category' },
+    { path: 'productType', name: 'Product Type' },
+    { path: 'subCategory', name: 'Subcategory' },
+    { path: 'product', name: 'Product' },
+    { path: 'permission', name: 'Permission' },
+    { path: 'order', name: 'Order' },
+    { path: 'tags', name: 'Tags' },
+    { path: 'brand', name: 'Brand' },
+    { path: 'chat', name: 'Chat' },
+    { path: 'wallet', name: 'Wallet' },
+    { path: 'payment', name: 'Payment' },
+  ]
 
   const [enabled, setEnabled] = useState(false)
   const [name, setName] = useState('')
@@ -161,14 +181,20 @@ const TablesPage = () => {
                             >
                               Title
                             </label>
-                            <input
-                              id="labelname"
-                              placeholder="Admin, operation ..."
-                              type="text"
-                              value={input.title}
-                              onChange={(event) => handleChange(index, event, 'title')}
+                            <select
+                              data-te-select-init
+                              onChange={(e: any) => handleChange(index, event, 'title')}
+                              // defaultValue={clients[ind].Roles?.name}
+                              id="countries"
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            />
+                            >
+                              <option value="none">Choose The target</option>
+                              {routes?.map((data: any, index: any) => (
+                                <option value={data.path} key={index}>
+                                  {data.name}
+                                </option>
+                              ))}
+                            </select>
                           </div>
                           <div>
                             <label

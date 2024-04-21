@@ -11,6 +11,7 @@ import Buttons from '../Buttons'
 import CardBoxModal from '../CardBox/Modal'
 import { ApiUpdateData, ApiAddData, ApiGetData } from '../../../api'
 import NotificationBar from '../NotificationBar'
+import MomentP from '../MomentP'
 
 const TableSampleClients = ({ columns }) => {
   const { clients } = useSampleClients('admin')
@@ -250,7 +251,9 @@ const TableSampleClients = ({ columns }) => {
                     {/* {client.roles.name != null ? client.roles[0]?.name : 'Admin'} */}
                   </td>
                   <td data-label="Created" className="lg:w-1 whitespace-nowrap">
-                    <small className="text-gray-500 dark:text-slate-400">{client.created_at}</small>
+                    <small className="text-gray-500 d ark:text-slate-400">
+                      <MomentP dateValue={client.created_at} />
+                    </small>{' '}
                   </td>
                   <td className="before:hidden lg:w-1 whitespace-nowrap">
                     <Buttons type="justify-start lg:justify-end gap-1" noWrap>

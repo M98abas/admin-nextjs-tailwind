@@ -1,4 +1,4 @@
-import { mdiPlus, mdiTableBorder } from '@mdi/js'
+import { mdiExportVariant, mdiPlus, mdiTableBorder } from '@mdi/js'
 import Head from 'next/head'
 import React, { ReactElement, useState, useEffect } from 'react'
 import CardBox from '../../components/CardBox'
@@ -193,7 +193,7 @@ const TablesPage = () => {
                         style={{ width: '100%' }}
                         placeholder="Please select"
                         onChange={handleChangeSelectProduct}
-                        defaultValue={1} // Set the default value as needed, but usually, it should be an empty array for multiple selection
+                        defaultValue={[1]} // Set the default value as needed, but usually, it should be an empty array for multiple selection
                       >
                         {products.map((option) => (
                           <Option key={option.id} value={option.titleEn}>

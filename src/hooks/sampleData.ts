@@ -5,9 +5,9 @@ import Cookies from 'js-cookie'
 const token = Cookies.get('token')
 
 const myHeaders = new Headers()
-myHeaders.append('token', token)
 
 const requestOptions: any = {
+  token,
   method: 'GET',
   headers: myHeaders,
   redirect: 'follow',

@@ -21,6 +21,7 @@ const menuNavBar: MenuNavBarItem[] = [
       {
         icon: mdiLogout,
         label: 'Log Out',
+        href: '/login',
         isLogout: true,
       },
     ],
@@ -34,6 +35,7 @@ const menuNavBar: MenuNavBarItem[] = [
   {
     icon: mdiLogout,
     label: 'Log out',
+    href: '/login',
     isDesktopNoLabel: true,
     isLogout: true,
   },

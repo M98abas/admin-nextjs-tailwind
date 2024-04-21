@@ -1,11 +1,12 @@
 // utils/useSocket.js
 import { useEffect, useState } from 'react'
 import io from 'socket.io-client'
+import Cookies from 'js-cookie'
 
 const useSocket = (url) => {
   const [socket, setSocket] = useState(null)
-  const token: any =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluSk0xQGphbWFsU3RvcmUuY29tIiwicm9sZSI6IkFkbWluIiwiaWF0IjoxNzEyMTgxNjQwfQ.uSGcM2sW7bCO2I79KpByACHCppQSZZfK8O2Vx2zxpos'
+
+  const token = Cookies.get('token')
 
   useEffect(() => {
     // Create the Socket.IO client with custom path

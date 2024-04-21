@@ -5,6 +5,8 @@ import AsideMenuItem from './AsideMenuItem'
 import AsideMenuList from './AsideMenuList'
 import { MenuAsideItem } from '../interfaces'
 import { useAppSelector } from '../stores/hooks'
+import Cookies from 'js-cookie'
+import Router from 'next/router'
 
 type Props = {
   menu: MenuAsideItem[]
@@ -24,12 +26,15 @@ export default function AsideMenuLayer({ menu, className = '', ...props }: Props
     color: 'info',
     isLogout: true,
   }
-
   const handleAsideLgCloseClick = (e: React.MouseEvent) => {
     e.preventDefault()
     props.onAsideLgCloseClick()
   }
-
+  const handleAsideLgLogout = async (e: React.MouseEvent) => {
+    await Cookies.remove('token')
+    Router.push('/login')
+    e.preventDefault()
+  }
   return (
     <aside
       className={`${className} zzz lg:py-2 lg:pl-2 w-65 fixed flex z-40 top-0 h-screen transition-position overflow-hidden`}
@@ -57,7 +62,7 @@ export default function AsideMenuLayer({ menu, className = '', ...props }: Props
         >
           <AsideMenuList menu={menu} />
         </div>
-        <ul>
+        <ul onClick={handleAsideLgLogout}>
           <AsideMenuItem item={logoutItem} />
         </ul>
       </div>

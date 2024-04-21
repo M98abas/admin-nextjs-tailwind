@@ -98,19 +98,21 @@ export const ApiActivateData = (route, info, callback) => {
 }
 
 export const ApiAddData = (route, info, callback) => {
-  const token = Cookies.get('token')
+  const token = info.tokenData == '' ? Cookies.get('token') : info.tokenData
 
   const headers = {
     token,
     'Content-Type': 'application/json',
   }
-  console.log(route, info.id)
+  // console.log(route, info.id)
 
   const data = JSON.stringify(info)
 
   axios
     .post(`${BASE_URL}/${route}`, data, { headers })
     .then((response) => {
+      // console.log(response)
+
       const result = response.data
       if (result.status) {
         callback(result, null)
@@ -149,8 +151,7 @@ export const ApiDeleteData = (route: string, id: number, callback) => {
 }
 
 export const ApiGetData = (route, callback) => {
-  const token =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluSk0xQGphbWFsU3RvcmUuY29tIiwicm9sZSI6IkFkbWluIiwiaWF0IjoxNzEyMTgxNjQwfQ.uSGcM2sW7bCO2I79KpByACHCppQSZZfK8O2Vx2zxpos'
+  const token = Cookies.get('token')
   const headers = {
     token,
     'Content-Type': 'application/json',

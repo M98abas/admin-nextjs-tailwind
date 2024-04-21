@@ -18,7 +18,7 @@ const LoginPage: any = () => {
   const handleLogin: any = (e: any) => {
     setLoading(true)
     e.preventDefault()
-    ApiLogin('admin', { email }, (data: any) => {
+    ApiLogin('sadmin', { email }, (data: any) => {
       setLoading(false)
       console.log(data)
 
@@ -28,9 +28,10 @@ const LoginPage: any = () => {
         return
       }
 
-      Cookies.set('token', data.token)
+    //   Cookies.remove('token')
+      Cookies.set('tokenLogin', data.token)
       setLoading(false)
-      router.push('/otpStep')
+      router.push('/otpStepS')
     })
   }
 

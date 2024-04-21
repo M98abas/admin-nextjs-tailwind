@@ -5,32 +5,34 @@ import CardBox from '../components/CardBox'
 import { useRouter } from 'next/router'
 import { getPageTitle } from '../config'
 import Cookies from 'js-cookie'
-import { ApiLogin } from '../../api'
+import { ApiAddData } from '../..//api'
 import SectionFullScreen from '../components/Section/FullScreen'
 import LayoutGuest from '../layouts/Guest'
 
-const LoginPage: any = () => {
+const VeryfyPage: any = () => {
   const router = useRouter()
-  const [email, setEmail] = useState('')
+
+  const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
   const [data, setData]: any = useState()
   const [error, setError] = useState(false)
+  const token = Cookies.get('tokenLogin')
   const handleLogin: any = (e: any) => {
     setLoading(true)
     e.preventDefault()
-    ApiLogin('admin', { email }, (data: any) => {
+    ApiAddData('admin/otp', { otp, tokenData: token }, (data: any) => {
       setLoading(false)
-      console.log(data)
-
       setData(data)
       if (data.errMsg != '') {
         setError(true)
         return
       }
 
+      Cookies.remove('tokenLogin')
       Cookies.set('token', data.token)
       setLoading(false)
-      router.push('/otpStep')
+
+      router.push('/')
     })
   }
 
@@ -46,23 +48,22 @@ const LoginPage: any = () => {
             <div className="grid gap-1 md:grid-cols-1 ">
               <div className="mb-6">
                 <label
-                  htmlFor="email"
+                  htmlFor="otp"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
-                  Email address
+                  OTP
                 </label>
                 <input
-                  type="email"
-                  id="email"
+                  type="text"
+                  id="otp"
                   disabled={loading}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
                   className="bg-gray-50 border  border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="john.doe@company.com"
+                  placeholder="123456"
                   required
                 />
               </div>
-              {/* <Divider /> */}
 
               <button
                 type="submit"
@@ -122,8 +123,8 @@ const LoginPage: any = () => {
     </>
   )
 }
-LoginPage.getLayout = function getLayout(page: ReactElement) {
+VeryfyPage.getLayout = function getLayout(page: ReactElement) {
   return <LayoutGuest>{page}</LayoutGuest>
 }
 
-export default LoginPage
+export default VeryfyPage

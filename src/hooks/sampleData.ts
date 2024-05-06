@@ -6,8 +6,11 @@ const token = Cookies.get('token')
 
 const myHeaders = new Headers()
 
+if (token) {
+  myHeaders.append('token', `${token}`)
+}
+
 const requestOptions: any = {
-  token,
   method: 'GET',
   headers: myHeaders,
   redirect: 'follow',

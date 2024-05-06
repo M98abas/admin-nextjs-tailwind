@@ -15,7 +15,7 @@ import MomentP from '../MomentP'
 
 const TableSampleClients = ({ columns }) => {
   const { clients } = useSampleClients('admin')
-  console.log(clients)
+  console.log(clients.length)
 
   const [id, setid] = useState()
   const [email, setEmail] = useState('')
@@ -29,7 +29,10 @@ const TableSampleClients = ({ columns }) => {
 
   const [currentPage, setCurrentPage] = useState(0)
 
-  const clientsPaginated = clients.slice(perPage * currentPage, perPage * (currentPage + 1))
+  const clientsPaginated =
+    clients.length <= 5
+      ? clients
+      : clients.slice(perPage * currentPage, perPage * (currentPage + 1))
 
   const numPages = Math.round(clients.length / perPage)
 

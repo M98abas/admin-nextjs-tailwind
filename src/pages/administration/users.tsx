@@ -11,9 +11,7 @@ import { getPageTitle } from '../../config'
 
 const TablesPage = () => {
   const columns: Array<string> = [
-    'fin_name',
-    'mid_name',
-    'lst_name',
+    'Full name',
     'nickName',
     'email',
     'phoneNumber',

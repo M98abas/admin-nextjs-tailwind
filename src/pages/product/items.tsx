@@ -9,9 +9,11 @@ import TableSampleClients from '../../components/Table/itemsTable'
 import { getPageTitle } from '../../config'
 import CardBoxModal from '../../components/CardBox/Modal'
 import { ApiAddData, ApiGetData } from '../../../api'
-import { mdiPlus, mdiTableBorder } from '@mdi/js'
+import { mdiMonitorCellphone, mdiPlus, mdiTableBorder } from '@mdi/js'
 import { Select, Space } from 'antd'
 import axios, { AxiosRequestConfig } from 'axios'
+import NotificationBar from '../../components/NotificationBar'
+import { useRouter } from 'next/router'
 const { Option } = Select
 
 const TablesPage = () => {
@@ -19,6 +21,8 @@ const TablesPage = () => {
   const [uploadProgress, setUploadProgress] = useState(100)
   const [enabled, setEnabled] = useState(false)
   const [imgUrl, setImgUrl] = useState([])
+  const [notificationnActive, setNotificationnActive] = useState(false)
+  const router: any = useRouter()
 
   const [titleAr, setTitleAr] = useState('')
   const [titleEn, setTitleEn] = useState('')
@@ -29,7 +33,6 @@ const TablesPage = () => {
   const [doctorRecommmand, setDoctorRecommmand] = useState(true)
   const [howToUse, setHowToUse] = useState('')
   const [contentProduct, setContentProduct] = useState('')
-  const [sintificNameAR, setSintificNameAR] = useState('')
   const [sintificNameEN, setSintificNameEN] = useState('')
   const [doses, setDoses] = useState(0)
   const [barCode, setBarCode] = useState('')
@@ -50,6 +53,8 @@ const TablesPage = () => {
   const [sideEffect, setSideEffect] = useState('')
   const [productsTagsId, setProductsTagsId] = useState([])
 
+
+  
   const handelChange: any = (indexSub: any) => {
     console.log(category[indexSub])
 
@@ -74,7 +79,7 @@ const TablesPage = () => {
   }
   useEffect(() => {
     getData()
-  }, [])
+  }, [router])
 
   const handelRemoveImage = async (indexToRemove: any) => {
     const newImgUrl = imgUrl.filter((_, index) => index !== indexToRemove)
@@ -167,23 +172,9 @@ const TablesPage = () => {
         productTypeId,
       },
       (data) => {
-        if (data.errMsg != '')
-          return (
-            <>
-              <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
-                <svg
-                  className="w-5 h-5"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-                </svg>
-                <span className="sr-only">Check icon</span>
-              </div>
-            </>
-          )
+        console.log(data)
+
+        if (data.status) setNotificationnActive(true)
         setEnabled(!enabled)
         setProductsTagsId([])
         setTitleAr('')
@@ -241,6 +232,13 @@ const TablesPage = () => {
             </SectionTitleLineWithButton>
 
             <CardBox className="mb-6" hasTable>
+              {notificationnActive ? (
+                <NotificationBar color="info" icon={mdiMonitorCellphone}>
+                  All good
+                </NotificationBar>
+              ) : (
+                ''
+              )}
               <TableSampleClients columns={columns} />
               <CardBoxModal
                 title="Add Course"
@@ -396,10 +394,12 @@ const TablesPage = () => {
                       <input
                         type="number"
                         id="email"
+                        max={10000}
                         onChange={(e) => setDoses(parseInt(e.target.value))}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Any data"
                         required
+                        inputMode="numeric"
                       />
                     </div>
                     <div>

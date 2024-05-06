@@ -18,7 +18,7 @@ import DatePicker from 'tailwind-datepicker-react'
 const TableSampleClients = ({ columns }) => {
   const { clients } = useSampleClients('promocode')
   console.log(clients)
-
+  const [minSpent, setMinSpent] = useState(0)
   const [enabled, setEnabled] = useState(false)
   const [text, setText] = useState('')
   const [end_at, setEnd_at] = useState('')
@@ -29,8 +29,6 @@ const TableSampleClients = ({ columns }) => {
   const [directTo, setDirectTo] = useState('')
   const [error, setError] = useState(false)
   const [Loading, setLoading] = useState(false)
-  const [subCategory, setSubCategory] = useState([])
-  const [category, setCategory] = useState([])
   const [show, setShow] = useState(false)
   const [ind, setInd] = useState(0)
   const [id, setid] = useState()
@@ -76,15 +74,6 @@ const TableSampleClients = ({ columns }) => {
 
   const pagesList = []
 
-  const getData = async () => {
-    await ApiGetData('category', (data) => {
-      setCategory(data)
-    })
-  }
-  useEffect(() => {
-    getData()
-  }, [])
-
   for (let i = 0; i < numPages; i++) {
     pagesList.push(i)
   }
@@ -93,7 +82,7 @@ const TableSampleClients = ({ columns }) => {
 
     await ApiAddData(
       `promocode/update/${id}`,
-      { text, percentage, availableFor, target, constValue, directTo, end_at },
+      { text, percentage, availableFor, target, constValue, directTo, end_at, minSpent },
       (data) => {
         if (data.errMsg != '')
           return (
@@ -126,6 +115,12 @@ const TableSampleClients = ({ columns }) => {
     setLoading(false)
     setIsModalInfoActive(false)
   }
+  const handelChangeTarget: any = (index: any) => {
+    if (index) {
+      setDirectTo(index)
+    }
+    return
+  }
 
   const handelDeleteAction = async () => {
     setLoading(true)
@@ -139,14 +134,6 @@ const TableSampleClients = ({ columns }) => {
 
     setIsModalInfoActive(false)
     setIsModalTrashActive(false)
-  }
-
-  const handelChange: any = (index: any) => {
-    if (index) {
-      setSubCategory(category[index].subcategory)
-      setTarget(category[index].titleEn)
-    }
-    return
   }
 
   return (
@@ -286,13 +273,13 @@ const TableSampleClients = ({ columns }) => {
                       htmlFor="name"
                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                     >
-                      Const value
+                      minimum Spent
                     </label>
                     <input
                       type="text"
                       id="name"
-                      defaultValue={clients[ind]?.constValue}
-                      onChange={(e) => setConstValue(parseInt(e.target.value))}
+                      defaultValue={clients[ind]?.minSpent}
+                      onChange={(e) => setMinSpent(parseInt(e.target.value))}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="IN case promocode you need it with const value"
                       required
@@ -305,59 +292,16 @@ const TableSampleClients = ({ columns }) => {
                     >
                       Direct to
                     </label>
-                    <input
-                      type="text"
-                      id="name"
+                    <select
+                      data-te-select-init
+                      onChange={(e: any) => handelChangeTarget(e.target.value)}
+                      id="countries"
                       defaultValue={clients[ind]?.directTo}
-                      onChange={(e) => setDirectTo(e.target.value)}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder=""
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="countries"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Select Category(s)
-                    </label>
-                    <select
-                      data-te-select-init
-                      onChange={(e: any) => handelChange(e.target.value)}
-                      id="countries"
-                      defaultValue="none"
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     >
                       <option value="none">Choose The target</option>
-                      {category?.map((data: any) => (
-                        <option value={data.id} key={data.id}>
-                          {data.titleEn}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="countries"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Select Sub-Category(s)
-                    </label>
-                    <select
-                      data-te-select-init
-                      defaultValue="none"
-                      onChange={(e: any) => setTarget(e.target.value)}
-                      id="countries"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    >
-                      <option value="none">Choose The target</option>
-                      {subCategory?.map((data: any) => (
-                        <option value={data.titleEn} key={data.id}>
-                          {data.titleEn}
-                        </option>
-                      ))}
+                      <option value="Invoice">Invoice</option>
+                      <option value="Shippment">Shippment</option>
                     </select>
                   </div>
                 </div>

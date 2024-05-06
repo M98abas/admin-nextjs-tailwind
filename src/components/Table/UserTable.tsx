@@ -243,9 +243,7 @@ const TableSampleClients = ({ columns }) => {
             <tbody>
               {clientsPaginated.map((client: any, index: number) => (
                 <tr key={client.id}>
-                  <td data-label="nickName">{client.fin_name}</td>
-                  <td data-label="nickName">{client.mid_name}</td>
-                  <td data-label="Name">{client.lst_name}</td>
+                  <td data-label="nickName">{client.fullName}</td>
                   <td data-label="nickName">{client.nickName}</td>
                   <td data-label="nickName">{client.email}</td>
                   <td data-label="Name">{client.phoneNumber}</td>

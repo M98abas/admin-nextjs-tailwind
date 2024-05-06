@@ -18,17 +18,17 @@ const LoginPage: any = () => {
   const handleLogin: any = (e: any) => {
     setLoading(true)
     e.preventDefault()
-    ApiLogin('admin', { email }, (data: any) => {
+    ApiLogin('admin', { email }, (data: any, error: any) => {
       setLoading(false)
-      console.log(data)
+      // console.log(error)
 
       setData(data)
-      if (data.errMsg != '') {
+      if (error && error.errMsg != '') {
         setError(true)
         return
       }
 
-      Cookies.set('token', data.token)
+      Cookies.set('tokenLogin', data.token)
       setLoading(false)
       router.push('/otpStep')
     })
@@ -108,10 +108,14 @@ const LoginPage: any = () => {
                 <span>Submit</span>
               </button>
             </div>
+            <br />
             {error ? (
-              <div>
-                <h2>Error</h2>
-                <span>{data.errMsg}</span>
+              <div
+                className="p-4 text-orange-700 bg-orange-100 border-l-4 border-orange-500"
+                role="alert"
+              >
+                <h2 className="font-bold">Error</h2>
+                <span>Please enter valid email</span>
               </div>
             ) : (
               ''

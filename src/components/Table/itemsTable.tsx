@@ -15,13 +15,14 @@ import Image from 'next/image'
 import axios, { AxiosRequestConfig } from 'axios'
 import { Select } from 'antd'
 import MomentP from '../MomentP'
+import { useRouter } from 'next/router'
 const { Option } = Select
 
 const TableSampleClients = ({ columns }) => {
   const { clients } = useSampleClients('product')
-  console.log(clients)
+  const router: any = useRouter()
 
-  // const router = useRouter()
+  const router = useRouter()
   const [id, setid] = useState()
   const perPage = 10
 
@@ -80,7 +81,7 @@ const TableSampleClients = ({ columns }) => {
   }
   useEffect(() => {
     getData()
-  }, [])
+  }, [router])
 
   const [currentPage, setCurrentPage] = useState(0)
   const [uploadProgress, setUploadProgress]: any = useState(100)

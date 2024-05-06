@@ -5,17 +5,24 @@ import {
   mdiTrashCan,
   mdiDownloadCircleOutline,
   mdiExportVariant,
+  mdiExclamation,
+  mdiCheckCircleOutline,
+  mdiPlusCircleOutline,
 } from '@mdi/js'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSampleClients } from '../../hooks/sampleData'
 import Button from '../Button'
 import Buttons from '../Buttons'
 import CardBoxModal from '../CardBox/Modal'
-import { ApiUpdateData, ApiAddData } from '../../../api'
+import { ApiUpdateData, ApiAddData, ApiGetData } from '../../../api'
 import NotificationBar from '../NotificationBar'
 import MomentP from '../MomentP'
 import CustomInvoice from '../CustomInvoice'
 import { CSVLink } from 'react-csv'
+import Icon from '../Icon'
+import Item from 'antd/es/list/Item'
+import { Select } from 'antd'
+const { Option } = Select
 
 const TableSampleClients = ({ columns }) => {
   const { clients } = useSampleClients('order')
@@ -24,6 +31,9 @@ const TableSampleClients = ({ columns }) => {
   const [id, setid] = useState()
   // const [status, setStatus] = useState('')
   const [Loading, setLoading] = useState(false)
+  const [enabled, setEnabled] = useState(!false)
+  const [products, setProducts] = useState([])
+
   const perPage = 10
   const [notificationnActive, setNotificationnActive] = useState(false)
 
@@ -39,12 +49,23 @@ const TableSampleClients = ({ columns }) => {
     pagesList.push(i)
   }
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
+  const [isModalInfoActiveUpdate, setIsModalInfoActiveUpdate] = useState(false)
   const [isModalInvoActive, setIsModalInvoActive] = useState(false)
   const [isModalStatusActive, setIsModalStatusActive] = useState(false)
   const [isModalTrashActive, setIsModalTrashActive] = useState(false)
   const [status, setStatus] = useState('')
   const [isModalActive, setIsModalActive] = useState(false)
   const [ind, setInd] = useState(0)
+  const [quantity, setQuantity] = useState(0)
+  const [descripption, setDescripption] = useState('')
+  const [notes, setNote] = useState('')
+  const [receivedDate, setReceivedDate] = useState('')
+  const [Adddress_name, setAdddress_name] = useState('')
+  const [street, setStreet] = useState('')
+  const [city, setCity] = useState('')
+  const [floor, setFloor] = useState('')
+  const [apartment, setApartment] = useState('')
+  const [productId, setProductId] = useState(0)
 
   /**
    *
@@ -77,6 +98,16 @@ const TableSampleClients = ({ columns }) => {
       })
     return
   }
+  // Get product
+  const getData = async () => {
+    await ApiGetData('product', (data: any) => {
+      setProducts(data)
+    })
+  }
+  useEffect(() => {
+    getData()
+  }, [])
+
   const handelDeleteAction = async () => {
     setLoading(true)
     console.log(id)
@@ -132,11 +163,46 @@ const TableSampleClients = ({ columns }) => {
     setIsModalActive(false)
   }
 
+  // Add Basket for older
+  const handleModalActionUpdate = async () => {
+    setLoading(true)
+    await ApiUpdateData(
+      'order',
+      {
+        id: clients[ind]?.id,
+        basket: [{ quantity, descripption, productsId: productId[0] }],
+        receivedDate: receivedDate[0],
+      },
+      (data: any) => {
+        if (data) setNotificationnActive(true)
+        setLoading(false)
+      }
+    )
+    setLoading(false)
+
+    setIsModalInfoActiveUpdate(false)
+    setIsModalInfoActive(false)
+    setIsModalTrashActive(false)
+    setIsModalActive(false)
+  }
+
   const handleCancelAction = async () => {
     setIsModalInfoActive(false)
     setIsModalTrashActive(false)
     setIsModalActive(false)
     setIsModalInvoActive(false)
+  }
+
+  interface OptionColors {
+    [key: string]: string
+  }
+
+  const optionColors: OptionColors = {
+    'طلب جديد': '#FFFFFF', // White background for new order
+    'قيد التجهيز': 'rgba(255, 215, 0, 0.49)', // Gold background for order in preparation
+    'قيد التوصيل': 'rgba(135, 206, 235, 0.54)', // Sky blue background for order in delivery
+    'تم الاستلام': 'rgba(50, 205, 50, 0.61)', // Lime green background for order received
+    'تم الرفض': 'rgba(255, 0, 0, 0.38)', // Red background for rejected order
   }
 
   const flattenOrders = () => {
@@ -165,6 +231,22 @@ const TableSampleClients = ({ columns }) => {
     { label: 'Quantity', key: 'Quantity' },
     { label: 'amount', key: 'amount' },
   ]
+
+  const handleChangeSelectProduct = (value: number[]) => {
+    // Map selected phone numbers to user IDs
+    const selectedUserIds: any = value
+      .map((items: any) => {
+        const product = products.find((product) => product.titleEn === items)
+        return product ? product.id : null
+      })
+      .filter((id) => id !== null) // Filter out null values
+
+    // Update state with selected user IDs
+    setProductId(selectedUserIds)
+
+    return
+  }
+
   return (
     <>
       {Loading && (
@@ -218,7 +300,7 @@ const TableSampleClients = ({ columns }) => {
             title={`OId --> ${clients[ind]?.id} || ${clients[ind]?.status}`}
             buttonColor="info"
             buttonLabel="Done"
-            classData="h-[97vh] xl:w-9/12 overflow-scroll"
+            classData="h-[97vh] xl:w-9/12 overflow-scroll z-0"
             isActive={isModalInfoActive}
             onConfirm={handleModalAction}
             onCancel={handleCancelAction}
@@ -258,7 +340,7 @@ const TableSampleClients = ({ columns }) => {
                         : clients[ind]?.users?.phoneNumber
                     }
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="John"
+                    placeholder="96477-xxxxxx"
                     required
                     disabled
                   />
@@ -275,7 +357,7 @@ const TableSampleClients = ({ columns }) => {
                     id="email"
                     defaultValue={clients[ind]?.total_price}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Doe"
+                    placeholder="1000000"
                     required
                     disabled
                   />
@@ -309,6 +391,7 @@ const TableSampleClients = ({ columns }) => {
                     id="email"
                     defaultValue={clients[ind]?.status}
                     onChange={(e) => setStatus(e.target.value)}
+                    style={{ background: optionColors[clients[ind]?.status] }}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Doe"
                     required
@@ -326,12 +409,51 @@ const TableSampleClients = ({ columns }) => {
                     <MomentP dateValue={clients[ind]?.receivedDate} />
                   </span>
                 </div>
+                {clients[ind]?.content.length != 0 ? (
+                  <div className="grid gap-6 mb-6 md:grid-cols-3">
+                    {/* <span>{`${clients[ind]?.content[0]?.content}`}</span> */}
+                    {clients[ind]?.content.map((ittem: any) => {
+                      console.log(ittem)
+
+                      return (
+                        <>
+                          <div key={ittem.id} className="w-16">
+                            {ittem.isImage ? (
+                              <a href={ittem.content} target="_blank">
+                                <img
+                                  src={ittem.content}
+                                  alt="Product Img"
+                                  className="w-40"
+                                  width={200}
+                                  height={200}
+                                />
+                              </a>
+                            ) : (
+                              // <span>{ittem.content}</span>
+                              <span>{ittem.content}</span>
+                            )}
+                          </div>
+                        </>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  ''
+                )}
                 <div>
                   <label
                     htmlFor="role"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    className="flex justify-between block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Order list
+                    <span>Order list</span>
+                    <Button
+                      color="info"
+                      icon={mdiPlusCircleOutline}
+                      onClick={() => {
+                        setIsModalInfoActiveUpdate(true)
+                      }}
+                      small
+                    />
                   </label>
                   <table>
                     <thead>
@@ -368,7 +490,94 @@ const TableSampleClients = ({ columns }) => {
               </div>
             </form>
           </CardBoxModal>
-
+          <CardBoxModal
+            title={`Add Basket for Order Id --> ${clients[ind]?.id}`}
+            buttonColor="info"
+            buttonLabel="Done"
+            classData="h-[87vh] xl:w-8/12 overflow-scroll z-100"
+            disabled={!enabled}
+            isActive={isModalInfoActiveUpdate}
+            onConfirm={handleModalActionUpdate}
+            onCancel={() => setIsModalInfoActiveUpdate(false)}
+          >
+            <form>
+              <div className="grid gap-6 mb-6 md:grid-cols-4">
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Choose product
+                  </label>
+                  <Select
+                    mode="multiple"
+                    style={{ width: '100%' }}
+                    placeholder="Please select"
+                    onChange={handleChangeSelectProduct}
+                    defaultValue={[1]} // Set the default value as needed, but usually, it should be an empty array for multiple selection
+                  >
+                    {products.map((option) => (
+                      <Option key={option.id} value={option.titleEn}>
+                        {option.titleEn}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    quantity
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    onChange={(e) => setQuantity(parseInt(e.target.value))}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="5,6,43 ..."
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    descripption
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    onChange={(e) => setDescripption(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="descripption"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Received Date
+                  </label>
+                  <input
+                    type="date"
+                    id="name"
+                    onChange={(e) => setReceivedDate(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Received Date "
+                    required
+                  />
+                </div>
+                <h1>Other Details</h1>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            </form>
+          </CardBoxModal>
           <CardBoxModal
             title={`OId --> ${clients[ind]?.id} || ${clients[ind]?.status}`}
             buttonColor="info"
@@ -453,7 +662,7 @@ const TableSampleClients = ({ columns }) => {
             ''
           )}
 
-          <div className="flex justify-between align-middle items-center p-3">
+          <div className="flex items-center justify-between p-3 align-middle">
             <div className="pb-4 mb-4 bg-white dark:bg-gray-900">
               <label htmlFor="table-search" className="sr-only">
                 Search
@@ -485,7 +694,7 @@ const TableSampleClients = ({ columns }) => {
                 />
               </div>
             </div>
-            <div className="bg-blue-800 text-white p-2 rounded transition-all delay-100 hover:bg-blue-300">
+            <div className="p-2 text-white transition-all delay-100 bg-blue-800 rounded hover:bg-blue-300">
               <CSVLink data={dataExported} headers={headers} filename={'example.csv'}>
                 Export CSV
               </CSVLink>
@@ -504,15 +713,29 @@ const TableSampleClients = ({ columns }) => {
                 <tr key={client.id}>
                   <td data-label="nickName">{client.id}</td>
                   <td data-label="nickName">{client.users?.email ?? client.users?.phoneNumber}</td>
-                  <td data-label="Name">{client.total_price}</td>
+                  <td data-label="Name">
+                    {client.total_price ? client.total_price.toLocaleString() : client.total_price}
+                  </td>
+
                   <td data-label="nickName">
                     <small className="text-gray-500 dark:text-slate-400">
                       <MomentP dateValue={client.receivedDate} />
                     </small>
                   </td>
-                  <td data-label="nickName">{client.isPaid}</td>
+                  <td data-label="nickName">
+                    {client.isPaid ? (
+                      <Icon path={mdiCheckCircleOutline} size={20} />
+                    ) : (
+                      <Icon path={mdiExclamation} size={20} />
+                    )}{' '}
+                  </td>
                   <td data-label="Name">{client.Addresses?.city}</td>
-                  <td data-label="Name">{client.status}</td>
+                  <td
+                    data-label="Name"
+                    style={{ background: optionColors[client.status], width: 200, height: 40 }}
+                  >
+                    {client.status}
+                  </td>
                   <td data-label="Created" className="lg:w-1 whitespace-nowrap">
                     <small className="text-gray-500 dark:text-slate-400">
                       <MomentP dateValue={client.created_at} />
@@ -527,6 +750,8 @@ const TableSampleClients = ({ columns }) => {
                             icon={mdiSquareEditOutline}
                             onClick={() => {
                               setInd(index)
+                              console.log(clients[index].content)
+
                               setid(client.id)
                               setIsModalInfoActive(true)
                             }}

@@ -1,4 +1,4 @@
-import { mdiPlus, mdiTableBorder } from '@mdi/js'
+import { mdiMonitorCellphone, mdiPlus, mdiTableBorder } from '@mdi/js'
 import Head from 'next/head'
 import React, { ReactElement, useState } from 'react'
 import Button from '../../components/Button'
@@ -12,9 +12,11 @@ import CardBoxModal from '../../components/CardBox/Modal'
 import { ApiAddData } from '../../../api'
 import axios, { AxiosRequestConfig } from 'axios'
 import DatePicker from 'tailwind-datepicker-react'
+import NotificationBar from '../../components/NotificationBar'
 
 const TablesPage = () => {
   const columns: Array<string> = ['title', 'message', 'sendDate', 'Created at', 'actions']
+  const [notificationnActive, setNotificationnActive] = useState(false)
 
   const [enabled, setEnabled] = useState(false)
   const [title, setTitle] = useState('')
@@ -105,6 +107,13 @@ const TablesPage = () => {
             </SectionTitleLineWithButton>
 
             <CardBox className="mb-6" hasTable>
+              {notificationnActive ? (
+                <NotificationBar color="info" icon={mdiMonitorCellphone}>
+                  All good
+                </NotificationBar>
+              ) : (
+                ''
+              )}
               <TableSampleClients columns={columns} />
               <CardBoxModal
                 title="Add Notification"

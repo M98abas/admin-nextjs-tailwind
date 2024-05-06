@@ -20,10 +20,12 @@ const VeryfyPage: any = () => {
   const handleLogin: any = (e: any) => {
     setLoading(true)
     e.preventDefault()
-    ApiAddData('admin/otp', { otp, tokenData: token }, (data: any) => {
+    ApiAddData('admin/otp', { otp, tokenData: token }, (data: any, error: any) => {
       setLoading(false)
       setData(data)
-      if (data.errMsg != '') {
+      console.log(otp,error)
+
+      if (error && error.errMsg != '') {
         setError(true)
         return
       }
@@ -31,7 +33,6 @@ const VeryfyPage: any = () => {
       Cookies.remove('tokenLogin')
       Cookies.set('token', data.token)
       setLoading(false)
-
       router.push('/')
     })
   }
@@ -109,10 +110,14 @@ const VeryfyPage: any = () => {
                 <span>Submit</span>
               </button>
             </div>
+            <br />
             {error ? (
-              <div>
-                <h2>Error</h2>
-                <span>{data.errMsg}</span>
+              <div
+                className="p-4 text-orange-700 bg-orange-100 border-l-4 border-orange-500"
+                role="alert"
+              >
+                <h2 className="font-bold">Error</h2>
+                <span>Wrong otp, kindly check it next time.[check your email]</span>
               </div>
             ) : (
               ''

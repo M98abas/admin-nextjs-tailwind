@@ -99,12 +99,14 @@ const TablesPage = () => {
       {
         productsId: productId,
         total_price,
-        basket: [{ quantity, amount, descripption, productsId: productId[0] }],
         usersId: usersId[0],
+        basket: [{ quantity, amount, descripption, productsId: productId[0] }],
         receivedDate: receivedDate[0],
         address: { Adddress_name, street, city, district: floor, closePoint: apartment, notes },
       },
       (data) => {
+        console.log(data)
+
         if (data.error)
           return (
             <>
@@ -149,7 +151,7 @@ const TablesPage = () => {
             <CardBox className="mb-6" hasTable>
               <TableSampleClients columns={columns} />
               <CardBoxModal
-                title="Add Course"
+                title="Add Order"
                 buttonColor="info"
                 buttonLabel="Done"
                 classData="h-[97vh] xl:w-9/12 overflow-scroll"
@@ -214,7 +216,7 @@ const TablesPage = () => {
                         id="name"
                         onChange={(e) => setTotal_price(parseInt(e.target.value))}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Title Arabic"
+                        placeholder="Total Price"
                         required
                       />
                     </div>
@@ -230,7 +232,7 @@ const TablesPage = () => {
                         id="name"
                         onChange={(e) => setQuantity(parseInt(e.target.value))}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Title Arabic"
+                        placeholder="5,6,43 ..."
                         required
                       />
                     </div>
@@ -246,7 +248,7 @@ const TablesPage = () => {
                         id="name"
                         onChange={(e) => setAmount(parseInt(e.target.value))}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Title Arabic"
+                        placeholder="40,50,60 ..."
                         required
                       />
                     </div>
@@ -262,7 +264,7 @@ const TablesPage = () => {
                         id="name"
                         onChange={(e) => setDescripption(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Title Arabic"
+                        placeholder="descripption"
                         required
                       />
                     </div>
@@ -278,7 +280,7 @@ const TablesPage = () => {
                         id="name"
                         onChange={(e) => setReceivedDate(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Title Arabic"
+                        placeholder="Received Date "
                         required
                       />
                     </div>
@@ -295,7 +297,7 @@ const TablesPage = () => {
                         id="name"
                         onChange={(e) => setAdddress_name(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Title Arabic"
+                        placeholder="Address Name"
                         required
                       />
                     </div>
@@ -311,7 +313,7 @@ const TablesPage = () => {
                         id="name"
                         onChange={(e) => setStreet(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Title Arabic"
+                        placeholder="street"
                         required
                       />
                     </div>
@@ -327,7 +329,7 @@ const TablesPage = () => {
                         id="name"
                         onChange={(e) => setCity(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Title Arabic"
+                        placeholder="City"
                         required
                       />
                     </div>
@@ -343,7 +345,7 @@ const TablesPage = () => {
                         id="name"
                         onChange={(e) => setFloor(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Title Arabic"
+                        placeholder="District"
                         required
                       />
                     </div>
@@ -359,7 +361,7 @@ const TablesPage = () => {
                         id="name"
                         onChange={(e) => setApartment(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Title Arabic"
+                        placeholder="Close Point"
                         required
                       />
                     </div>
@@ -375,13 +377,14 @@ const TablesPage = () => {
                         id="name"
                         onChange={(e) => setNote(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Title Arabic"
+                        placeholder="Note"
                         required
                       />
                     </div>
                   </div>
                 </form>
               </CardBoxModal>
+              {/* THis Located CardBoxModel to update Old orders */}
             </CardBox>
           </SectionMain>
         </>

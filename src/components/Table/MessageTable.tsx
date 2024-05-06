@@ -184,7 +184,7 @@ const TableSampleClients = ({ socket }) => {
       ) : (
         <>
           <div className="flex bg-white h-[80vh] overflow-hidden">
-            <div className="w-1/4 border-r border-gray-300 overflow-y-auto">
+            <div className="w-1/4 overflow-y-auto border-r border-gray-300">
               <div className="p-3 pb-20 mb-9 h-[70vh] overflow-y-auto">
                 <div className="pb-4 mb-4 bg-white dark:bg-gray-900">
                   <label htmlFor="table-search" className="sr-only">
@@ -247,10 +247,11 @@ const TableSampleClients = ({ socket }) => {
               </div>
             </div>
 
-            <div className="flex-1 relative">
+            <div className="relative flex-1">
               <header className="p-4 text-gray-700 bg-white">
-                <h1 className="text-2xl font-semibold">
-                  {ind == 0 ? 'Users' : clients[ind].phoneNumber}
+                <h1 className="flex justify-between pl-1 pr-1 text-2xl font-semibold">
+                  <span>{ind == 0 ? 'Users' : clients[ind].phoneNumber}</span>
+                  <span>{ind == 0 ? 'Users' : clients[ind].message[0]?.sender.fullName}</span>
                 </h1>
               </header>
 
@@ -283,7 +284,7 @@ const TableSampleClients = ({ socket }) => {
                     <button className="px-4 py-2 ml-2 text-white bg-indigo-500 rounded-md">
                       Send
                     </button>
-                    <label htmlFor="dropzone-file" className="file-input-label cursor-pointer">
+                    <label htmlFor="dropzone-file" className="cursor-pointer file-input-label">
                       <input
                         id="dropzone-file"
                         type="file"
@@ -291,7 +292,7 @@ const TableSampleClients = ({ socket }) => {
                         onChange={handleFileUpload}
                       />
                       <svg
-                        className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400 hover:scale-150 transition delay-75"
+                        className="w-8 h-8 mb-4 text-gray-500 transition delay-75 dark:text-gray-400 hover:scale-150"
                         aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"

@@ -11,34 +11,37 @@ import { getPageTitle } from '../../config'
 import CardBoxModal from '../../components/CardBox/Modal'
 import { ApiAddData, ApiGetData } from '../../../api'
 import Datepicker from 'tailwind-datepicker-react'
+import { Select } from 'antd'
 
 const TablesPage = () => {
   const columns: Array<string> = ['Target', 'value', 'End at', 'Created At', 'actions']
   //   initTE({ Select })
+  const { Option } = Select
+
   const [value, setValue] = useState(0)
+  const [constValue, setConstValue] = useState(0)
   const [end_at, setEnd_at] = useState('')
   const [target, setTarget] = useState('')
-  const [category, setCategory] = useState([])
-  const [subCategory, setSubCategory] = useState([])
-  const [ids, setIds] = useState([])
+  const [dataFetch, setDataFetch] = useState([])
+  const [ids, setIds] = useState('')
   const [error, setError] = useState(false)
   const [Loading, setLoading] = useState(false)
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
   const [show, setShow] = useState(false)
 
-  const getData = async () => {
-    await ApiGetData('category', (data) => {
-      setCategory(data)
+  const getData = async (route: any) => {
+    console.log(route)
+    await ApiGetData(route, (data: any) => {
+      console.log(data)
+
+      setDataFetch(data)
     })
   }
-  useEffect(() => {
-    getData()
-  }, [])
 
-  const handelChange: any = (index: any) => {
+  const handelChange: any = async (index: any) => {
     if (index) {
-      setSubCategory(category[index].subcategory)
-      setTarget(category[index].titleEn)
+      await getData(index)
+      setTarget(index)
     }
     return
   }
@@ -79,7 +82,7 @@ const TablesPage = () => {
       return
     }
     setLoading(true)
-    await ApiAddData('discount', { value, end_at, target, ids }, (data) => {
+    await ApiAddData('discount', { value, end_at, target, ids, constValue }, (data: any) => {
       if (data.error)
         return (
           <>
@@ -100,6 +103,12 @@ const TablesPage = () => {
     })
     setLoading(false)
     setIsModalInfoActive(false)
+  }
+  const handleSelect = (value: any) => {
+    console.log(value)
+
+    setIds(value)
+    return
   }
 
   return (
@@ -152,6 +161,22 @@ const TablesPage = () => {
                     </div>
                     <div>
                       <label
+                        htmlFor="name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Const Value
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        onChange={(e) => setConstValue(parseInt(e.target.value))}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="3000,2000 ...."
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label
                         htmlFor="email"
                         className="flex mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
@@ -170,12 +195,13 @@ const TablesPage = () => {
                         </div>
                       </div>
                     </div>
+                    <div></div>
                     <div>
                       <label
                         htmlFor="countries"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Select Category(s)
+                        Select Target(s)
                       </label>
                       <select
                         data-te-select-init
@@ -185,11 +211,10 @@ const TablesPage = () => {
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       >
                         <option value="none">Choose The target</option>
-                        {category?.map((data: any) => (
-                          <option value={data.id} key={data.id}>
-                            {data.titleEn}
-                          </option>
-                        ))}
+                        <option value="Category">Category</option>
+                        <option value="subCategory">subCategory</option>
+                        <option value="Brand">Brand</option>
+                        <option value="Product">Product</option>
                       </select>
                     </div>
                     <div>
@@ -197,22 +222,24 @@ const TablesPage = () => {
                         htmlFor="countries"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Select Sub-Category(s)
+                        Select {target}
                       </label>
-                      <select
-                        data-te-select-init
-                        defaultValue="none"
-                        onChange={(e: any) => setIds(e.target.value)}
-                        id="countries"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      <Select
+                        showSearch
+                        style={{ width: 200 }}
+                        placeholder="Select a data"
+                        onSelect={handleSelect}
+                        optionFilterProp="children"
+                        filterOption={(input: any, option: any) =>
+                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
                       >
-                        <option value="none">Choose The target</option>
-                        {subCategory?.map((data: any) => (
-                          <option value={data.id} key={data.id}>
-                            {data.titleEn}
+                        {dataFetch.map((item: any) => (
+                          <option key={item.id} value={item.id}>
+                            {item.titleEn}
                           </option>
                         ))}
-                      </select>
+                      </Select>
                     </div>
                   </div>
                   {error ? (

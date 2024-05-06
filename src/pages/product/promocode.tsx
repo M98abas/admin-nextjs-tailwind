@@ -28,31 +28,21 @@ const TablesPage = () => {
   const [text, setText] = useState('')
   const [end_at, setEnd_at] = useState('')
   const [target, setTarget] = useState('')
+  const [minSpent, setMinSpent] = useState(0)
   const [percentage, setPercentage] = useState(0)
   const [availableFor, setAvailableFor] = useState(0)
   const [constValue, setConstValue] = useState(0)
   const [directTo, setDirectTo] = useState('')
   const [error, setError] = useState(false)
   const [Loading, setLoading] = useState(false)
-  const [subCategory, setSubCategory] = useState([])
   const [category, setCategory] = useState([])
 
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
   const [show, setShow] = useState(false)
 
-  const getData = async () => {
-    await ApiGetData('category', (data) => {
-      setCategory(data)
-    })
-  }
-  useEffect(() => {
-    getData()
-  }, [])
-
-  const handelChange: any = (index: any) => {
+  const handelChangeTarget: any = (index: any) => {
     if (index) {
-      setSubCategory(category[index].subcategory)
-      setTarget(category[index].titleEn)
+      setDirectTo(index)
     }
     return
   }
@@ -95,7 +85,7 @@ const TablesPage = () => {
     setLoading(true)
     await ApiAddData(
       'promocode',
-      { text, percentage, availableFor, target, constValue, directTo, end_at },
+      { text, percentage, availableFor, target, constValue, directTo, end_at, minSpent },
       (data) => {
         if (data.error)
           return (
@@ -221,16 +211,35 @@ const TablesPage = () => {
                         htmlFor="name"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Direct to
+                        minimum Spent
                       </label>
                       <input
                         type="text"
                         id="name"
-                        onChange={(e) => setDirectTo(e.target.value)}
+                        onChange={(e) => setMinSpent(parseInt(e.target.value))}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder=""
+                        placeholder="IN case promocode you need it with const value"
                         required
                       />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Direct to
+                      </label>
+                      <select
+                        data-te-select-init
+                        onChange={(e: any) => handelChangeTarget(e.target.value)}
+                        id="countries"
+                        defaultValue="none"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      >
+                        <option value="none">Choose The target</option>
+                        <option value="Invoice">Invoice</option>
+                        <option value="Shippment">Shippment</option>
+                      </select>
                     </div>
                     <div>
                       <label
@@ -252,50 +261,7 @@ const TablesPage = () => {
                         </div>
                       </div>
                     </div>
-                    <div>
-                      <label
-                        htmlFor="countries"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Select Category(s)
-                      </label>
-                      <select
-                        data-te-select-init
-                        onChange={(e: any) => handelChange(e.target.value)}
-                        id="countries"
-                        defaultValue="none"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      >
-                        <option value="none">Choose The target</option>
-                        {category?.map((data: any) => (
-                          <option value={data.id} key={data.id}>
-                            {data.titleEn}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="countries"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Select Sub-Category(s)
-                      </label>
-                      <select
-                        data-te-select-init
-                        defaultValue="none"
-                        onChange={(e: any) => setTarget(e.target.value)}
-                        id="countries"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      >
-                        <option value="none">Choose The target</option>
-                        {subCategory?.map((data: any) => (
-                          <option value={data.titleEn} key={data.id}>
-                            {data.titleEn}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                 
                   </div>
                   {error ? (
                     <div

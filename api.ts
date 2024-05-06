@@ -19,7 +19,7 @@ export const ApiLogin = (route, info, callback) => {
       if (result.status) {
         callback(result, null)
       } else {
-        callback(null, result.errMsg)
+        callback(null, result)
       }
     })
     .catch((error) => {
@@ -98,7 +98,8 @@ export const ApiActivateData = (route, info, callback) => {
 }
 
 export const ApiAddData = (route, info, callback) => {
-  const token = info.tokenData == '' ? Cookies.get('token') : info.tokenData
+  const token = info.tokenData ?? Cookies.get('token')
+  console.log(token)
 
   const headers = {
     token,
@@ -111,13 +112,13 @@ export const ApiAddData = (route, info, callback) => {
   axios
     .post(`${BASE_URL}/${route}`, data, { headers })
     .then((response) => {
-      // console.log(response)
+      console.log(response)
 
       const result = response.data
       if (result.status) {
         callback(result, null)
       } else {
-        callback(null, result.errMsg)
+        callback(null, result)
       }
     })
     .catch((error) => {

@@ -4,6 +4,10 @@ export type UserPayloadObject = {
   avatar: string
 }
 
+export type ValuePiece = Date | null
+
+export type Value = ValuePiece | [ValuePiece, ValuePiece]
+
 export type MenuAsideItem = {
   label: string
   icon?: string

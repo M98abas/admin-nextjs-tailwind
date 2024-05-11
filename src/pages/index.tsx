@@ -16,20 +16,23 @@ const Dashboard = () => {
   const router: any = useRouter()
 
   // const clientsListed = clients.slice(0, 4)
-  const [clients, setClient] = useState([])
-  const [order, setOrder] = useState([])
-  const [product, setProduct] = useState([])
+  const [clients, setClient]: any = useState(0)
+  const [order, setOrder] = useState(0)
+  const [product, setProduct] = useState(0)
   const fetchData = async () => {
-    await ApiGetData('clinet', (data: any) => {
+    await ApiGetData('clinet/count-users', (data: any) => {
+      // console.log(data)
+
       setClient(data)
     })
-    await ApiGetData('order', (data: any) => {
+    await ApiGetData('order/countOrder', (data: any) => {
       setOrder(data)
     })
-    await ApiGetData('product', (data: any) => {
+    await ApiGetData('product/countPro', (data: any) => {
       setProduct(data)
     })
   }
+  // countOrder
   useEffect(() => {
     fetchData()
   }, [router])
@@ -53,7 +56,7 @@ const Dashboard = () => {
             trendColor="success"
             icon={mdiAccountMultiple}
             iconColor="success"
-            number={clients.length}
+            number={clients}
             label="Clients"
           />
           <CardBoxWidget
@@ -62,7 +65,7 @@ const Dashboard = () => {
             trendColor="info"
             icon={mdiCartOutline}
             iconColor="info"
-            number={order.length}
+            number={order}
             label="Orders"
           />
           <CardBoxWidget
@@ -71,7 +74,7 @@ const Dashboard = () => {
             trendColor="light"
             icon={mdiChartTimelineVariant}
             iconColor="danger"
-            number={product.length}
+            number={product}
             label="Products"
           />
         </div>

@@ -162,6 +162,8 @@ export const ApiGetData = (route, callback) => {
     .get(`${BASE_URL}/${route}`, { headers })
     .then((response) => {
       const result = response.data
+      console.log(response)
+
       if (result.status) {
         callback(result.data, null)
       } else {

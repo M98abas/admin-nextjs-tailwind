@@ -19,6 +19,7 @@ const requestOptions: any = {
 const fetcher = (url: string) => fetch(url, requestOptions).then((res) => res.json())
 
 export const useSampleClients = (route) => {
+  
   const { data, error } = useSWR(`${BASE_URL}/${route}`, fetcher)
 
   return {

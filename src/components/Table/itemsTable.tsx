@@ -22,7 +22,7 @@ const TableSampleClients = ({ columns }) => {
   const { clients } = useSampleClients('product')
   const router: any = useRouter()
 
-  const router = useRouter()
+  // const router = useRouter()
   const [id, setid] = useState()
   const perPage = 10
 
@@ -33,7 +33,6 @@ const TableSampleClients = ({ columns }) => {
   const [departmentNameEn, setDepartmentNameEn] = useState('')
   const [mostItems, setMostItems] = useState(true)
   const [howToUse, setHowToUse] = useState('')
-  const [sintificNameAR, setSintificNameAR] = useState('')
   const [sintificNameEN, setSintificNameEN] = useState('')
   const [doses, setDoses] = useState(0)
   const [barCode, setBarCode] = useState('')

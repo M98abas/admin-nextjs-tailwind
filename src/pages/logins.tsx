@@ -38,10 +38,10 @@ const LoginPage: any = () => {
   return (
     <>
       <Head>
-        <title>{getPageTitle('Login')}</title>
+        <title>{getPageTitle('Login SuperAdmin')}</title>
       </Head>
 
-      <SectionFullScreen bg="purplePink">
+      <SectionFullScreen bg="pinkRed">
         <CardBox className="w-11/12 shadow-2xl md:w-7/12 lg:w-6/12 xl:w-4/12 hover:bg-gray-100">
           <form>
             <div className="grid gap-1 md:grid-cols-1 ">

@@ -192,7 +192,7 @@ const TableSampleClients = ({ columns }) => {
         <>
           {
             <CardBoxModal
-              title="Add New"
+              title={`Update ${clients[ind]?.titleAr}`}
               buttonColor="info"
               buttonLabel="Done"
               classData="xl:w-8/12"

@@ -1,4 +1,4 @@
-import { mdiExportVariant, mdiPlus, mdiTableBorder } from '@mdi/js'
+import { mdiExportVariant, mdiMonitorCellphone, mdiPlus, mdiTableBorder } from '@mdi/js'
 import Head from 'next/head'
 import React, { ReactElement, useState, useEffect } from 'react'
 import CardBox from '../../components/CardBox'
@@ -11,6 +11,7 @@ import { ApiAddData, ApiGetData } from '../../../api'
 import CardBoxModal from '../../components/CardBox/Modal'
 import { Select } from 'antd'
 import Button from '../../components/Button'
+import NotificationBar from '../../components/NotificationBar'
 // import axios, { AxiosRequestConfig } from 'axios'
 
 const { Option } = Select
@@ -29,8 +30,8 @@ const TablesPage = () => {
   ]
   const [Loading, setLoading] = useState(false)
   const [enabled, setEnabled] = useState(!false)
+  const [notificationnActive, setNotificationnActive] = useState(false)
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
-  const [total_price, setTotal_price] = useState(0)
   const [error, setError] = useState(false)
   const [products, setProducts] = useState([])
   const [productId, setProductId] = useState(0)
@@ -39,8 +40,11 @@ const TablesPage = () => {
   const [users, setUsers] = useState([])
   const [usersId, setUsersId] = useState(0)
   const [descripption, setDescripption] = useState('')
+  const [total_price, setTotal_price] = useState(amount * quantity)
   const [notes, setNote] = useState('')
   const [receivedDate, setReceivedDate] = useState('')
+  const [timePicked, setTimePicked] = useState('')
+
   const [Adddress_name, setAdddress_name] = useState('')
   const [street, setStreet] = useState('')
   const [city, setCity] = useState('')
@@ -58,7 +62,9 @@ const TablesPage = () => {
   useEffect(() => {
     getData()
   }, [])
-
+  useEffect(() => {
+    setTotal_price(amount * quantity)
+  }, [amount, quantity])
   const handleChangeSelectUsers: any = (selectedPhoneNumbers: string[]) => {
     // Map selected phone numbers to user IDs
     const selectedUserIds: any = selectedPhoneNumbers
@@ -88,12 +94,29 @@ const TablesPage = () => {
   }
 
   const handleModalAction = async () => {
+    const resDate: any = `${receivedDate}T${timePicked}`
+    // resDate = Date.parse(resDate)
+    console.log(receivedDate[0], timePicked, resDate)
+
     setError(false)
     if (quantity == 0 && productId == 0) {
       setError(true)
       return
     }
     setLoading(true)
+    if (
+      quantity == 0 ||
+      amount == 0 ||
+      descripption == '' ||
+      total_price == 0 ||
+      productId == 0 ||
+      resDate != null
+    ) {
+      setNotificationnActive(true)
+      setLoading(!true)
+
+      return
+    }
     await ApiAddData(
       'order/manual',
       {
@@ -101,7 +124,7 @@ const TablesPage = () => {
         total_price,
         usersId: usersId[0],
         basket: [{ quantity, amount, descripption, productsId: productId[0] }],
-        receivedDate: receivedDate[0],
+        receivedDate: resDate,
         address: { Adddress_name, street, city, district: floor, closePoint: apartment, notes },
       },
       (data) => {
@@ -161,6 +184,16 @@ const TablesPage = () => {
                 onCancel={() => setIsModalInfoActive(false)}
               >
                 <form>
+                  {notificationnActive ? (
+                    <div onClick={() => setNotificationnActive(false)}>
+                      <NotificationBar color="warning" icon={mdiMonitorCellphone}>
+                        There some Data not right check it
+                      </NotificationBar>
+                    </div>
+                  ) : (
+                    ''
+                  )}
+                  <br />
                   <div className="grid gap-6 mb-6 md:grid-cols-4">
                     <div>
                       <label
@@ -174,7 +207,7 @@ const TablesPage = () => {
                         style={{ width: '100%' }}
                         placeholder="Please select"
                         onChange={handleChangeSelectUsers}
-                        defaultValue={1} // Set the default value as needed, but usually, it should be an empty array for multiple selection
+                        // defaultValue={} // Set the default value as needed, but usually, it should be an empty array for multiple selection
                       >
                         {users.map((option) => (
                           <Option key={option.id} value={option.phoneNumber}>
@@ -195,7 +228,7 @@ const TablesPage = () => {
                         style={{ width: '100%' }}
                         placeholder="Please select"
                         onChange={handleChangeSelectProduct}
-                        defaultValue={[1]} // Set the default value as needed, but usually, it should be an empty array for multiple selection
+                        defaultValue={[]} // Set the default value as needed, but usually, it should be an empty array for multiple selection
                       >
                         {products.map((option) => (
                           <Option key={option.id} value={option.titleEn}>
@@ -203,38 +236,6 @@ const TablesPage = () => {
                           </Option>
                         ))}
                       </Select>
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="name"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Total Price
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        onChange={(e) => setTotal_price(parseInt(e.target.value))}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Total Price"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="name"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        quantity
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        onChange={(e) => setQuantity(parseInt(e.target.value))}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="5,6,43 ..."
-                        required
-                      />
                     </div>
                     <div>
                       <label
@@ -254,6 +255,40 @@ const TablesPage = () => {
                     </div>
                     <div>
                       <label
+                        htmlFor="quantity"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        quantity
+                      </label>
+                      <input
+                        type="text"
+                        id="quantity"
+                        onChange={(e) => setQuantity(parseInt(e.target.value))}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="5,6,43 ..."
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Total Price
+                      </label>
+                      <input
+                        type="number"
+                        id="name"
+                        value={total_price}
+                        onChange={(e) => setTotal_price(parseInt(e.target.value))}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Total Price"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label
                         htmlFor="name"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
@@ -270,21 +305,44 @@ const TablesPage = () => {
                     </div>
                     <div>
                       <label
-                        htmlFor="name"
+                        htmlFor="dateDays"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
                         Received Date
                       </label>
                       <input
                         type="date"
-                        id="name"
-                        onChange={(e) => setReceivedDate(e.target.value)}
+                        id="dateDays"
+                        onChange={(e) => {
+                          console.log(e.target.value)
+
+                          setReceivedDate(e.target.value)
+                        }}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Received Date "
                         required
                       />
                     </div>
-                    <div></div>
+                    <div>
+                      <label
+                        htmlFor="timeing"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Pick time
+                      </label>
+                      <input
+                        type="time"
+                        id="timeing"
+                        onChange={(e) => {
+                          console.log(e.target.value)
+
+                          setTimePicked(e.target.value)
+                        }}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Received Date "
+                        required
+                      />
+                    </div>
                     <div>
                       <label
                         htmlFor="name"

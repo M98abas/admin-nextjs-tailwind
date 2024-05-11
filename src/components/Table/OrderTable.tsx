@@ -20,8 +20,7 @@ import MomentP from '../MomentP'
 import CustomInvoice from '../CustomInvoice'
 import { CSVLink } from 'react-csv'
 import Icon from '../Icon'
-import Item from 'antd/es/list/Item'
-import { Select } from 'antd'
+import { Dropdown, Select, Space } from 'antd'
 const { Option } = Select
 
 const TableSampleClients = ({ columns }) => {
@@ -58,14 +57,9 @@ const TableSampleClients = ({ columns }) => {
   const [ind, setInd] = useState(0)
   const [quantity, setQuantity] = useState(0)
   const [descripption, setDescripption] = useState('')
-  const [notes, setNote] = useState('')
   const [receivedDate, setReceivedDate] = useState('')
-  const [Adddress_name, setAdddress_name] = useState('')
-  const [street, setStreet] = useState('')
-  const [city, setCity] = useState('')
-  const [floor, setFloor] = useState('')
-  const [apartment, setApartment] = useState('')
   const [productId, setProductId] = useState(0)
+  const [timePicked, setTimePicked] = useState('')
 
   /**
    *
@@ -166,13 +160,17 @@ const TableSampleClients = ({ columns }) => {
   // Add Basket for older
   const handleModalActionUpdate = async () => {
     setLoading(true)
+    const resDate: any = `${receivedDate}T${timePicked}`
+    // resDate = Date.parse(resDate)
+    // console.log(receivedDate[0], timePicked, resDate)
+
     await ApiUpdateData(
       'order',
       {
         id: clients[ind]?.id,
         basket: [{ quantity, descripption, productsId: productId[0] }],
-        receivedDate: receivedDate[0],
-      },
+        receivedDate: resDate,
+      }, 
       (data: any) => {
         if (data) setNotificationnActive(true)
         setLoading(false)
@@ -246,7 +244,70 @@ const TableSampleClients = ({ columns }) => {
 
     return
   }
+  console.log()
 
+  const items: any = [
+    {
+      label: (
+        <Button
+          color="info"
+          label="Edit"
+          className="pl-6 pr-6"
+          icon={mdiSquareEditOutline}
+          onClick={() => {
+            setIsModalInfoActive(true)
+          }}
+          small
+        />
+      ),
+      key: 0,
+    },
+    {
+      label: (
+        <Button
+          color="danger"
+          label="Delete"
+          className="pl-4 pr-4"
+          icon={mdiTrashCan}
+          onClick={() => {
+            setIsModalTrashActive(true)
+          }}
+          small
+        />
+      ),
+      key: 1,
+    },
+    {
+      label: (
+        <Button
+          color="info"
+          label="Invoice"
+          className="pl-4 pr-4"
+          icon={mdiDownloadCircleOutline}
+          onClick={() => {
+            setIsModalInvoActive(true)
+          }}
+          small
+        />
+      ),
+      key: 2,
+    },
+    {
+      label: (
+        <Button
+          color="whiteDark"
+          label="status"
+          className="pl-4 pr-4"
+          icon={mdiDownloadCircleOutline}
+          onClick={() => {
+            setIsModalStatusActive(true)
+          }}
+          small
+        />
+      ),
+      key: 3,
+    },
+  ]
   return (
     <>
       {Loading && (
@@ -487,6 +548,15 @@ const TableSampleClients = ({ columns }) => {
                     </tbody>
                   </table>
                 </div>
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Is user accept to have another Company of the medicine
+                  </label>
+                  <p className="font-thin">{clients[ind]?.isUserAgree ? 'Agree ' : 'Not Agree '}</p>
+                </div>
               </div>
             </form>
           </CardBoxModal>
@@ -571,6 +641,7 @@ const TableSampleClients = ({ columns }) => {
                     required
                   />
                 </div>
+
                 <h1>Other Details</h1>
                 <div></div>
                 <div></div>
@@ -745,46 +816,24 @@ const TableSampleClients = ({ columns }) => {
                     <Buttons type="justify-start lg:justify-end gap-1" noWrap>
                       {client.active ? (
                         <div className="flex gap-1">
-                          <Button
-                            color="info"
-                            icon={mdiSquareEditOutline}
-                            onClick={() => {
-                              setInd(index)
-                              console.log(clients[index].content)
-
-                              setid(client.id)
-                              setIsModalInfoActive(true)
-                            }}
-                            small
-                          />
-                          <Button
-                            color="danger"
-                            icon={mdiTrashCan}
-                            onClick={() => {
-                              setInd(index)
-                              setid(client.id)
-                              setIsModalTrashActive(true)
-                            }}
-                            small
-                          />
-                          <Button
-                            color="info"
-                            icon={mdiDownloadCircleOutline}
-                            onClick={() => {
-                              setInd(index)
-                              setIsModalInvoActive(true)
-                            }}
-                            small
-                          />
-                          <Button
-                            color="whiteDark"
-                            icon={mdiDownloadCircleOutline}
-                            onClick={() => {
-                              setInd(index)
-                              setIsModalStatusActive(true)
-                            }}
-                            small
-                          />
+                          <Dropdown
+                            menu={{ items }}
+                            trigger={['click']}
+                            key={index}
+                            className="justify-center p-2 pl-4 pr-4 transition-all delay-100 rounded cursor-pointer hover:bg-slate-400"
+                          >
+                            <a
+                              onClick={(e) => {
+                                setInd(index)
+                                setid(client.id)
+                              }}
+                            >
+                              <Space>
+                                Actions
+                                {/* <mdiChevronDown /> */}
+                              </Space>
+                            </a>
+                          </Dropdown>
                         </div>
                       ) : (
                         <>

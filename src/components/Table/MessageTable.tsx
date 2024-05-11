@@ -274,13 +274,19 @@ const TableSampleClients = ({ socket }) => {
                     } w-full gap-4 align-middle items-center flex`}
                     onSubmit={(e: any) => sendData(e)}
                   >
-                    <input
-                      type="text"
-                      value={!isImgUrl ? currentMsg : ''}
-                      placeholder="Type a message..."
-                      onChange={(e) => setCurrentMsg(e.target.value)}
-                      className="w-full p-3 border border-gray-400 rounded-md focus:outline-none focus:border-blue-500"
-                    />
+                    {isImgUrl ? (
+                      <a href={currentMsg} target="_blank">
+                        <img src={currentMsg} alt={currentMsg} width={220} />
+                      </a>
+                    ) : (
+                      <input
+                        type="text"
+                        value={!isImgUrl ? currentMsg : ''}
+                        placeholder="Type a message..."
+                        onChange={(e) => setCurrentMsg(e.target.value)}
+                        className="w-full p-3 border border-gray-400 rounded-md focus:outline-none focus:border-blue-500"
+                      />
+                    )}
                     <button className="px-4 py-2 ml-2 text-white bg-indigo-500 rounded-md">
                       Send
                     </button>

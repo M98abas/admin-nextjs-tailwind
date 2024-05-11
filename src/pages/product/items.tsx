@@ -17,11 +17,12 @@ import { useRouter } from 'next/router'
 const { Option } = Select
 
 const TablesPage = () => {
-  const columns: Array<string> = ['img', 'titleAr', 'departmentNameAr', 'created_at', 'actions']
+  const columns: Array<string> = ['img', 'Title', 'Description', 'created_at', 'actions']
   const [uploadProgress, setUploadProgress] = useState(100)
   const [enabled, setEnabled] = useState(false)
   const [imgUrl, setImgUrl] = useState([])
   const [notificationnActive, setNotificationnActive] = useState(false)
+  const [notificationnActiveIssue, setNotificationnActiveIssue] = useState(false)
   const router: any = useRouter()
 
   const [titleAr, setTitleAr] = useState('')
@@ -53,8 +54,6 @@ const TablesPage = () => {
   const [sideEffect, setSideEffect] = useState('')
   const [productsTagsId, setProductsTagsId] = useState([])
 
-
-  
   const handelChange: any = (indexSub: any) => {
     console.log(category[indexSub])
 
@@ -142,7 +141,32 @@ const TablesPage = () => {
 
   const handleModalAction = async () => {
     setLoading(true)
+    if (
+      titleAr == '' ||
+      titleEn == '' ||
+      imgUrl.length == 0 ||
+      descriptionEn == '' ||
+      departmentNameAr == '' ||
+      departmentNameEn == '' ||
+      sintificNameEN == '' ||
+      howToUse == '' ||
+      contentProduct == '' ||
+      doses == 0 ||
+      barCode == '' ||
+      priceCell == 0 ||
+      priceBuy == 0 ||
+      quantity == 0 ||
+      brandId == 0 ||
+      subCategoryId == 0 ||
+      sideEffect == '' ||
+      hoursToTake == 0 ||
+      productTypeId
+    ) {
+      setNotificationnActiveIssue(true)
+      setLoading(!true)
 
+      return
+    }
     await ApiAddData(
       'product',
       {
@@ -232,13 +256,16 @@ const TablesPage = () => {
             </SectionTitleLineWithButton>
 
             <CardBox className="mb-6" hasTable>
-              {notificationnActive ? (
-                <NotificationBar color="info" icon={mdiMonitorCellphone}>
-                  All good
-                </NotificationBar>
-              ) : (
-                ''
-              )}
+              <div onClick={() => setNotificationnActiveIssue(false)}>
+                {notificationnActive ? (
+                  <NotificationBar color="info" icon={mdiMonitorCellphone}>
+                    All good
+                  </NotificationBar>
+                ) : (
+                  ''
+                )}
+              </div>
+
               <TableSampleClients columns={columns} />
               <CardBoxModal
                 title="Add Course"
@@ -251,6 +278,13 @@ const TablesPage = () => {
                 onCancel={() => setIsModalInfoActive(false)}
               >
                 <form>
+                  {notificationnActiveIssue ? (
+                    <NotificationBar color="info" icon={mdiMonitorCellphone}>
+                      All good
+                    </NotificationBar>
+                  ) : (
+                    ''
+                  )}
                   <div className="grid gap-6 mb-6 md:grid-cols-4">
                     <div>
                       <label

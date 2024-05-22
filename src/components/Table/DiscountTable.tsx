@@ -101,7 +101,7 @@ const TableSampleClients = ({ columns }) => {
 
   const handleModalAction = async () => {
     setLoading(true)
-    await ApiUpdateData('discount', { value, end_at, target, ids }, (data) => {
+    await ApiUpdateData('discount', { id, value, end_at, target, ids }, (data) => {
       if (data.error) return setError(true)
       setLoading(false)
       return
@@ -307,6 +307,8 @@ const TableSampleClients = ({ columns }) => {
                             icon={mdiSquareEditOutline}
                             onClick={() => {
                               setInd(index)
+                              console.log(client.id)
+
                               setid(client.id)
                               setIsModalInfoActive(true)
                             }}

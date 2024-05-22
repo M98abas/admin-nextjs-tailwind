@@ -31,6 +31,8 @@ const Content = () => {
 
   const handelChange: any = async (index: any) => {
     setFlag(index)
+    console.log(index)
+
     if (index != 'External') {
       await ApiGetData(index, (data: any) => {
         setData(data)
@@ -69,7 +71,7 @@ const Content = () => {
   }
 
   const handelChangeInner: any = async (index: any) => {
-    setFlag(index)
+    // setFlag(index)
     if (index) setUrl(index)
 
     return

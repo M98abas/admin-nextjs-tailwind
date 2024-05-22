@@ -60,6 +60,9 @@ const TablesPage = () => {
     })
   }
   useEffect(() => {
+    const now = new Date()
+    const formattedDateTime = now.toLocaleString() // Adjust format as needed
+    setReceivedDate(formattedDateTime)
     getData()
   }, [])
   useEffect(() => {
@@ -94,9 +97,9 @@ const TablesPage = () => {
   }
 
   const handleModalAction = async () => {
-    const resDate: any = `${receivedDate}T${timePicked}`
+    // const resDate: any = `${receivedDate}`
     // resDate = Date.parse(resDate)
-    console.log(receivedDate[0], timePicked, resDate)
+    console.log(receivedDate)
 
     setError(false)
     if (quantity == 0 && productId == 0) {
@@ -110,8 +113,16 @@ const TablesPage = () => {
       descripption == '' ||
       total_price == 0 ||
       productId == 0 ||
-      resDate != null
+      receivedDate == null
     ) {
+      console.log(
+        quantity == 0,
+        amount == 0,
+        descripption == '',
+        total_price == 0,
+        productId == 0,
+        receivedDate == null
+      )
       setNotificationnActive(true)
       setLoading(!true)
 
@@ -124,7 +135,7 @@ const TablesPage = () => {
         total_price,
         usersId: usersId[0],
         basket: [{ quantity, amount, descripption, productsId: productId[0] }],
-        receivedDate: resDate,
+        receivedDate: receivedDate,
         address: { Adddress_name, street, city, district: floor, closePoint: apartment, notes },
       },
       (data) => {
@@ -277,9 +288,9 @@ const TablesPage = () => {
                         Total Price
                       </label>
                       <input
-                        type="number"
+                        type="text"
                         id="name"
-                        value={total_price}
+                        value={total_price.toLocaleString()}
                         onChange={(e) => setTotal_price(parseInt(e.target.value))}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Total Price"
@@ -310,39 +321,21 @@ const TablesPage = () => {
                       >
                         Received Date
                       </label>
-                      <input
+                      <p>{receivedDate}</p>
+                      {/* <input
                         type="date"
                         id="dateDays"
                         onChange={(e) => {
                           console.log(e.target.value)
 
-                          setReceivedDate(e.target.value)
+                          setReceivedDate(Date.now().toString())
                         }}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Received Date "
                         required
-                      />
+                      /> */}
                     </div>
-                    <div>
-                      <label
-                        htmlFor="timeing"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Pick time
-                      </label>
-                      <input
-                        type="time"
-                        id="timeing"
-                        onChange={(e) => {
-                          console.log(e.target.value)
-
-                          setTimePicked(e.target.value)
-                        }}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Received Date "
-                        required
-                      />
-                    </div>
+                    <div></div>
                     <div>
                       <label
                         htmlFor="name"
@@ -396,7 +389,7 @@ const TablesPage = () => {
                         htmlFor="name"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        District
+                        Area
                       </label>
                       <input
                         type="text"

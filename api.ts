@@ -70,6 +70,30 @@ export const ApiUpdateData = (route, info, callback) => {
       console.log('error', error)
     })
 }
+export const ApiUpdateDataOrder = (route, info, callback) => {
+  const token = Cookies.get('token')
+  const headers = {
+    token,
+    'Content-Type': 'application/json',
+  }
+  console.log(route, info.id)
+
+  const data = JSON.stringify(info)
+
+  axios
+    .put(`${BASE_URL}/${route}/update/order/${info.id}`, data, { headers })
+    .then((response) => {
+      const result = response.data
+      if (result.status) {
+        callback(result, null)
+      } else {
+        callback(null, result.errMsg)
+      }
+    })
+    .catch((error) => {
+      console.log('error', error)
+    })
+}
 
 // isModalActiveActive
 export const ApiActivateData = (route, info, callback) => {
@@ -112,7 +136,7 @@ export const ApiAddData = (route, info, callback) => {
   axios
     .post(`${BASE_URL}/${route}`, data, { headers })
     .then((response) => {
-      console.log(response)
+      // console.log(response)
 
       const result = response.data
       if (result.status) {

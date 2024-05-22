@@ -17,8 +17,9 @@ const SubCategory = () => {
   const router: any = useRouter()
   const { id } = router.query
   console.log(id)
-
+  
   const columns: Array<string> = [
+    'img',
     'titleAr',
     'titleEn',
     'descriptionAr',
@@ -133,7 +134,7 @@ const SubCategory = () => {
       {!Loading ? (
         <>
           <Head>
-            <title>{getPageTitle('Sub-Category - OneCC')}</title>
+            <title>{getPageTitle('Sub-Category')}</title>
           </Head>
           <SectionMain>
             <SectionTitleLineWithButton icon={mdiTableBorder} title="Sub-Category" main>

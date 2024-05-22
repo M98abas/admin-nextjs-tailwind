@@ -64,7 +64,7 @@ const TableSampleClients = ({ columns }) => {
   const handleModalAction = async () => {
     setLoading(true)
 
-    await ApiAddData(`announcements/update/${id}`, { imgURL, flag, url, end_at }, (data) => {
+    await ApiAddData(`annousments/update/${id}`, { imgURL, flag, url, end_at }, (data) => {
       if (data.errMsg != '')
         return (
           <>
@@ -96,7 +96,7 @@ const TableSampleClients = ({ columns }) => {
 
   const handelDeleteAction = async () => {
     setLoading(true)
-    await ApiDeleteData('brand', id, (data) => {
+    await ApiDeleteData('annousments', id, (data) => {
       console.log(data)
 
       if (data) setNotificationnActive(true)

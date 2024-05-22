@@ -18,6 +18,7 @@ const TableSampleClients = ({ columns }) => {
 
   const [id, setid] = useState()
   const [email, setEmail] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
   const [rolesId, setRolesId] = useState(0)
@@ -25,6 +26,7 @@ const TableSampleClients = ({ columns }) => {
   const [Loading, setLoading] = useState(false)
   const perPage = 10
   const [notificationnActive, setNotificationnActive] = useState(false)
+  const [isModalActivateActive, setIsModalActivateActive] = useState(false)
 
   const [currentPage, setCurrentPage] = useState(0)
 
@@ -65,12 +67,30 @@ const TableSampleClients = ({ columns }) => {
     setIsModalTrashActive(false)
   }
 
-  const handleModalAction = async () => {
+  const handelActivateAction = async () => {
     setLoading(true)
-    await ApiUpdateData('clinet', { id, email, name, password, rolesId }, (data) => {
+    console.log(id)
+
+    await ApiAddData(`clinet/active/${id}`, { active: true }, (data) => {
       if (data) setNotificationnActive(true)
       setLoading(false)
     })
+    setIsModalActivateActive(false)
+    setIsModalInfoActive(false)
+    setIsModalTrashActive(false)
+  }
+
+  const handleModalAction = async () => {
+    setLoading(true)
+    // let vaarData: any = email == '964' ? 'phoneNumber' : 'email'
+    await ApiUpdateData(
+      'clinet',
+      { id, email, phoneNumber, fullName: name, password, rolesId },
+      (data) => {
+        if (data) setNotificationnActive(true)
+        setLoading(false)
+      }
+    )
     setIsModalInfoActive(false)
     setIsModalTrashActive(false)
   }
@@ -134,18 +154,39 @@ const TableSampleClients = ({ columns }) => {
           >
             <form>
               <div className="grid gap-6 mb-6 md:grid-cols-2">
+                {clients[ind]?.email == '' ? (
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Email
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      onChange={(e) => setEmail(e.target.value)}
+                      defaultValue={clients[ind]?.email}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="John"
+                      required
+                    />
+                  </div>
+                ) : (
+                  ''
+                )}
                 <div>
                   <label
                     htmlFor="name"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Email
+                    Phone number
                   </label>
                   <input
                     type="text"
                     id="name"
-                    onChange={(e) => setEmail(e.target.value)}
-                    defaultValue={clients[ind]?.email}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    defaultValue={clients[ind]?.phoneNumber}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="John"
                     required
@@ -162,7 +203,7 @@ const TableSampleClients = ({ columns }) => {
                     type="text"
                     id="email"
                     onChange={(e) => setName(e.target.value)}
-                    defaultValue={clients[ind]?.name}
+                    defaultValue={clients[ind]?.fullName}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Doe"
                     required
@@ -178,33 +219,12 @@ const TableSampleClients = ({ columns }) => {
                   <input
                     type="password"
                     onChange={(e) => setPassword(e.target.value)}
+                    defaultValue={'*******'}
                     id="password"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Old password not show due to security reasons"
                     required
                   />
-                </div>
-                <div>
-                  <label
-                    htmlFor="role"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Role
-                  </label>
-                  <select
-                    data-te-select-init
-                    onChange={(e: any) => setRolesId(parseInt(e.target.value))}
-                    // defaultValue={clients[ind].Roles?.name}
-                    id="countries"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  >
-                    <option value="none">Choose The target</option>
-                    {rolesData?.map((data: any) => (
-                      <option value={data.id} key={data.id}>
-                        {data.name}
-                      </option>
-                    ))}
-                  </select>
                 </div>
               </div>
             </form>
@@ -217,6 +237,22 @@ const TableSampleClients = ({ columns }) => {
             isActive={isModalTrashActive}
             onConfirm={handelDeleteAction}
             onCancel={() => {
+              setIsModalTrashActive(false)
+              setLoading(false)
+            }}
+          >
+            <p>
+              Are you sure you want to delete this <b> {clients[ind]?.email} </b> ??
+            </p>
+          </CardBoxModal>
+          <CardBoxModal
+            title="Please confirm"
+            buttonColor="info"
+            buttonLabel="Confirm"
+            isActive={isModalActivateActive}
+            onConfirm={handelActivateAction}
+            onCancel={() => {
+              setIsModalActivateActive(!true)
               setIsModalTrashActive(false)
               setLoading(false)
             }}
@@ -282,7 +318,7 @@ const TableSampleClients = ({ columns }) => {
                             icon={mdiAccountReactivate}
                             onClick={() => {
                               setid(client.id)
-                              setIsModalTrashActive(true)
+                              setIsModalActivateActive(true)
                             }}
                             small
                           />

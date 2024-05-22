@@ -5,6 +5,9 @@ sudo ss -ltpn | grep :80
 sudo lsof -i:80
 sudo kill -9 $(sudo lsof -t -i:80) && sudo systemctl restart nginx && sudo systemctl restart apache2
 PORT=4000 pm2 start npm --name Back-end -- start --host 0.0.0.0 --interpreter=/root/.nvm/versions/node/v18.12.1/bin/node
+PORT=3000 pm2 start npm --name Admin -- start --host 0.0.0.0 --interpreter=/root/.nvm/versions/node/v18.12.1/bin/node
+
+  pm2 logs Back-end
 
 # Todo
 
@@ -22,44 +25,3 @@ PORT=4000 pm2 start npm --name Back-end -- start --host 0.0.0.0 --interpreter=/r
   في حال تاخر الطلب وبقى نفس الحالة يتم تغيير اللون من تاخر ١س اصفر الى  ٢س احمر وارسال ايميل ✅
   اضافة بروموكود اقل مبلغ لكي يتم تقليل مبلغ التوصيل ✅
 - PromoCode to order to check the content promoCodeid
-
-          {/* <Button
-                            color="info"
-                            icon={mdiSquareEditOutline}
-                            onClick={() => {
-                              setInd(index)
-                              console.log(clients[index].content)
-
-                              setid(client.id)
-                              setIsModalInfoActive(true)
-                            }}
-                            small
-                          />
-                          <Button
-                            color="danger"
-                            icon={mdiTrashCan}
-                            onClick={() => {
-                              setInd(index)
-                              setid(client.id)
-                              setIsModalTrashActive(true)
-                            }}
-                            small
-                          />
-                          <Button
-                            color="info"
-                            icon={mdiDownloadCircleOutline}
-                            onClick={() => {
-                              setInd(index)
-                              setIsModalInvoActive(true)
-                            }}
-                            small
-                          />
-                          <Button
-                            color="whiteDark"
-                            icon={mdiDownloadCircleOutline}
-                            onClick={() => {
-                              setInd(index)
-                              setIsModalStatusActive(true)
-                            }}
-                            small
-                          /> */}

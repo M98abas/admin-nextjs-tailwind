@@ -29,15 +29,13 @@ const TableSampleClients = ({ columns }) => {
   const [titleAr, setTitleAr] = useState('')
   const [titleEn, setTitleEn] = useState('')
   const [descriptionEn, setDescriptionEn] = useState('')
-  const [departmentNameAr, setDepartmentNameAr] = useState('')
-  const [departmentNameEn, setDepartmentNameEn] = useState('')
+  const [descriptionAr, setDescriptionAr] = useState('')
   const [mostItems, setMostItems] = useState(true)
   const [howToUse, setHowToUse] = useState('')
   const [sintificNameEN, setSintificNameEN] = useState('')
   const [doses, setDoses] = useState(0)
   const [barCode, setBarCode] = useState('')
   const [priceCell, setPriceCell] = useState(0.0)
-  const [priceBuy, setPriceBuy] = useState(0.0)
   const [quantity, setQuantity] = useState(0)
   const [subCategoryId, setSubCategoryId] = useState(0)
   const [brandId, setBrandId] = useState(0)
@@ -45,8 +43,7 @@ const TableSampleClients = ({ columns }) => {
   const [hoursToTake, setHoursToTake] = useState(0)
   const [productType, setProductType] = useState([])
   const [Loading, setLoading] = useState(false)
-  const [subCategory, setSubCategory] = useState([])
-  const [category, setCategory] = useState([])
+  // const [category, setCategory] = useState([])
   const [brand, setBrand] = useState([])
   const [productsTags, setProductsTags] = useState([])
   const [sideEffects, setSideEffects] = useState('')
@@ -55,18 +52,13 @@ const TableSampleClients = ({ columns }) => {
   const [notificationnActive, setNotificationnActive] = useState(false)
   const [imgUrl, setImgUrl] = useState([])
   const [ind, setInd] = useState(0)
+  const [subCategory, setSubCategory] = useState([])
 
   const [doctorRecommmand, setDoctorRecommmand] = useState(false)
 
-  const handelChange: any = (index: any) => {
-    if (index) {
-      setSubCategory(category[index].subcategory)
-    }
-    return
-  }
   const getData = async () => {
-    await ApiGetData('category', (data: any) => {
-      setCategory(data)
+    await ApiGetData('subCategory', (data: any) => {
+      setSubCategory(data)
     })
     await ApiGetData('brand', (data: any) => {
       setBrand(data)
@@ -182,6 +174,8 @@ const TableSampleClients = ({ columns }) => {
     console.log(id)
 
     await ApiAddData(`product/active/${id}`, { active: false }, (data) => {
+      console.log(data)
+
       if (data) setNotificationnActive(true)
       setLoading(false)
     })
@@ -200,10 +194,8 @@ const TableSampleClients = ({ columns }) => {
         titleAr,
         titleEn,
         imgUrl,
-        descriptionAr: descriptionEn,
+        descriptionAr,
         descriptionEn,
-        departmentNameAr,
-        departmentNameEn,
         sintificNameAR: sintificNameEN,
         sintificNameEN,
         doctorRecommmand,
@@ -212,9 +204,7 @@ const TableSampleClients = ({ columns }) => {
         mostItems,
         doses,
         barCode,
-        priceCell,
-        priceBuy,
-        quntity: quantity,
+        price_cell: priceCell,
         brandId,
         subCategoryId,
         sideEffects,
@@ -229,17 +219,13 @@ const TableSampleClients = ({ columns }) => {
           setTitleAr('')
           setTitleEn('')
           setImgUrl([])
-          // setDescriptionAr('')
+          setDescriptionAr('')
           setDescriptionEn('')
-          setDepartmentNameAr('')
-          setDepartmentNameEn('')
-          // setSintificNameEN('')
           setHowToUse('')
           setMostItems(false)
           setDoses(0)
           setBarCode('')
           setPriceCell(0)
-          setPriceBuy(0)
           setQuantity(0)
           setBrandId(0)
           setSubCategoryId(0)
@@ -304,11 +290,11 @@ const TableSampleClients = ({ columns }) => {
       ) : (
         <>
           <CardBoxModal
-            title="Add Course"
+            title="Update Item"
             buttonColor="info"
             buttonLabel="Done"
             classData="h-[97vh] xl:w-9/12 overflow-scroll"
-            disabled={enabled}
+            disabled={!true}
             isActive={isModalInfoActive}
             onConfirm={handleModalAction}
             onCancel={() => {
@@ -357,7 +343,24 @@ const TableSampleClients = ({ columns }) => {
                     htmlFor="email"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Description
+                    Description Arabic
+                  </label>
+                  <input
+                    type="text"
+                    id="email"
+                    defaultValue={clients[ind]?.descriptionAr}
+                    onChange={(e) => setDescriptionAr(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Description English"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Description English
                   </label>
                   <input
                     type="text"
@@ -371,62 +374,10 @@ const TableSampleClients = ({ columns }) => {
                 </div>
                 <div>
                   <label
-                    htmlFor="name"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Department Name Arabic
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    defaultValue={clients[ind]?.departmentNameAr}
-                    onChange={(e) => setDepartmentNameAr(e.target.value)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Department Name Arabic"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
                     htmlFor="email"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Department Name English
-                  </label>
-                  <input
-                    type="text"
-                    id="email"
-                    defaultValue={clients[ind]?.descriptionEn}
-                    onChange={(e) => setDepartmentNameEn(e.target.value)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Department Name English"
-                    required
-                  />
-                </div>
-                {/* <div>
-                <div></div>
-                  <label
-                    htmlFor="name"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    scientific Name Arabic
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    defaultValue={clients[ind]?.sintificNameAR}
-                    onChange={(e) => setSintificNameAR(e.target.value)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="scientific Name Arabic"
-                    required
-                  />
-                </div> */}
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    scientific Name English
+                    scientific Name Ar
                   </label>
                   <input
                     type="text"
@@ -455,6 +406,23 @@ const TableSampleClients = ({ columns }) => {
                     required
                   />
                 </div>
+                <div>
+                  <label
+                    htmlFor="countries"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Side Effect(s)
+                  </label>
+                  <input
+                    type="text"
+                    id="email"
+                    defaultValue={clients[ind]?.sideEffect}
+                    onChange={(e) => setSideEffects(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Any data"
+                    required
+                  />
+                </div>
                 {/*  */}
                 <div>
                   <label
@@ -480,15 +448,15 @@ const TableSampleClients = ({ columns }) => {
                     htmlFor="email"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    How many doses
+                    Doses
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     id="email"
                     defaultValue={clients[ind]?.doses}
                     onChange={(e) => setDoses(parseInt(e.target.value))}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Any data"
+                    placeholder="12 مل، 20مل، 15مل"
                     required
                   />
                 </div>
@@ -517,7 +485,7 @@ const TableSampleClients = ({ columns }) => {
                     Price Cell
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     id="email"
                     defaultValue={clients[ind]?.price_cell}
                     onChange={(e) => setPriceCell(parseInt(e.target.value))}
@@ -526,57 +494,9 @@ const TableSampleClients = ({ columns }) => {
                     required
                   />
                 </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Price Buy
-                  </label>
-                  <input
-                    type="number"
-                    id="email"
-                    defaultValue={clients[ind]?.price_buy}
-                    onChange={(e) => setPriceBuy(parseInt(e.target.value))}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Any data"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Quntity
-                  </label>
-                  <input
-                    type="number"
-                    id="email"
-                    defaultValue={clients[ind]?.quntity}
-                    onChange={(e) => setQuantity(parseInt(e.target.value))}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Any data"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Hours To Take
-                  </label>
-                  <input
-                    type="number"
-                    id="email"
-                    defaultValue={clients[ind]?.howToUse}
-                    onChange={(e) => setHoursToTake(parseInt(e.target.value))}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Any data"
-                    required
-                  />
-                </div>
+                <div></div>
+                <div></div>
+                <div></div>
                 <div></div>
                 <div></div>
 
@@ -668,28 +588,7 @@ const TableSampleClients = ({ columns }) => {
                     htmlFor="countries"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Select Category(s)
-                  </label>
-                  <select
-                    data-te-select-init
-                    onChange={(e: any) => handelChange(e.target.value)}
-                    id="countries"
-                    defaultValue={[clients[ind]?.SubCategory?.categoryId]}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  >
-                    {category?.map((data: any) => (
-                      <option value={data.id} key={data.id}>
-                        {data.titleEn}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label
-                    htmlFor="countries"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Select Sub-Category(s)
+                    Sub-Category(s)
                   </label>
                   <select
                     data-te-select-init
@@ -698,6 +597,7 @@ const TableSampleClients = ({ columns }) => {
                     id="countries"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   >
+                    <option value="none">Choose The target</option>
                     {subCategory?.map((data: any) => (
                       <option value={data.id} key={data.id}>
                         {data.titleEn}
@@ -726,23 +626,7 @@ const TableSampleClients = ({ columns }) => {
                     ))}
                   </Select>
                 </div>
-                <div>
-                  <label
-                    htmlFor="countries"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Side Effect(s)
-                  </label>
-                  <input
-                    type="text"
-                    id="email"
-                    defaultValue={clients[ind]?.sideEffect}
-                    onChange={(e) => setSideEffects(e.target.value)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Any data"
-                    required
-                  />
-                </div>
+                <div></div>
               </div>
               <div className="flex items-center justify-center w-full gap-5">
                 <label
@@ -789,18 +673,23 @@ const TableSampleClients = ({ columns }) => {
                     multiple
                   />
                 </label>
-                <div className="grid gap-6 mb-6 md:grid-cols-2">
-                  {clients[ind]?.imgUrl.map((img: any) => (
-                    <>
-                      <div key={img.id} className="w-16">
-                        <span className="close" onClick={() => handelRemoveImage(img.id)}>
-                          &times;
-                        </span>
-                        <img src={img.url} alt="Product Img" />
-                      </div>
-                    </>
-                  ))}
-                </div>
+              </div>
+              <div className="grid gap-6 mb-6 md:grid-cols-3">
+                {clients[ind]?.imgUrl.map((img: any) => (
+                  <>
+                    <div key={img.id} className="w-60">
+                      <span
+                        className="flex items-center justify-center w-10 h-10 p-2 rounded-full hover:bg-slate-400"
+                        onClick={() => handelRemoveImage(img.id)}
+                      >
+                        &times;
+                      </span>
+                      <a href={img.url} target="_blank" className="w-40">
+                        <img src={img.url} alt="Product Img" className="w-full" />
+                      </a>
+                    </div>
+                  </>
+                ))}
               </div>
             </form>
           </CardBoxModal>
@@ -893,8 +782,10 @@ const TableSampleClients = ({ columns }) => {
                             color="info"
                             icon={mdiSquareEditOutline}
                             onClick={() => {
+                              console.log(currentPage, clients[index + 10 * currentPage])
+
                               clients[index]?.productsTags.map(({ tagsId }) => tagsId)
-                              setInd(index)
+                              setInd(index + 10 * currentPage)
                               setid(client.id)
                               setIsModalInfoActive(true)
                               setMostItems(client[ind]?.mostItems)

@@ -40,6 +40,7 @@ const TableSampleClients = ({ columns }) => {
   const clientsPaginated = clients.slice(perPage * currentPage, perPage * (currentPage + 1))
 
   const numPages = Math.round(clients.length / perPage)
+console.log();
 
   const pagesList = []
 
@@ -381,7 +382,7 @@ const TableSampleClients = ({ columns }) => {
                             color="info"
                             icon={mdiSquareEditOutline}
                             onClick={() => {
-                              setInd(index)
+                              setInd(index + currentPage * 5)
                               setid(client.id)
                               setIsModalInfoActive(true)
                             }}
@@ -391,7 +392,7 @@ const TableSampleClients = ({ columns }) => {
                             color="danger"
                             icon={mdiTrashCan}
                             onClick={() => {
-                              setInd(index)
+                              setInd(index + currentPage * 5)
                               setid(client.id)
                               setIsModalTrashActive(true)
                             }}

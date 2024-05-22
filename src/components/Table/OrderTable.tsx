@@ -14,7 +14,7 @@ import { useSampleClients } from '../../hooks/sampleData'
 import Button from '../Button'
 import Buttons from '../Buttons'
 import CardBoxModal from '../CardBox/Modal'
-import { ApiUpdateData, ApiAddData, ApiGetData } from '../../../api'
+import { ApiUpdateData, ApiAddData, ApiGetData, ApiUpdateDataOrder } from '../../../api'
 import NotificationBar from '../NotificationBar'
 import MomentP from '../MomentP'
 import CustomInvoice from '../CustomInvoice'
@@ -54,6 +54,7 @@ const TableSampleClients = ({ columns }) => {
   const [isModalTrashActive, setIsModalTrashActive] = useState(false)
   const [status, setStatus] = useState('')
   const [isModalActive, setIsModalActive] = useState(false)
+  const [isPaid, setIsPaid] = useState(false)
   const [ind, setInd] = useState(0)
   const [quantity, setQuantity] = useState(0)
   const [descripption, setDescripption] = useState('')
@@ -146,9 +147,11 @@ const TableSampleClients = ({ columns }) => {
     setIsModalTrashActive(false)
   }
 
+  console.log()
+
   const handleModalAction = async () => {
     setLoading(true)
-    await ApiUpdateData('change', { id, status }, (data) => {
+    await ApiUpdateDataOrder('order', { id, isPaid }, (data) => {
       if (data) setNotificationnActive(true)
       setLoading(false)
     })
@@ -170,7 +173,8 @@ const TableSampleClients = ({ columns }) => {
         id: clients[ind]?.id,
         basket: [{ quantity, descripption, productsId: productId[0] }],
         receivedDate: resDate,
-      }, 
+        isPaid,
+      },
       (data: any) => {
         if (data) setNotificationnActive(true)
         setLoading(false)
@@ -292,21 +296,6 @@ const TableSampleClients = ({ columns }) => {
       ),
       key: 2,
     },
-    {
-      label: (
-        <Button
-          color="whiteDark"
-          label="status"
-          className="pl-4 pr-4"
-          icon={mdiDownloadCircleOutline}
-          onClick={() => {
-            setIsModalStatusActive(true)
-          }}
-          small
-        />
-      ),
-      key: 3,
-    },
   ]
   return (
     <>
@@ -361,7 +350,7 @@ const TableSampleClients = ({ columns }) => {
             title={`OId --> ${clients[ind]?.id} || ${clients[ind]?.status}`}
             buttonColor="info"
             buttonLabel="Done"
-            classData="h-[97vh] xl:w-9/12 overflow-scroll z-0"
+            classData="h-[97vh] xl:w-8/12 overflow-scroll z-0"
             isActive={isModalInfoActive}
             onConfirm={handleModalAction}
             onCancel={handleCancelAction}
@@ -416,7 +405,7 @@ const TableSampleClients = ({ columns }) => {
                   <input
                     type="text"
                     id="email"
-                    defaultValue={clients[ind]?.total_price}
+                    defaultValue={clients[ind]?.total_price.toLocaleString()}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="1000000"
                     required
@@ -430,15 +419,20 @@ const TableSampleClients = ({ columns }) => {
                   >
                     Is he Paid
                   </label>
-                  <input
-                    type="text"
-                    id="email"
-                    defaultValue={clients[ind]?.isPaid ? 'Paid' : 'Not Paid'}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Doe"
-                    required
-                    disabled
-                  />
+                  <select
+                    style={{ width: '100%' }}
+                    placeholder="Please select"
+                    onChange={(e: any) => setIsPaid(e.target.value == 'true' ? true : false)}
+                    defaultValue={clients[ind]?.isPaid} // Set the default value as needed, but usually, it should be an empty array for multiple selection
+                  >
+                    {/* {products.map((option) => ( */}
+                    <option key={1} value={'true'}>
+                      Paid
+                    </option>
+                    <option key={2} value={'false'}>
+                      not Paid
+                    </option>
+                  </select>
                 </div>
                 <div>
                   <label
@@ -771,18 +765,22 @@ const TableSampleClients = ({ columns }) => {
               </CSVLink>
             </div>
           </div>
-          <table>
+          <table className="text-center">
             <thead>
               <tr>
                 {columns.map((col) => (
-                  <th key={col}>{col}</th>
+                  <th style={{ width: 10 }} key={col}>
+                    {col}
+                  </th>
                 ))}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="justify-center">
               {clientsPaginated.map((client: any, index: number) => (
                 <tr key={client.id}>
-                  <td data-label="nickName">{client.id}</td>
+                  <td style={{ width: 10 }} data-label="nickName">
+                    {client.id.substring(0, 8)}
+                  </td>
                   <td data-label="nickName">{client.users?.email ?? client.users?.phoneNumber}</td>
                   <td data-label="Name">
                     {client.total_price ? client.total_price.toLocaleString() : client.total_price}
@@ -803,7 +801,11 @@ const TableSampleClients = ({ columns }) => {
                   <td data-label="Name">{client.Addresses?.city}</td>
                   <td
                     data-label="Name"
-                    style={{ background: optionColors[client.status], width: 200, height: 40 }}
+                    style={{
+                      background: optionColors[client.status],
+                      width: 200,
+                      height: 40,
+                    }}
                   >
                     {client.status}
                   </td>
@@ -834,6 +836,16 @@ const TableSampleClients = ({ columns }) => {
                               </Space>
                             </a>
                           </Dropdown>
+                          <Button
+                            color="whiteDark"
+                            className="pl-4 pr-4"
+                            icon={mdiDownloadCircleOutline}
+                            onClick={() => {
+                              setInd(index + 10 * currentPage)
+                              setIsModalStatusActive(true)
+                            }}
+                            small
+                          />
                         </div>
                       ) : (
                         <>

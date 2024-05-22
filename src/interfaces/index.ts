@@ -1,6 +1,7 @@
 export type UserPayloadObject = {
   name: string
   email: string
+  lastLogin: string
   avatar: string
 }
 
@@ -64,11 +65,12 @@ export type Client = {
   id: number
   avatar: string
   login: string
-  name: string
   company: string
   city: string
+  fullName: string
+  order: Array<[]>
+  created_at: string
   progress: number
-  created: string
   created_mm_dd_yyyy: string
 }
 

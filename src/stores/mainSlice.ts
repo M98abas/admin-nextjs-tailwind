@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { UserPayloadObject } from '../interfaces'
 
 interface MainState {
+  userLastLogin: any
   userName: string
   userEmail: null | string
   userAvatar: null | string
@@ -12,6 +13,7 @@ const initialState: MainState = {
   /* User */
   userName: '',
   userEmail: null,
+  userLastLogin: null,
   userAvatar: null,
 
   /* Field focus with ctrl+k (to register only once) */
@@ -25,6 +27,7 @@ export const mainSlice = createSlice({
     setUser: (state, action: PayloadAction<UserPayloadObject>) => {
       state.userName = action.payload.name
       state.userEmail = action.payload.email
+      state.userLastLogin = action.payload.lastLogin
       state.userAvatar = action.payload.avatar
     },
   },

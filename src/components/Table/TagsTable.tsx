@@ -9,7 +9,7 @@ import { useSampleClients } from '../../hooks/sampleData'
 import Button from '../Button'
 import Buttons from '../Buttons'
 import CardBoxModal from '../CardBox/Modal'
-import { ApiAddData, ApiDeleteData } from '../../../api'
+import { ApiAddData, ApiDeleteData, ApiUpdateData } from '../../../api'
 import NotificationBar from '../NotificationBar'
 import Image from 'next/image'
 import MomentP from '../MomentP'
@@ -42,7 +42,7 @@ const TableSampleClients = ({ columns }) => {
   const handleModalAction = async () => {
     setLoading(true)
 
-    await ApiAddData(`tags/update/${id}`, { titleAr, titleEn }, (data) => {
+    await ApiUpdateData(`tags`, { id, titleAr, titleEn }, (data) => {
       if (data.errMsg != '')
         return (
           <>

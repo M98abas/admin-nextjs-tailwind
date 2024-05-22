@@ -1,0 +1,40 @@
+   {/* <Button
+                            color="info"
+                            icon={mdiSquareEditOutline}
+                            onClick={() => {
+                              setInd(index)
+                              console.log(clients[index].content)
+
+                              setid(client.id)
+                              setIsModalInfoActive(true)
+                            }}
+                            small
+                          />
+                          <Button
+                            color="danger"
+                            icon={mdiTrashCan}
+                            onClick={() => {
+                              setInd(index)
+                              setid(client.id)
+                              setIsModalTrashActive(true)
+                            }}
+                            small
+                          />
+                          <Button
+                            color="info"
+                            icon={mdiDownloadCircleOutline}
+                            onClick={() => {
+                              setInd(index)
+                              setIsModalInvoActive(true)
+                            }}
+                            small
+                          />
+                          <Button
+                            color="whiteDark"
+                            icon={mdiDownloadCircleOutline}
+                            onClick={() => {
+                              setInd(index)
+                              setIsModalStatusActive(true)
+                            }}
+                            small
+                          /> */}

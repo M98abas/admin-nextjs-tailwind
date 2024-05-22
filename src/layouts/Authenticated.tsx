@@ -11,6 +11,7 @@ import FooterBar from '../components/FooterBar'
 import { setUser } from '../stores/mainSlice'
 import { useAppDispatch, useAppSelector } from '../stores/hooks'
 import { useRouter } from 'next/router'
+import { ApiGetData } from '../../api'
 
 type Props = {
   children: ReactNode
@@ -18,17 +19,31 @@ type Props = {
 
 export default function LayoutAuthenticated({ children }: Props) {
   const dispatch = useAppDispatch()
+  const [data, setData]: any = useState([])
+  console.log()
+
+  const getData = async () => {
+    await ApiGetData('admin/profile', (data: any) => {
+      console.log(data)
+
+      setData(data)
+    })
+  }
+  useEffect(() => {
+    getData()
+  }, [])
 
   useEffect(() => {
     dispatch(
       setUser({
-        name: 'Admin',
-        email: 'MainUser',
+        name: data?.name,
+        email: data?.email,
+        lastLogin: data?.lastLoginAt,
         avatar:
           'https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93',
       })
     )
-  })
+  }, [data])
 
   const darkMode = useAppSelector((state) => state.style.darkMode)
 

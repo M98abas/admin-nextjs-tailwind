@@ -17,7 +17,7 @@ import { useRouter } from 'next/router'
 const { Option } = Select
 
 const TablesPage = () => {
-  const columns: Array<string> = ['img', 'Title', 'Description', 'created_at', 'actions']
+  const columns: Array<string> = ['img', 'Title', 'description', 'created_at', 'actions']
   const [uploadProgress, setUploadProgress] = useState(100)
   const [enabled, setEnabled] = useState(false)
   const [imgUrl, setImgUrl] = useState([])
@@ -28,22 +28,18 @@ const TablesPage = () => {
   const [titleAr, setTitleAr] = useState('')
   const [titleEn, setTitleEn] = useState('')
   const [descriptionEn, setDescriptionEn] = useState('')
-  const [departmentNameAr, setDepartmentNameAr] = useState('')
-  const [departmentNameEn, setDepartmentNameEn] = useState('')
+  const [descriptionAr, setDescriptionAr] = useState('')
   const [mostItems, setMostItems] = useState(true)
   const [doctorRecommmand, setDoctorRecommmand] = useState(true)
   const [howToUse, setHowToUse] = useState('')
   const [contentProduct, setContentProduct] = useState('')
   const [sintificNameEN, setSintificNameEN] = useState('')
-  const [doses, setDoses] = useState(0)
+  const [doses, setDoses] = useState('')
   const [barCode, setBarCode] = useState('')
   const [priceCell, setPriceCell] = useState(0.0)
-  const [priceBuy, setPriceBuy] = useState(0.0)
-  const [quantity, setQuantity] = useState(0)
   const [subCategoryId, setSubCategoryId] = useState(0)
   const [brandId, setBrandId] = useState(0)
   const [productTypeId, setProductTypeId] = useState(0)
-  const [hoursToTake, setHoursToTake] = useState(0)
   const [productType, setProductType] = useState([])
   const [Loading, setLoading] = useState(false)
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
@@ -131,8 +127,8 @@ const TablesPage = () => {
 
     try {
       const response = await axios(requestOptions)
-      console.log(response)
-      setEnabled(true)
+      // console.log(response, response.data.data.url)
+        setEnabled(true)
       setImgUrl([...imgUrl, response.data.data.url])
     } catch (error) {
       console.error(error)
@@ -146,22 +142,32 @@ const TablesPage = () => {
       titleEn == '' ||
       imgUrl.length == 0 ||
       descriptionEn == '' ||
-      departmentNameAr == '' ||
-      departmentNameEn == '' ||
       sintificNameEN == '' ||
       howToUse == '' ||
       contentProduct == '' ||
-      doses == 0 ||
+      doses == '' ||
       barCode == '' ||
       priceCell == 0 ||
-      priceBuy == 0 ||
-      quantity == 0 ||
       brandId == 0 ||
       subCategoryId == 0 ||
-      sideEffect == '' ||
-      hoursToTake == 0 ||
-      productTypeId
+      sideEffect == ''
     ) {
+      console.log(
+        titleAr == '',
+        titleEn == '',
+        imgUrl.length == 0,
+        descriptionEn == '',
+        sintificNameEN == '',
+        howToUse == '',
+        contentProduct == '',
+        doses == '',
+        barCode == '',
+        priceCell == 0,
+        brandId == 0,
+        subCategoryId == 0,
+        sideEffect == ''
+      )
+
       setNotificationnActiveIssue(true)
       setLoading(!true)
 
@@ -175,10 +181,8 @@ const TablesPage = () => {
         titleEn,
         imgUrl,
         doctorRecommmand,
-        descriptionAr: descriptionEn,
+        descriptionAr,
         descriptionEn,
-        departmentNameAr,
-        departmentNameEn,
         sintificNameAR: sintificNameEN,
         sintificNameEN,
         howToUse,
@@ -187,42 +191,37 @@ const TablesPage = () => {
         doses,
         barCode,
         price_cell: priceCell,
-        price_buy: priceBuy,
-        quntity: quantity,
+        quntity: 100,
         brandId,
         subCategoryId,
         sideEffect,
-        hoursToTake,
         productTypeId,
       },
       (data) => {
         console.log(data)
 
-        if (data.status) setNotificationnActive(true)
-        setEnabled(!enabled)
-        setProductsTagsId([])
-        setTitleAr('')
-        setTitleEn('')
-        setImgUrl([])
-        setDescriptionEn('')
-        setDepartmentNameAr('')
-        setContentProduct('')
-        setDepartmentNameEn('')
-        setSintificNameEN('')
-        setHowToUse('')
-        setMostItems(false)
-        setDoses(0)
-        setBarCode('')
-        setPriceCell(0)
-        setPriceBuy(0)
-        setQuantity(0)
-        setBrandId(0)
-        setSubCategoryId(0)
-        setSideEffect('')
-        setHoursToTake(0)
-        setDoctorRecommmand(true)
-        setProductTypeId(0)
-
+        if (data) {
+          setNotificationnActive(true)
+          setEnabled(!enabled)
+          setProductsTagsId([])
+          setIsModalInfoActive(false)
+          setTitleAr('')
+          setTitleEn('')
+          setImgUrl([])
+          setDescriptionEn('')
+          setContentProduct('')
+          setSintificNameEN('')
+          setHowToUse('')
+          setMostItems(false)
+          setDoses('')
+          setBarCode('')
+          setPriceCell(0)
+          setBrandId(0)
+          setSubCategoryId(0)
+          setSideEffect('')
+          setDoctorRecommmand(true)
+          setProductTypeId(0)
+        }
         return
       }
     )
@@ -256,19 +255,9 @@ const TablesPage = () => {
             </SectionTitleLineWithButton>
 
             <CardBox className="mb-6" hasTable>
-              <div onClick={() => setNotificationnActiveIssue(false)}>
-                {notificationnActive ? (
-                  <NotificationBar color="info" icon={mdiMonitorCellphone}>
-                    All good
-                  </NotificationBar>
-                ) : (
-                  ''
-                )}
-              </div>
-
               <TableSampleClients columns={columns} />
               <CardBoxModal
-                title="Add Course"
+                title="Add Item"
                 buttonColor="info"
                 buttonLabel="Done"
                 classData="h-[97vh] xl:w-9/12 overflow-scroll"
@@ -278,13 +267,24 @@ const TablesPage = () => {
                 onCancel={() => setIsModalInfoActive(false)}
               >
                 <form>
-                  {notificationnActiveIssue ? (
-                    <NotificationBar color="info" icon={mdiMonitorCellphone}>
-                      All good
-                    </NotificationBar>
-                  ) : (
-                    ''
-                  )}
+                  <div onClick={() => setNotificationnActiveIssue(false)}>
+                    {notificationnActiveIssue ? (
+                      <NotificationBar color="info" icon={mdiMonitorCellphone}>
+                        There something wrong, kindly check
+                      </NotificationBar>
+                    ) : (
+                      ''
+                    )}
+                  </div>
+                  <div onClick={() => setNotificationnActiveIssue(false)}>
+                    {notificationnActiveIssue ? (
+                      <NotificationBar color="info" icon={mdiMonitorCellphone}>
+                        All good
+                      </NotificationBar>
+                    ) : (
+                      ''
+                    )}
+                  </div>
                   <div className="grid gap-6 mb-6 md:grid-cols-4">
                     <div>
                       <label
@@ -323,6 +323,22 @@ const TablesPage = () => {
                         htmlFor="email"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
+                        Description Arabic
+                      </label>
+                      <input
+                        type="text"
+                        id="email"
+                        onChange={(e) => setDescriptionAr(e.target.value)}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Description English"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
                         Description English
                       </label>
                       <input
@@ -334,45 +350,13 @@ const TablesPage = () => {
                         required
                       />
                     </div>
-                    <div>
-                      <label
-                        htmlFor="name"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Department Name Arabic
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        onChange={(e) => setDepartmentNameAr(e.target.value)}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Department Name Arabic"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Department Name English
-                      </label>
-                      <input
-                        type="text"
-                        id="email"
-                        onChange={(e) => setDepartmentNameEn(e.target.value)}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Department Name English"
-                        required
-                      />
-                    </div>
                     {/* <div></div> */}
                     <div>
                       <label
                         htmlFor="email"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        scientific Name English
+                        Scientific Name Arabic
                       </label>
                       <input
                         type="text"
@@ -399,7 +383,22 @@ const TablesPage = () => {
                         required
                       />
                     </div>
-                    {/*  */}
+                    <div>
+                      <label
+                        htmlFor="countries"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Side Effect(s)
+                      </label>
+                      <input
+                        type="text"
+                        id="email"
+                        onChange={(e) => setSideEffect(e.target.value)}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Any data"
+                        required
+                      />
+                    </div>
                     <div>
                       <label
                         htmlFor="email"
@@ -426,12 +425,12 @@ const TablesPage = () => {
                         Doses
                       </label>
                       <input
-                        type="number"
+                        type="text"
                         id="email"
                         max={10000}
-                        onChange={(e) => setDoses(parseInt(e.target.value))}
+                        onChange={(e) => setDoses(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
+                        placeholder="12مل، ....."
                         required
                         inputMode="numeric"
                       />
@@ -468,38 +467,7 @@ const TablesPage = () => {
                         required
                       />
                     </div>
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Price Buy
-                      </label>
-                      <input
-                        type="number"
-                        id="email"
-                        onChange={(e) => setPriceBuy(parseInt(e.target.value))}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Quntity
-                      </label>
-                      <input
-                        type="number"
-                        id="email"
-                        onChange={(e) => setQuantity(parseInt(e.target.value))}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
-                        required
-                      />
-                    </div>
+                    <div></div>
                     <div></div>
                     <div></div>
                     <div></div>
@@ -646,28 +614,13 @@ const TablesPage = () => {
                         defaultValue={[]} // Set the default value as needed, but usually, it should be an empty array for multiple selection
                       >
                         {productsTags.map((option) => (
-                          <Option key={option.id} value={option.id}>
-                            {option.titleEn}
+                          <Option key={option.id} value={option.id} style={{ textAlign: 'right' }}>
+                            {option.titleAr}
                           </Option>
                         ))}
                       </Select>
                     </div>
-                    <div>
-                      <label
-                        htmlFor="countries"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Side Effect(s)
-                      </label>
-                      <input
-                        type="text"
-                        id="email"
-                        onChange={(e) => setSideEffect(e.target.value)}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
-                        required
-                      />
-                    </div>
+                    <div></div>
                   </div>
                   <div className="flex items-center justify-center w-full">
                     <label
@@ -714,18 +667,22 @@ const TablesPage = () => {
                         multiple
                       />
                     </label>
-                    <div className="grid gap-6 mb-6 md:grid-cols-2">
-                      {imgUrl.map((img: any, index: number) => (
-                        <>
-                          <div key={index} className="w-16">
-                            <span className="close" onClick={() => handelRemoveImage(index)}>
-                              &times;
-                            </span>
-                            <img src={img.url} alt="Product Img" />
-                          </div>
-                        </>
-                      ))}
-                    </div>
+                  </div>
+                  <br />
+                  <div className="grid gap-6 mb-6 md:grid-cols-3">
+                    {imgUrl.map((img: any, index: number) => (
+                      <>
+                        <div key={index} className="w-16">
+                          <span
+                            className="flex items-center justify-center w-10 h-10 p-2 rounded-full hover:bg-slate-400"
+                            onClick={() => handelRemoveImage(index)}
+                          >
+                            &times;
+                          </span>
+                          <img src={img.url} alt={`${img.url}`} />
+                        </div>
+                      </>
+                    ))}
                   </div>
                 </form>
               </CardBoxModal>

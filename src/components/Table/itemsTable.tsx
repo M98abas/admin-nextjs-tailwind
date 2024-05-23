@@ -21,12 +21,14 @@ const { Option } = Select
 const TableSampleClients = ({ columns }) => {
   const { clients } = useSampleClients('product')
   const router: any = useRouter()
-
+  // const [activeImg, setActiveImg] = useState(true)
   // const router = useRouter()
   const [id, setid] = useState()
   const perPage = 10
-
+  const [isOpen, setIsOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
   const [titleAr, setTitleAr] = useState('')
+  const [dataImg, setDataImg]: any = useState()
   const [titleEn, setTitleEn] = useState('')
   const [descriptionEn, setDescriptionEn] = useState('')
   const [descriptionAr, setDescriptionAr] = useState('')
@@ -91,6 +93,21 @@ const TableSampleClients = ({ columns }) => {
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
   const [isModalTrashActive, setIsModalTrashActive] = useState(false)
   // console.log(isModalInfoActive)
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen)
+  }
+
+  const handleSearchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value.toLowerCase())
+  }
+
+  const filteredItems = clients.filter(
+    (item: any) =>
+      item.titleAr.toLowerCase().includes(searchTerm) ||
+      item.titleEn.toLowerCase().includes(searchTerm)
+  )
+
   const handleImageUpload = (e: any) => {
     const fileInput = e.target
     if (!fileInput.files) {
@@ -146,7 +163,10 @@ const TableSampleClients = ({ columns }) => {
 
   const handelRemoveImage = async (id: any) => {
     await ApiGetData(`product/imageDelete/${id}`, (data: any) => {
-      console.log(data)
+      setDataImg(data)
+      // console.log(data)
+      // setActiveImg(false)
+      // clients[ind]?.imgUrl.splice(imgInd, 1)
     })
   }
   const handleChangeSelect = (value: number[]) => {
@@ -675,9 +695,14 @@ const TableSampleClients = ({ columns }) => {
                 </label>
               </div>
               <div className="grid gap-6 mb-6 md:grid-cols-3">
+                {/* <p>{`${dataImg.id}`}</p> */}
                 {clients[ind]?.imgUrl.map((img: any) => (
                   <>
-                    <div key={img.id} className="w-60">
+                    <div
+                      key={img.id}
+                      className="w-60"
+                      hidden={dataImg?.id == img.id ? true : false}
+                    >
                       <span
                         className="flex items-center justify-center w-10 h-10 p-2 rounded-full hover:bg-slate-400"
                         onClick={() => handelRemoveImage(img.id)}
@@ -739,12 +764,39 @@ const TableSampleClients = ({ columns }) => {
                 </svg>
               </div>
               <input
-                onKeyDown={handelSearchInputChanged}
-                type="text"
+                onClick={toggleDropdown}
+                type="button"
                 id="table-search"
                 className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Search for items"
               />
+              {isOpen && (
+                <div className="right-0 p-1 mt-2 space-y-1 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+                  {/* Search input */}
+                  <input
+                    onChange={handleSearchInput}
+                    value={searchTerm}
+                    className="block w-full px-4 py-2 text-gray-800 border border-gray-300 rounded-md focus:outline-none"
+                    type="text"
+                    placeholder="Search items"
+                    autoComplete="off"
+                  />
+                  {/* Dropdown content */}
+                  {filteredItems.map((item: any, index: any) => (
+                    <a
+                      key={index}
+                      href="#"
+                      onClick={() => {
+                        setInd(index)
+                        setIsModalInfoActive(true)
+                      }}
+                      className="block px-4 py-2 text-gray-700 rounded-md cursor-pointer hover:bg-gray-100 active:bg-blue-100"
+                    >
+                      {item.titleAr} - {item.titleEn}
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <table>

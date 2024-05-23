@@ -24,7 +24,7 @@ const Dashboard = () => {
   const [order, setOrder] = useState([])
   const handelChangeDate: any = async (e: any) => {
     await ApiAddData(`order/dateOrder`, { createdDate: e.target.value }, (data) => {
-      console.log(data)
+      // console.log(data)
 
       setOrder(data.data)
     })

@@ -11,7 +11,7 @@ import { useSampleClients } from '../../hooks/sampleData'
 import Button from '../Button'
 import Buttons from '../Buttons'
 import CardBoxModal from '../CardBox/Modal'
-import { ApiAddData, ApiDeleteData } from '../../../api'
+import { ApiAddData, ApiDeleteData, ApiGetData } from '../../../api'
 import NotificationBar from '../NotificationBar'
 import Image from 'next/image'
 import axios, { AxiosRequestConfig } from 'axios'
@@ -20,8 +20,12 @@ import { useRouter } from 'next/router'
 
 const TableSampleClients = ({ columns }) => {
   const { clients } = useSampleClients('category')
+  console.log({ clients })
+
   const [enabled, setEnabled] = useState(false)
   const router = useRouter()
+
+  const [dataImg, setDataImg]: any = useState()
 
   const [titleAr, setTitleAr] = useState('')
   const [descriptionAr, setDescriptionAr] = useState('')
@@ -34,7 +38,7 @@ const TableSampleClients = ({ columns }) => {
   // const router = useRouter()
   const [id, setid] = useState()
   const [Loading, setLoading] = useState(false)
-  const perPage = 5
+  const perPage = 10
   const [notificationnActive, setNotificationnActive] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
   const [uploadProgress, setUploadProgress]: any = useState(100)
@@ -56,6 +60,8 @@ const TableSampleClients = ({ columns }) => {
       `category/update/${id}`,
       { titleAr, descriptionAr, titleEn, descriptionEn, imgUrl: imgURL },
       (data) => {
+        console.log(data)
+
         if (data.errMsg != '')
           return (
             <>
@@ -98,6 +104,16 @@ const TableSampleClients = ({ columns }) => {
 
     setIsModalInfoActive(false)
     setIsModalTrashActive(false)
+  }
+  const [activeImg, setActiveImg] = useState(true)
+
+  const handelRemoveImage = async (id: any) => {
+    await ApiGetData(`product/imageDelete/${id}`, (data: any) => {
+      setDataImg(data)
+      // console.log(data)
+      setActiveImg(false)
+      // clients[ind]?.imgUrl.splice(imgInd, 1)
+    })
   }
 
   const imgbb = '807b79b03a554f95b5980b6b9d688013'
@@ -205,7 +221,7 @@ const TableSampleClients = ({ columns }) => {
               title="Add New"
               buttonColor="info"
               buttonLabel="Done"
-              classData="xl:w-8/12"
+              classData="xl:w-8/12 overflow-scroll"
               isActive={isModalInfoActive}
               onConfirm={handleModalAction}
               onCancel={() => setIsModalInfoActive(false)}
@@ -281,7 +297,7 @@ const TableSampleClients = ({ columns }) => {
                     />
                   </div>
                 </div>
-                <div className="flex items-center justify-center w-full gap-3">
+                <div className="flex flex-col items-center justify-center w-full gap-3">
                   <label
                     htmlFor="dropzone-file"
                     className="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer h-44 bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
@@ -326,7 +342,17 @@ const TableSampleClients = ({ columns }) => {
                       onChange={handleFileUpload}
                     />
                   </label>
-                  <img src={clients[ind]?.imgUrl} width={120} height={120} alt="" />
+                  <div key={2} className="w-60" hidden={!activeImg}>
+                    <span
+                      className="flex items-center justify-center w-10 h-10 p-2 rounded-full hover:bg-slate-400"
+                      onClick={() => handelRemoveImage(id)}
+                    >
+                      &times;
+                    </span>
+                    <a href={clients[ind]?.imgUrl} target="_blank" className="w-40">
+                      <img src={clients[ind]?.imgUrl} width={180} height={120} alt="" />
+                    </a>
+                  </div>
                 </div>
               </form>
             </CardBoxModal>

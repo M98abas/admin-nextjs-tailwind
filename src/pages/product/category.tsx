@@ -145,7 +145,7 @@ const TablesPage = () => {
                 title="Add category"
                 buttonColor="info"
                 buttonLabel="Done"
-                classData="xl:w-8/12"
+                classData="xl:w-8/12 overflow-scroll"
                 disabled={!enabled}
                 isActive={isModalInfoActive}
                 onConfirm={handleModalAction}
@@ -218,7 +218,7 @@ const TablesPage = () => {
                       />
                     </div>
                   </div>
-                  <div className="flex items-center justify-center w-full">
+                  <div className="flex flex-col items-center justify-center w-full gap-5">
                     <label
                       htmlFor="dropzone-file"
                       className="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer h-54 bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
@@ -262,6 +262,15 @@ const TablesPage = () => {
                         onChange={handleImageUpload}
                       />
                     </label>
+                    <br />
+                    <br />
+                    {imgUrl != '' ? (
+                      <a href={imgUrl} target="_blank" className="w-40">
+                        <img src={imgUrl} width={180} height={120} alt="" />
+                      </a>
+                    ) : (
+                      ''
+                    )}
                   </div>
                 </form>
               </CardBoxModal>

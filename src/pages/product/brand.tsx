@@ -128,16 +128,14 @@ const TablesPage = () => {
             </SectionTitleLineWithButton>
 
             <CardBox className="mb-6" hasTable>
-
-             <div onClick={()=>setNotificationnActive(false) }>
-
-              {notificationnActive ? (
-                <NotificationBar color="info" icon={mdiMonitorCellphone}>
-                  There some Data not right check it && try again
-                </NotificationBar>
-              ) : (
-                ''
-              )}
+              <div onClick={() => setNotificationnActive(false)}>
+                {notificationnActive ? (
+                  <NotificationBar color="info" icon={mdiMonitorCellphone}>
+                    There some Data not right check it && try again
+                  </NotificationBar>
+                ) : (
+                  ''
+                )}
               </div>
               <TableSampleClients columns={columns} />
               <CardBoxModal

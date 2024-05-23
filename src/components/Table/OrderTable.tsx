@@ -405,7 +405,11 @@ const TableSampleClients = ({ columns }) => {
                   <input
                     type="text"
                     id="email"
-                    defaultValue={clients[ind]?.total_price.toLocaleString()}
+                    defaultValue={
+                      clients[ind]?.total_price != null
+                        ? clients[ind]?.total_price.toLocaleString()
+                        : 0
+                    }
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="1000000"
                     required
@@ -417,22 +421,15 @@ const TableSampleClients = ({ columns }) => {
                     htmlFor="email"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Is he Paid
+                    Is he Paid?
                   </label>
-                  <select
-                    style={{ width: '100%' }}
-                    placeholder="Please select"
-                    onChange={(e: any) => setIsPaid(e.target.value == 'true' ? true : false)}
-                    defaultValue={clients[ind]?.isPaid} // Set the default value as needed, but usually, it should be an empty array for multiple selection
-                  >
-                    {/* {products.map((option) => ( */}
-                    <option key={1} value={'true'}>
-                      Paid
-                    </option>
-                    <option key={2} value={'false'}>
-                      not Paid
-                    </option>
-                  </select>
+                  <input
+                    type="text"
+                    name="any"
+                    id="ndw"
+                    defaultValue={clients[ind]?.isPaid ? 'Yes' : 'No'}
+                    disabled
+                  />
                 </div>
                 <div>
                   <label
@@ -783,7 +780,9 @@ const TableSampleClients = ({ columns }) => {
                   </td>
                   <td data-label="nickName">{client.users?.email ?? client.users?.phoneNumber}</td>
                   <td data-label="Name">
-                    {client.total_price ? client.total_price.toLocaleString() : client.total_price}
+                    {client?.total_price
+                      ? client?.total_price.toLocaleString()
+                      : client.total_price}
                   </td>
 
                   <td data-label="nickName">

@@ -18,6 +18,8 @@ import MomentP from '../MomentP'
 
 const TableSampleClients = ({ columns }) => {
   const { clients } = useSampleClients('brand')
+  console.log({ clients })
+
   const [enabled, setEnabled] = useState(false)
 
   const [titleAr, setTitleAr] = useState('')
@@ -31,7 +33,7 @@ const TableSampleClients = ({ columns }) => {
   // const router = useRouter()
   const [id, setid] = useState()
   const [Loading, setLoading] = useState(false)
-  const perPage = 5
+  const perPage = 15
   const [notificationnActive, setNotificationnActive] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
   const [uploadProgress, setUploadProgress]: any = useState(100)
@@ -40,12 +42,27 @@ const TableSampleClients = ({ columns }) => {
   const clientsPaginated = clients.slice(perPage * currentPage, perPage * (currentPage + 1))
 
   const numPages = Math.round(clients.length / perPage)
-console.log();
+  console.log()
 
   const pagesList = []
 
   for (let i = 0; i < numPages; i++) {
     pagesList.push(i)
+  }
+
+  const handelSearchInputChanged = (e) => {
+    if (e.key == 'Enter' && e.target.value != '')
+      clients.map((client, index) => {
+        if (
+          client.id == e.target.value ||
+          client.titleEn == e.target.value ||
+          client.titleAr == e.target.value
+        ) {
+          setInd(index)
+          setIsModalInfoActive(true)
+        }
+      })
+    return
   }
   const handleModalAction = async () => {
     setLoading(true)
@@ -272,7 +289,7 @@ console.log();
                     />
                   </div>
                 </div>
-                <div className="flex items-center justify-center w-full gap-3">
+                <div className="flex flex-col items-center justify-center w-full gap-3">
                   <label
                     htmlFor="dropzone-file"
                     className="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer h-44 bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
@@ -345,6 +362,38 @@ console.log();
           ) : (
             ''
           )}
+
+          <div className="pb-4 mb-4 bg-white dark:bg-gray-900">
+            <label htmlFor="table-search" className="sr-only">
+              Search
+            </label>
+            <div className="relative mt-1">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg
+                  className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                  />
+                </svg>
+              </div>
+              <input
+                onKeyDown={handelSearchInputChanged}
+                type="text"
+                id="table-search"
+                className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Search for items"
+              />
+            </div>
+          </div>
           <table>
             <thead>
               <tr>

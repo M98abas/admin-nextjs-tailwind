@@ -15,7 +15,7 @@ import MomentP from '../MomentP'
 
 const TableSampleClients = ({ columns }) => {
   const { clients } = useSampleClients('admin')
-  console.log(clients.length)
+  console.log(clients)
 
   const [id, setid] = useState()
   const [email, setEmail] = useState('')
@@ -193,12 +193,12 @@ const TableSampleClients = ({ columns }) => {
                     htmlFor="role"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Role
+                    Rule
                   </label>
                   <select
                     data-te-select-init
                     onChange={(e: any) => setRolesId(parseInt(e.target.value))}
-                    defaultValue={clients[ind].rolesId}
+                    defaultValue={clients[ind]?.rolesId}
                     id="countries"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   >
@@ -249,10 +249,7 @@ const TableSampleClients = ({ columns }) => {
                 <tr key={client.id}>
                   <td data-label="nickName">{client.name}</td>
                   <td data-label="nickName">{client.email}</td>
-                  <td data-label="Name">
-                    Admin
-                    {/* {client.roles.name != null ? client.roles[0]?.name : 'Admin'} */}
-                  </td>
+                  <td data-label="Name">{client?.Roles?.name}</td>
                   <td data-label="Created" className="lg:w-1 whitespace-nowrap">
                     <small className="text-gray-500 d ark:text-slate-400">
                       <MomentP dateValue={client.created_at} />

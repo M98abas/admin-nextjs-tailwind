@@ -83,7 +83,7 @@ const TableSampleClients = ({ columns }) => {
 
   const clientsPaginated = clients.slice(perPage * currentPage, perPage * (currentPage + 1))
 
-  const numPages = Math.round(clients.length / perPage)
+  const numPages = Math.ceil(clients.length / perPage)
 
   const pagesList = []
 
@@ -101,10 +101,19 @@ const TableSampleClients = ({ columns }) => {
   const handleSearchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value.toLowerCase())
   }
-
+  const handleItemClick = (id: string) => {
+    const selectedItem = clients.findIndex((client: any) => client.id === id)
+    if (selectedItem !== -1) {
+      // console.log(selectedItem)
+      // Assuming setInd is used to set the selected item or index
+      setInd(selectedItem) // or setInd(clients.indexOf(selectedItem)) if you still need the index
+      setIsModalInfoActive(true)
+    }
+  }
   const filteredItems = clients.filter(
     (item: any) =>
       item.titleAr.toLowerCase().includes(searchTerm) ||
+      item.barCode.toLowerCase().includes(searchTerm) ||
       item.titleEn.toLowerCase().includes(searchTerm)
   )
 
@@ -784,11 +793,10 @@ const TableSampleClients = ({ columns }) => {
                   {/* Dropdown content */}
                   {filteredItems.map((item: any, index: any) => (
                     <a
-                      key={index}
+                      key={item.id}
                       href="#"
                       onClick={() => {
-                        setInd(index)
-                        setIsModalInfoActive(true)
+                        handleItemClick(item.id)
                       }}
                       className="block px-4 py-2 text-gray-700 rounded-md cursor-pointer hover:bg-gray-100 active:bg-blue-100"
                     >

@@ -63,6 +63,7 @@ export type Transaction = {
 
 export type Client = {
   id: number
+  phoneNumber: string
   avatar: string
   login: string
   company: string

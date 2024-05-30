@@ -19,6 +19,7 @@ const TablesPage = () => {
   const [notificationnActive, setNotificationnActive] = useState(false)
 
   const [enabled, setEnabled] = useState(false)
+  const [whenResult, setWhenResult] = useState(false)
   const [title, setTitle] = useState('')
   const [message, setMessage] = useState('')
   const [sendDate, setSendDate] = useState('')
@@ -58,7 +59,7 @@ const TablesPage = () => {
   const handleModalAction = async () => {
     setLoading(true)
 
-    await ApiAddData('notification', { title, message, sendDate }, (data) => {
+    await ApiAddData('notification', { title, message, sendDate, now: whenResult }, (data) => {
       if (data.errMsg != '')
         return (
           <>
@@ -161,20 +162,38 @@ const TablesPage = () => {
                     </div>
                     <div>
                       <label
+                        htmlFor="email"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        When
+                      </label>
+                      <select
+                        id="countries"
+                        defaultValue={`${whenResult}`}
+                        onChange={(e: any) => setWhenResult(e.target.value)}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      >
+                        <option value={'Checked'}>Choose a Status</option>
+                        <option value="true">Now</option>
+                        <option value="false">Later</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label
                         htmlFor="phoneNumber"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
                         sendDate
                       </label>
                       <div className="relative max-w-sm">
-                        <DatePicker
-                          options={options}
-                          onChange={(dateSelected: any) => {
-                            setSendDate(dateSelected)
+                        <input
+                          type="date"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          id="Date"
+                          onChange={(e) => {
+                            setSendDate(e.target.value)
                             setEnabled(true)
                           }}
-                          show={show}
-                          setShow={(e: boolean) => setShow(e)}
                         />
                       </div>
                     </div>

@@ -64,7 +64,7 @@ const TableSampleClients = ({ columns }) => {
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
   const [isModalTrashActive, setIsModalTrashActive] = useState(false)
 
-  const perPage = 5
+  const perPage = 15
   const [notificationnActive, setNotificationnActive] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
 

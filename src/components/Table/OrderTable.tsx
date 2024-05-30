@@ -4,7 +4,6 @@ import {
   mdiSquareEditOutline,
   mdiTrashCan,
   mdiDownloadCircleOutline,
-  mdiExportVariant,
   mdiExclamation,
   mdiCheckCircleOutline,
   mdiPlusCircleOutline,
@@ -47,6 +46,9 @@ const TableSampleClients = ({ columns }) => {
   for (let i = 0; i < numPages; i++) {
     pagesList.push(i)
   }
+  const [isOpen, setIsOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
   const [isModalInfoActiveUpdate, setIsModalInfoActiveUpdate] = useState(false)
   const [isModalInvoActive, setIsModalInvoActive] = useState(false)
@@ -77,6 +79,29 @@ const TableSampleClients = ({ columns }) => {
       setLoading(false)
     })
   }
+
+  const handleItemClick = (id: string) => {
+    const selectedItem = clients.findIndex((client: any) => client.id === id)
+    if (selectedItem !== -1) {
+      // console.log(selectedItem)
+      // Assuming setInd is used to set the selected item or index
+      setInd(selectedItem) // or setInd(clients.indexOf(selectedItem)) if you still need the index
+      setIsModalInfoActive(true)
+    }
+  }
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen)
+  }
+
+  const handleSearchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value.toLowerCase())
+  }
+
+  const filteredItems = clients.filter(
+    (item: any) =>
+      item?.id.toLowerCase().includes(searchTerm) || item?.users.phoneNumber.includes(searchTerm)
+  )
 
   /**
    *
@@ -160,10 +185,10 @@ const TableSampleClients = ({ columns }) => {
     setIsModalActive(false)
   }
 
-  // Add Basket for older
+  // Add Basket for older 
   const handleModalActionUpdate = async () => {
     setLoading(true)
-    const resDate: any = `${receivedDate}T${timePicked}`
+    // const resDate: any = `${receivedDate}`
     // resDate = Date.parse(resDate)
     // console.log(receivedDate[0], timePicked, resDate)
 
@@ -172,7 +197,7 @@ const TableSampleClients = ({ columns }) => {
       {
         id: clients[ind]?.id,
         basket: [{ quantity, descripption, productsId: productId[0] }],
-        receivedDate: resDate,
+        receivedDate,
         isPaid,
       },
       (data: any) => {
@@ -724,36 +749,43 @@ const TableSampleClients = ({ columns }) => {
             ''
           )}
 
-          <div className="flex items-center justify-between p-3 align-middle">
-            <div className="pb-4 mb-4 bg-white dark:bg-gray-900">
+          <div className="flex items-center justify-between p-3 align-middle ">
+            <div className="relative bg-white dark:bg-gray-900">
               <label htmlFor="table-search" className="sr-only">
                 Search
               </label>
-              <div className="relative mt-1">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <svg
-                    className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                    />
-                  </svg>
-                </div>
+              <div
+                className={`${
+                  isOpen ? 'h-90 overflow-scroll w-100 ' : 'h-12 overflow-hidden w-80'
+                } space-y-1 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 `}
+              >
+                {/* Search input */}
                 <input
-                  onKeyDown={handelSearchInputChanged}
+                  onChange={handleSearchInput}
+                  onClick={toggleDropdown}
+                  value={searchTerm}
+                  className="block w-full px-2 text-gray-800 border border-gray-300 rounded-md focus:outline-none"
                   type="text"
-                  id="table-search"
-                  className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Search for items"
+                  placeholder="Search items"
+                  autoComplete="off"
                 />
+                {isOpen && (
+                  <>
+                    {/* Dropdown content */}
+                    {filteredItems.map((item: any) => (
+                      <a
+                        key={item.id}
+                        href="#"
+                        onClick={(e) => {
+                          handleItemClick(item.id)
+                        }}
+                        className="block px-4 py-2 text-gray-700 rounded-md cursor-pointer hover:bg-gray-100 active:bg-blue-100"
+                      >
+                        {item.id} - {item.users?.phoneNumber}
+                      </a>
+                    ))}
+                  </>
+                )}{' '}
               </div>
             </div>
             <div className="p-2 text-white transition-all delay-100 bg-blue-800 rounded hover:bg-blue-300">

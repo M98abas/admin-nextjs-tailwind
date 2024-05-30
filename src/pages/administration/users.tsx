@@ -13,7 +13,7 @@ const TablesPage = () => {
   const columns: Array<string> = [
     'Full name',
     'nickName',
-    'email',
+      // 'email',
     'phoneNumber',
     'Created at',
     'actions',

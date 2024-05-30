@@ -1,4 +1,4 @@
-import { mdiPlus, mdiTableBorder } from '@mdi/js'
+import { mdiMonitorCellphone, mdiPlus, mdiTableBorder } from '@mdi/js'
 import Head from 'next/head'
 import React, { ReactElement, useEffect, useState } from 'react'
 import Button from '../../components/Button'
@@ -12,6 +12,7 @@ import CardBoxModal from '../../components/CardBox/Modal'
 import { ApiAddData, ApiGetData } from '../../../api'
 import Datepicker from 'tailwind-datepicker-react'
 import { Select } from 'antd'
+import NotificationBar from '../../components/NotificationBar'
 
 const TablesPage = () => {
   const columns: Array<string> = ['Target', 'value', 'End at', 'Created At', 'actions']
@@ -28,6 +29,8 @@ const TablesPage = () => {
   const [Loading, setLoading] = useState(false)
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
   const [show, setShow] = useState(false)
+
+  const [notificationnActiveIssue, setNotificationnActiveIssue] = useState(false)
 
   const getData = async (route: any) => {
     console.log(route)
@@ -46,35 +49,6 @@ const TablesPage = () => {
     return
   }
 
-  // Date Picker
-  const options: any = {
-    title: 'Pick date',
-    autoHide: true,
-    todayBtn: false,
-    clearBtn: true,
-    maxDate: new Date('2030-08-01'),
-    minDate: new Date(),
-    theme: {
-      background: 'bg-white dark:bg-black-800',
-      todayBtn: '',
-      clearBtn: '',
-      icons: '',
-      text: '',
-      disabledText: 'bg-blue-100',
-      input: '',
-      inputIcon: '',
-      selected: 'bg-blue-500',
-    },
-    icons: {
-      // () => ReactElement | JSX.Element
-      prev: () => <span>Previous</span>,
-      next: () => <span>Next</span>,
-    },
-    datepickerClassNames: 'top-12',
-    defaultDate: new Date(),
-    language: 'en',
-  }
-
   const handleModalAction = async () => {
     setError(false)
     if (value == 0 && target == '') {
@@ -82,6 +56,13 @@ const TablesPage = () => {
       return
     }
     setLoading(true)
+
+    if (end_at == '' || target == '' || end_at == '' || target == '') {
+      setNotificationnActiveIssue(true)
+      setLoading(!true)
+
+      return
+    }
     await ApiAddData('discount', { value, end_at, target, ids, constValue }, (data: any) => {
       if (data.error)
         return (
@@ -106,7 +87,6 @@ const TablesPage = () => {
   }
   const handleSelect = (value: any) => {
     console.log(value)
-
     setIds(value)
     return
   }
@@ -142,6 +122,15 @@ const TablesPage = () => {
                 onCancel={() => setIsModalInfoActive(false)}
               >
                 <form>
+                  <div onClick={() => setNotificationnActiveIssue(false)}>
+                    {notificationnActiveIssue ? (
+                      <NotificationBar color="info" icon={mdiMonitorCellphone}>
+                        There something wrong, kindly check data
+                      </NotificationBar>
+                    ) : (
+                      ''
+                    )}
+                  </div>
                   <div className="grid gap-6 mb-6 md:grid-cols-2">
                     <div>
                       <label
@@ -184,13 +173,11 @@ const TablesPage = () => {
                       </label>
                       <div>
                         <div className="relative max-w-sm">
-                          <Datepicker
-                            options={options}
-                            onChange={(dateSelected: any) => {
-                              setEnd_at(dateSelected)
-                            }}
-                            show={show}
-                            setShow={(e: boolean) => setShow(e)}
+                          <input
+                            type="date"
+                            id="date"
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            onChange={(e: any) => setEnd_at(e.target.value)}
                           />
                         </div>
                       </div>

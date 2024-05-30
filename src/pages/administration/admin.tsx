@@ -13,7 +13,7 @@ import { ApiAddData, ApiGetData } from '../../../api'
 // import axios, { AxiosRequestConfig } from 'axios'
 
 const TablesPage = () => {
-  const columns: Array<string> = ['name', 'email', 'Role','Created at', 'actions']
+  const columns: Array<string> = ['name', 'email', 'Rule', 'Created at', 'actions']
 
   const [rolesData, setRoleData] = useState([])
   const [enabled, setEnabled] = useState(false)
@@ -91,7 +91,7 @@ const TablesPage = () => {
             <CardBox className="mb-6" hasTable>
               <TableSampleClients columns={columns} />
               <CardBoxModal
-                title="Add Course"
+                title="Add new Admin"
                 buttonColor="info"
                 buttonLabel="Done"
                 classData="xl:w-8/12"
@@ -155,7 +155,7 @@ const TablesPage = () => {
                         htmlFor="levelOfExperience"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Roles
+                        Rule
                       </label>
                       <select
                         data-te-select-init

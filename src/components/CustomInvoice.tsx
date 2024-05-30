@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
+import MomentP from './MomentP'
+import moment from 'moment'
 
 const CustomInvoice = ({ invoiceData }: any) => {
   const [pdfGenerated, setPdfGenerated] = useState(false)
@@ -40,22 +42,23 @@ const CustomInvoice = ({ invoiceData }: any) => {
           <div className="container relative">
             <div className="p-12 bg-white rounded-3xl">
               <div className="flex flex-wrap items-center justify-between gap-6 mb-4">
-                <h2 className="text-2xl font-semibold">Invoice</h2>
-                <img src="favicon.png" alt="" width={90} height={120} />
+                <h2 className="text-2xl font-semibold"></h2>
+                <img src="blueLogo.png" alt="" width={300} height={120} />
               </div>
               <hr />
-              <div className="flex flex-wrap items-center justify-between gap-6 py-4">
+              <div className="flex flex-wrap items-center justify-between gap-6 py-4" dir="rtl">
                 <h5 className="text-base font-normal">
-                  <span className="font-bold">Date:</span> 05/12/2020
+                  <span className="font-bold">التاريخ:</span>{' '}
+                  {moment(invoiceData.created_at).format('YYYY/MM/DD')}
                 </h5>
-                <h5 className="text-base font-normal">
+                {/* <h5 className="text-base font-normal">
                   <span className="font-bold">Invoice No:</span> {invoiceData.id}
-                </h5>
+                </h5> */}
               </div>
               <hr />
-              <div className="flex flex-wrap items-center justify-between gap-6 mt-4">
+              <div className="flex flex-wrap items-center justify-between gap-6 mt-4" dir="rtl">
                 <div>
-                  <h4 className="text-base font-bold">Invoice To:</h4>
+                  <h4 className="text-base font-bold">الى:</h4>
                   <p className="font-normal font-sm">
                     {invoiceData.Addresses?.district} - {invoiceData.Addresses?.street}
                     <br />
@@ -86,7 +89,8 @@ const CustomInvoice = ({ invoiceData }: any) => {
                   </thead>
                   <tbody className="bg-white">
                     {invoiceData.order_list.map((order: any, index: any) => {
-                      total += total + parseInt(order.Products.price_cell) * parseInt(order.amount)
+                      total +=
+                        total + parseInt(order.Products.price_cell) * parseInt(order.quantity)
                       return (
                         <tr className="text-center" key={index}>
                           <td className="p-5 text-base font-medium border-white border-s-2">
@@ -96,10 +100,10 @@ const CustomInvoice = ({ invoiceData }: any) => {
                             IQD {order.Products.price_cell}
                           </td>
                           <td className="p-5 text-base font-medium border-white border-s-2">
-                            {order.amount}
+                            {order.quantity}
                           </td>
                           <td className="p-5 text-base font-medium border-white border-s-2">
-                            IQD {parseInt(order.Products.price_cell) * parseInt(order.amount)}
+                            IQD {parseInt(order.Products.price_cell) * parseInt(order.quantity)}
                           </td>
                         </tr>
                       )
@@ -116,20 +120,37 @@ const CustomInvoice = ({ invoiceData }: any) => {
                 </table>
               </div>
 
-              <div className="flex flex-wrap justify-between gap-6 mt-28">
+              <div className="flex flex-wrap justify-between gap-6 mt-28" dir="rtl">
                 <div>
-                  <span className="text-lg font-bold">Payment Info:</span>
-                  <p className="pt-2 text-sm font-medium">
-                    Account No: <span className="font-bold">Credit</span>
+                  <span className="text-4xl font-bold size-30 text-[#3aa2da]">امير و مصطفى</span>
+                  <p className="pt-2 text-2xl font-medium text-[#3aa2da] mt-1 mb-3">
+                    المؤسسين التنفيذيين
                   </p>
-                  <p className="text-sm font-medium">
-                    Name: <span className="font-bold">1CC Driver</span>
-                  </p>
+                  <div className="flex justify-between w-96">
+                    <div className="flex flex-col gap-3">
+                      <p className="text-sm font-medium">
+                        رقم الهاتف: <span className="font-bold"></span>
+                      </p>
+                      <p className="text-sm font-medium">
+                        ايميل: <span className="font-bold"></span>
+                      </p>
+                    </div>
+                    <p>Sign</p>
+                  </div>
+                  <br />
+                  <div className="flex flex-col gap-3">
+                    <p className="text-sm font-medium">
+                      البريد الالكتروني: <span className="font-bold"></span>
+                    </p>
+                    <p className="text-sm font-medium">
+                      مقر الشركة: <span className="font-bold"></span>
+                    </p>
+                  </div>
                   {/* <p className="text-sm font-medium">
                     Bank Account: <span className="font-bold">0123 456 7890</span>
                   </p> */}
                 </div>
-
+                <img src="./bllackLogo.png" alt="LOgo" width={400} />
                 <div></div>
               </div>
             </div>

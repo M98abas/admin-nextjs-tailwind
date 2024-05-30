@@ -15,6 +15,8 @@ export const ApiLogin = (route, info, callback) => {
   axios
     .post(`${BASE_URL}/${route}/login`, data, { headers })
     .then((response) => {
+      console.log(response)
+
       const result = response.data
       if (result.status) {
         callback(result, null)
@@ -23,7 +25,33 @@ export const ApiLogin = (route, info, callback) => {
       }
     })
     .catch((error) => {
-      console.log('error', error)
+      console.error('Error:', error)
+
+      // Enhanced error handling
+      if (error.response) {
+        // Server responded with a status other than 200 range
+        console.error('Response data:', error.response.data)
+        console.error('Response status:', error.response.status)
+        console.error('Response headers:', error.response.headers)
+        callback(null, {
+          status: false,
+          message: 'Server error. Please try again later.',
+        })
+      } else if (error.request) {
+        // No response was received from the server
+        console.error('Request data:', error.request)
+        callback(null, {
+          status: false,
+          message: 'Network error. Please check your internet connection.',
+        })
+      } else {
+        // Something happened in setting up the request
+        console.error('Error message:', error.message)
+        callback(null, {
+          status: false,
+          message: 'An unknown error occurred. Please try again.',
+        })
+      }
     })
 }
 

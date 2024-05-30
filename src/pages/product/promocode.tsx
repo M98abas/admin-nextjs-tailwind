@@ -1,4 +1,4 @@
-import { mdiPlus, mdiTableBorder } from '@mdi/js'
+import { mdiMonitorCellphone, mdiPlus, mdiTableBorder } from '@mdi/js'
 import Head from 'next/head'
 import React, { ReactElement, useEffect, useState } from 'react'
 import Button from '../../components/Button'
@@ -11,6 +11,7 @@ import { getPageTitle } from '../../config'
 import CardBoxModal from '../../components/CardBox/Modal'
 import { ApiAddData, ApiGetData } from '../../../api'
 import Datepicker from 'tailwind-datepicker-react'
+import NotificationBar from '../../components/NotificationBar'
 
 const TablesPage = () => {
   const columns: Array<string> = [
@@ -27,6 +28,7 @@ const TablesPage = () => {
   //   initTE({ Select })
   const [text, setText] = useState('')
   const [end_at, setEnd_at] = useState('')
+  const [timeChangeing, setTimeChangeing] = useState('')
   const [target, setTarget] = useState('')
   const [minSpent, setMinSpent] = useState(0)
   const [percentage, setPercentage] = useState(0)
@@ -37,6 +39,7 @@ const TablesPage = () => {
   const [Loading, setLoading] = useState(false)
   const [category, setCategory] = useState([])
 
+  const [notificationnActiveIssue, setNotificationnActiveIssue] = useState(false)
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
   const [show, setShow] = useState(false)
 
@@ -47,45 +50,39 @@ const TablesPage = () => {
     return
   }
 
-  // Date Picker
-  const options: any = {
-    title: 'Pick date',
-    autoHide: true,
-    todayBtn: false,
-    clearBtn: true,
-    maxDate: new Date('2030-08-01'),
-    minDate: new Date(),
-    theme: {
-      background: 'bg-white dark:bg-black-800',
-      todayBtn: '',
-      clearBtn: '',
-      icons: '',
-      text: '',
-      disabledText: 'bg-blue-100',
-      input: '',
-      inputIcon: '',
-      selected: 'bg-blue-500',
-    },
-    icons: {
-      // () => ReactElement | JSX.Element
-      prev: () => <span>Previous</span>,
-      next: () => <span>Next</span>,
-    },
-    datepickerClassNames: 'top-12',
-    defaultDate: new Date(),
-    language: 'en',
-  }
-
   const handleModalAction = async () => {
     setError(false)
-    if (percentage == 0 && target == '') {
+    if (text == '' && target == '' && availableFor == 0) {
       setError(true)
       return
     }
     setLoading(true)
+    const dateTimeValue: any = `${end_at}T${timeChangeing}`
+    if (
+      text == '' ||
+      availableFor == 0 ||
+      target == '' ||
+      directTo == '' ||
+      end_at == '' ||
+      minSpent == 0
+    ) {
+      setNotificationnActiveIssue(true)
+      setLoading(!true)
+
+      return
+    }
     await ApiAddData(
       'promocode',
-      { text, percentage, availableFor, target, constValue, directTo, end_at, minSpent },
+      {
+        text,
+        percentage,
+        availableFor,
+        target,
+        constValue,
+        directTo,
+        end_at: dateTimeValue,
+        minSpent,
+      },
       (data) => {
         if (data.error)
           return (
@@ -140,21 +137,32 @@ const TablesPage = () => {
                 onConfirm={handleModalAction}
                 onCancel={() => setIsModalInfoActive(false)}
               >
+                {' '}
                 <form>
+                  <div onClick={() => setNotificationnActiveIssue(false)}>
+                    {notificationnActiveIssue ? (
+                      <NotificationBar color="info" icon={mdiMonitorCellphone}>
+                        There something wrong, kindly check data
+                      </NotificationBar>
+                    ) : (
+                      ''
+                    )}
+                  </div>
+
                   <div className="grid gap-6 mb-6 md:grid-cols-2">
                     <div>
                       <label
                         htmlFor="name"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Text
+                        PromoCode title
                       </label>
                       <input
                         type="text"
                         id="name"
                         onChange={(e) => setText(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="10%, 20% ...."
+                        placeholder="1ccFeb24"
                         required
                       />
                     </div>
@@ -176,17 +184,65 @@ const TablesPage = () => {
                     </div>
                     <div>
                       <label
+                        htmlFor="email"
+                        className="flex mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        End at
+                      </label>
+                      <div className="flex gap-5">
+                        <div className="relative max-w-sm">
+                          <input
+                            type="date"
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            id="date"
+                            onChange={(e: any) => {
+                              setEnd_at(e.target.value)
+                            }}
+                          />
+                        </div>
+                        <div className="flex">
+                          <input
+                            type="time"
+                            id="time"
+                            className="rounded-none rounded-s-lg bg-gray-50 border text-gray-900 leading-none focus:ring-blue-500 focus:border-blue-500 block flex-1 w-full text-sm border-gray-300 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            min="09:00"
+                            max="18:00"
+                            onChange={(e) => setTimeChangeing(e.target.value)}
+                            defaultValue={timeChangeing}
+                            required
+                          />
+                          <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-gray-300 rounded-s-0 border-s-0 rounded-e-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                            <svg
+                              className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                fill-rule="evenodd"
+                                d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
+                                clip-rule="evenodd"
+                              />
+                            </svg>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label
                         htmlFor="name"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Available for
+                        Available for people
                       </label>
                       <input
                         type="text"
                         id="name"
                         onChange={(e) => setAvailableFor(parseInt(e.target.value))}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="1,3,4,5..."
+                        placeholder="10,30,40,50..."
                         required
                       />
                     </div>
@@ -195,7 +251,7 @@ const TablesPage = () => {
                         htmlFor="name"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Const value
+                        Constant value (Amount)
                       </label>
                       <input
                         type="text"
@@ -211,7 +267,7 @@ const TablesPage = () => {
                         htmlFor="name"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        minimum Spent
+                        minimum Spent (Amount)
                       </label>
                       <input
                         type="text"
@@ -241,27 +297,6 @@ const TablesPage = () => {
                         <option value="Shippment">Shippment</option>
                       </select>
                     </div>
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="flex mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        End at
-                      </label>
-                      <div>
-                        <div className="relative max-w-sm">
-                          <Datepicker
-                            options={options}
-                            onChange={(dateSelected: any) => {
-                              setEnd_at(dateSelected)
-                            }}
-                            show={show}
-                            setShow={(e: boolean) => setShow(e)}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                 
                   </div>
                   {error ? (
                     <div

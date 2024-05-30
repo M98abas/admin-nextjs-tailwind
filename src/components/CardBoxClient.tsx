@@ -35,6 +35,7 @@ const CardBoxClient = (props: Props) => {
           <UserAvatar className="w-12 h-12 mb-6 md:mr-6 md:mb-0" username={props.client.fullName} />
           <div className="overflow-hidden text-center md:text-left">
             <h4 className="text-xl text-ellipsis">{props.client.fullName}</h4>
+            <p className="text-gray-500 dark:text-slate-400">{props.client.phoneNumber}</p>
             <p className="text-gray-500 dark:text-slate-400">
               <MomentP dateValue={props.client.created_at}></MomentP>
             </p>

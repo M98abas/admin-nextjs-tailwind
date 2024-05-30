@@ -17,7 +17,13 @@ import { useRouter } from 'next/router'
 const { Option } = Select
 
 const TablesPage = () => {
-  const columns: Array<string> = ['img', 'Title', 'description', 'created_at', 'actions']
+  const columns: Array<string> = [
+    'img',
+    'Medicine Name in Arabic',
+    'Description Arabic',
+    'created_at',
+    'actions',
+  ]
   const [uploadProgress, setUploadProgress] = useState(100)
   const [enabled, setEnabled] = useState(false)
   const [imgUrl, setImgUrl] = useState([])
@@ -27,18 +33,19 @@ const TablesPage = () => {
 
   const [titleAr, setTitleAr] = useState('')
   const [titleEn, setTitleEn] = useState('')
-  const [descriptionEn, setDescriptionEn] = useState('')
+  // const [descriptionEn, setDescriptionEn] = useState('')
   const [descriptionAr, setDescriptionAr] = useState('')
   const [mostItems, setMostItems] = useState(true)
   const [doctorRecommmand, setDoctorRecommmand] = useState(true)
   const [howToUse, setHowToUse] = useState('')
-  const [contentProduct, setContentProduct] = useState('')
+  // const [contentProduct, setContentProduct] = useState('')
   const [sintificNameEN, setSintificNameEN] = useState('')
   const [doses, setDoses] = useState('')
   const [barCode, setBarCode] = useState('')
   const [priceCell, setPriceCell] = useState(0.0)
   const [subCategoryId, setSubCategoryId] = useState(0)
   const [brandId, setBrandId] = useState(0)
+  const [brandName, setBrandName] = useState('')
   const [productTypeId, setProductTypeId] = useState(0)
   const [productType, setProductType] = useState([])
   const [Loading, setLoading] = useState(false)
@@ -49,7 +56,8 @@ const TablesPage = () => {
   const [productsTags, setProductsTags] = useState([])
   const [sideEffect, setSideEffect] = useState('')
   const [productsTagsId, setProductsTagsId] = useState([])
-
+  const [isOpen, setIsOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
   const handelChange: any = (indexSub: any) => {
     console.log(category[indexSub])
 
@@ -108,6 +116,20 @@ const TablesPage = () => {
     e.currentTarget.type = 'file'
   }
 
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen)
+  }
+
+  const handleSearchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value.toLowerCase())
+  }
+
+  const filteredItems = brand.filter(
+    (item: any) =>
+      item.titleAr.toLowerCase().includes(searchTerm) ||
+      item.titleEn.toLowerCase().includes(searchTerm)
+  )
+
   const imgbb = '807b79b03a554f95b5980b6b9d688013'
   const handleFileUpload = async (file: any) => {
     const formdata = new FormData()
@@ -128,7 +150,7 @@ const TablesPage = () => {
     try {
       const response = await axios(requestOptions)
       // console.log(response, response.data.data.url)
-        setEnabled(true)
+      setEnabled(true)
       setImgUrl([...imgUrl, response.data.data.url])
     } catch (error) {
       console.error(error)
@@ -141,10 +163,8 @@ const TablesPage = () => {
       titleAr == '' ||
       titleEn == '' ||
       imgUrl.length == 0 ||
-      descriptionEn == '' ||
       sintificNameEN == '' ||
       howToUse == '' ||
-      contentProduct == '' ||
       doses == '' ||
       barCode == '' ||
       priceCell == 0 ||
@@ -156,10 +176,8 @@ const TablesPage = () => {
         titleAr == '',
         titleEn == '',
         imgUrl.length == 0,
-        descriptionEn == '',
         sintificNameEN == '',
         howToUse == '',
-        contentProduct == '',
         doses == '',
         barCode == '',
         priceCell == 0,
@@ -182,11 +200,11 @@ const TablesPage = () => {
         imgUrl,
         doctorRecommmand,
         descriptionAr,
-        descriptionEn,
+        descriptionEn: descriptionAr,
         sintificNameAR: sintificNameEN,
         sintificNameEN,
         howToUse,
-        contentProduct,
+        contentProduct: sintificNameEN,
         mostItems,
         doses,
         barCode,
@@ -208,8 +226,6 @@ const TablesPage = () => {
           setTitleAr('')
           setTitleEn('')
           setImgUrl([])
-          setDescriptionEn('')
-          setContentProduct('')
           setSintificNameEN('')
           setHowToUse('')
           setMostItems(false)
@@ -334,29 +350,13 @@ const TablesPage = () => {
                         required
                       />
                     </div>
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Description English
-                      </label>
-                      <input
-                        type="text"
-                        id="email"
-                        onChange={(e) => setDescriptionEn(e.target.value)}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Description English"
-                        required
-                      />
-                    </div>
                     {/* <div></div> */}
                     <div>
                       <label
                         htmlFor="email"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Scientific Name Arabic
+                        Content Products
                       </label>
                       <input
                         type="text"
@@ -395,7 +395,7 @@ const TablesPage = () => {
                         id="email"
                         onChange={(e) => setSideEffect(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
+                        placeholder="this item will lead you to feel pain"
                         required
                       />
                     </div>
@@ -417,6 +417,25 @@ const TablesPage = () => {
                         <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                       </label>
                     </div>
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Need to Prescription
+                      </label>
+
+                      <label className="inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          value=""
+                          onChange={(e) => setDoctorRecommmand(Boolean(e.target.value))}
+                          className="sr-only peer"
+                        />
+                        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                      </label>
+                    </div>
+
                     <div>
                       <label
                         htmlFor="email"
@@ -447,7 +466,7 @@ const TablesPage = () => {
                         id="email"
                         onChange={(e) => setBarCode(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
+                        placeholder="123ABC"
                         required
                       />
                     </div>
@@ -463,10 +482,11 @@ const TablesPage = () => {
                         id="email"
                         onChange={(e) => setPriceCell(parseInt(e.target.value))}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
+                        placeholder="12000, 12500, 2000 or 12.500"
                         required
                       />
                     </div>
+                    <div></div>
                     <div></div>
                     <div></div>
                     <div></div>
@@ -477,40 +497,6 @@ const TablesPage = () => {
                     <div></div>
                     <div></div>
 
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Need to Prescription
-                      </label>
-
-                      <label className="inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          value=""
-                          onChange={(e) => setDoctorRecommmand(Boolean(e.target.value))}
-                          className="sr-only peer"
-                        />
-                        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                      </label>
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Content Product
-                      </label>
-                      <input
-                        type="text"
-                        id="email"
-                        onChange={(e) => setContentProduct(e.target.value)}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Any data"
-                        required
-                      />
-                    </div>
                     <div>
                       <label
                         htmlFor="countries"
@@ -533,27 +519,52 @@ const TablesPage = () => {
                         ))}
                       </select>
                     </div>
-                    <div>
+                    <div className="relative">
                       <label
                         htmlFor="countries"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
                         Select Brand(s)
                       </label>
-                      <select
-                        data-te-select-init
-                        defaultValue="none"
-                        onChange={(e: any) => setBrandId(e.target.value)}
-                        id="countries"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      <div
+                        className={`absolute right-0 w-full ${
+                          isOpen ? 'h-40 overflow-scroll' : 'h-12 overflow-hidden'
+                        } space-y-1 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5`}
                       >
-                        <option value="none">Choose The target</option>
-                        {brand?.map((data: any) => (
-                          <option value={data.id} key={data.id}>
-                            {data.titleEn}
-                          </option>
-                        ))}
-                      </select>
+                        {/* Search input 8AM will sent
+                        - note this will sent in 8AM
+                        - even no or sedual
+                        */}
+                        <input
+                          onChange={handleSearchInput}
+                          onClick={toggleDropdown}
+                          value={searchTerm}
+                          className="block w-full px-2 py-2 text-gray-800 border border-gray-300 rounded-md focus:outline-none"
+                          type="text"
+                          // defaultValue={brandName}
+                          placeholder={brandName == '' ? 'Search items' : brandName}
+                          autoComplete="off"
+                        />
+                        {isOpen && (
+                          <>
+                            {/* Dropdown content */}
+                            {filteredItems.map((item: any) => (
+                              <a
+                                key={item.id}
+                                href="#"
+                                onClick={(e) => {
+                                  setBrandId(item.id)
+                                  setBrandName(`${item.titleAr} - ${item.titleEn}`)
+                                  setIsOpen(false)
+                                }}
+                                className="block px-4 py-2 text-gray-700 rounded-md cursor-pointer hover:bg-gray-100 active:bg-blue-100"
+                              >
+                                {item.titleAr} - {item.titleEn}
+                              </a>
+                            ))}
+                          </>
+                        )}{' '}
+                      </div>
                     </div>
                     <div>
                       <label

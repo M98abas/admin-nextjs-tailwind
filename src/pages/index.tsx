@@ -21,14 +21,17 @@ const Dashboard = () => {
   // const { clients } = useSampleClients()
   const router: any = useRouter()
 
+  const [createdDate, setCreatedDate] = useState('')
+  const [EndAtDate, setEndAtDate] = useState('')
   const [order, setOrder] = useState([])
-  const handelChangeDate: any = async (e: any) => {
-    await ApiAddData(`order/dateOrder`, { createdDate: e.target.value }, (data) => {
-      // console.log(data)
+
+  const handelChangeDate: any = async () => {
+    await ApiAddData(`order/dateOrder`, { createdDate, EndAtDate }, (data) => {
+      console.log(data)
 
       setOrder(data.data)
     })
-    console.log(e.target.value)
+    // console.log(e.target.value)
   }
   // const clientsListed = clients.slice(0, 4)
   const [clients, setClient]: any = useState(0)
@@ -114,13 +117,28 @@ const Dashboard = () => {
           ))}
         </div>
         <SectionTitleLineWithButton icon={mdiCartOutline} title="Orders Statics" main>
-          <input
-            type="date"
-            name="date"
-            id="date"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-60 ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            onChange={handelChangeDate}
-          />
+          <div className="flex gap-2">
+            <button
+              onClick={handelChangeDate}
+              className="p-3 transition-all delay-75 bg-blue-300 rounded-md hover:bg-blue-500"
+            >
+              Click
+            </button>
+            <input
+              type="date"
+              name="date"
+              id="date"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-60 ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              onChange={(e) => setCreatedDate(e.target.value)}
+            />
+            <input
+              type="date"
+              name="date"
+              id="date"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-60 ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              onChange={(e) => setEndAtDate(e.target.value)}
+            />
+          </div>
         </SectionTitleLineWithButton>
 
         <div className="grid grid-cols-1 gap-6 mb-6 lg:grid-cols-3">

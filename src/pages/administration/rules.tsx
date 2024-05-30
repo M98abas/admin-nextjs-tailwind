@@ -95,10 +95,10 @@ const TablesPage = () => {
       {!Loading ? (
         <>
           <Head>
-            <title>{getPageTitle('Permissions')}</title>
+            <title>{getPageTitle('Rules')}</title>
           </Head>
           <SectionMain>
-            <SectionTitleLineWithButton icon={mdiTableBorder} title="Permissions" main>
+            <SectionTitleLineWithButton icon={mdiTableBorder} title="Rules" main>
               <Button
                 onClick={() => setIsModalInfoActive(true)}
                 label="Add New"
@@ -112,7 +112,7 @@ const TablesPage = () => {
             <CardBox className="mb-6" hasTable>
               <TableSampleClients columns={columns} />
               <CardBoxModal
-                title="Add Course"
+                title="Add new Rule"
                 buttonColor="info"
                 buttonLabel="Done"
                 classData="xl:w-8/12"
@@ -144,7 +144,7 @@ const TablesPage = () => {
                         htmlFor="email"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Description
+                        Rule Description
                       </label>
                       <input
                         type="text"
@@ -201,7 +201,7 @@ const TablesPage = () => {
                               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                               htmlFor="labelname"
                             >
-                              Desc.
+                              Route Description
                             </label>
                             <input
                               id="labelname"

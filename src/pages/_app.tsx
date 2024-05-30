@@ -38,9 +38,9 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 
   const description = 'OneCC'
 
-  const url = 'https://justboil.github.io/admin-one-react-tailwind/'
+  // const url = 'https://justboil.github.io/admin-one-react-tailwind/'
 
-  const image = `https://static.justboil.me/templates/one/repo-tailwind-react.png`
+  const image = `./dashboard.png`
 
   const imageWidth = '1920'
 
@@ -53,8 +53,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
           <Head>
             <meta name="description" content={description} />
 
-            <meta property="og:url" content={url} />
-            <meta property="og:site_name" content="JustBoil.me" />
+            <meta property="og:site_name" content="1CC" />
             <meta property="og:title" content={title} />
             <meta property="og:description" content={description} />
             <meta property="og:image" content={image} />
@@ -69,7 +68,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
             <meta property="twitter:image:width" content={imageWidth} />
             <meta property="twitter:image:height" content={imageHeight} />
 
-            <link rel="icon" href="/admin-one-react-tailwind/favicon.png" />
+            <link rel="icon" href="./favicon.ico" />
           </Head>
 
           <Script

@@ -89,8 +89,10 @@ const TableSampleClients = ({ columns }) => {
   const handelDeleteAction = async () => {
     setLoading(true)
     await ApiGetData(`discount/delete/${id}`, (data) => {
-      if (data.error) setError(true)
-      setLoading(false)
+      if (data.error) {
+        setError(true)
+        setLoading(false)
+      }
       return
     })
 
@@ -102,8 +104,15 @@ const TableSampleClients = ({ columns }) => {
   const handleModalAction = async () => {
     setLoading(true)
     await ApiUpdateData('discount', { id, value, end_at, target, ids }, (data) => {
-      if (data.error) return setError(true)
+      console.log('Date Table -->', data)
+
+      if (data) {
+        setError(true)
+        // setLoading(false)
+        // return
+      }
       setLoading(false)
+
       return
     })
     setIsModalInfoActive(false)
@@ -212,7 +221,7 @@ const TableSampleClients = ({ columns }) => {
                   </label>
                   <select
                     data-te-select-init
-                    defaultValue="none"
+                    defaultValue={clients[ind]?.target}
                     onChange={(e: any) => handelChange(e.target.value)}
                     id="countries"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"

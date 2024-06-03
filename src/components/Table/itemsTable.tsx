@@ -62,13 +62,13 @@ const TableSampleClients = ({ columns }) => {
     await ApiGetData('subCategory', (data: any) => {
       setSubCategory(data)
     })
-    await ApiGetData('brand', (data: any) => {
+    await ApiGetData('brand/api', (data: any) => {
       setBrand(data)
     })
-    await ApiGetData('productType', (data: any) => {
+    await ApiGetData('productType/api', (data: any) => {
       setProductType(data)
     })
-    await ApiGetData('tags', (data: any) => {
+    await ApiGetData('tags/api', (data: any) => {
       setProductsTags(data)
     })
   }

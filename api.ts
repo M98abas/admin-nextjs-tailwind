@@ -87,6 +87,8 @@ export const ApiUpdateData = (route, info, callback) => {
   axios
     .put(`${BASE_URL}/${route}/update/${info.id}`, data, { headers })
     .then((response) => {
+      // console.log(response)
+
       const result = response.data
       if (result.status) {
         callback(result, null)
@@ -207,6 +209,7 @@ export const ApiGetData = (route, callback) => {
   const token = Cookies.get('token')
   const headers = {
     token,
+    // user: 'Client',
     'Content-Type': 'application/json',
   }
 

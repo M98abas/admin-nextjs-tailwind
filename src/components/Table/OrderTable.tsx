@@ -120,7 +120,9 @@ const TableSampleClients = ({ columns }) => {
   }
   // Get product
   const getData = async () => {
-    await ApiGetData('product', (data: any) => {
+    await ApiGetData('product/api', (data: any) => {
+      console.log(data)
+
       setProducts(data)
     })
   }
@@ -185,7 +187,7 @@ const TableSampleClients = ({ columns }) => {
     setIsModalActive(false)
   }
 
-  // Add Basket for older 
+  // Add Basket for older
   const handleModalActionUpdate = async () => {
     setLoading(true)
     // const resDate: any = `${receivedDate}`
@@ -602,11 +604,12 @@ const TableSampleClients = ({ columns }) => {
                     onChange={handleChangeSelectProduct}
                     defaultValue={[1]} // Set the default value as needed, but usually, it should be an empty array for multiple selection
                   >
-                    {products.map((option) => (
-                      <Option key={option.id} value={option.titleEn}>
-                        {option.titleEn}
-                      </Option>
-                    ))}
+                    {products &&
+                      products.map((option) => (
+                        <Option key={option.id} value={option.titleEn}>
+                          {option.titleEn}
+                        </Option>
+                      ))}
                   </Select>
                 </div>
                 <div>

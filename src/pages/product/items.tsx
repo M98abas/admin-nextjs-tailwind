@@ -67,16 +67,18 @@ const TablesPage = () => {
     return
   }
   const getData = async () => {
-    await ApiGetData('category', (data: any) => {
+    await ApiGetData('category/api', (data: any) => {
       setCategory(data)
     })
-    await ApiGetData('brand', (data: any) => {
+    await ApiGetData('brand/api', (data: any) => {
       setBrand(data)
     })
-    await ApiGetData('productType', (data: any) => {
+    await ApiGetData('productType/api', (data: any) => {
       setProductType(data)
     })
-    await ApiGetData('tags', (data: any) => {
+    await ApiGetData('tags/api', (data: any) => {
+      console.log(data)
+
       setProductsTags(data)
     })
   }
@@ -124,11 +126,13 @@ const TablesPage = () => {
     setSearchTerm(event.target.value.toLowerCase())
   }
 
-  const filteredItems = brand.filter(
-    (item: any) =>
-      item.titleAr.toLowerCase().includes(searchTerm) ||
-      item.titleEn.toLowerCase().includes(searchTerm)
-  )
+  const filteredItems =
+    brand &&
+    brand.filter(
+      (item: any) =>
+        item.titleAr.toLowerCase().includes(searchTerm) ||
+        item.titleEn.toLowerCase().includes(searchTerm)
+    )
 
   const imgbb = '807b79b03a554f95b5980b6b9d688013'
   const handleFileUpload = async (file: any) => {
@@ -624,11 +628,17 @@ const TablesPage = () => {
                         onChange={handleChangeSelect}
                         defaultValue={[]} // Set the default value as needed, but usually, it should be an empty array for multiple selection
                       >
-                        {productsTags.map((option) => (
-                          <Option key={option.id} value={option.id} style={{ textAlign: 'right' }}>
-                            {option.titleAr}
-                          </Option>
-                        ))}
+                        {productsTags !== null
+                          ? productsTags.map((option) => (
+                              <Option
+                                key={option.id}
+                                value={option.id}
+                                style={{ textAlign: 'right' }}
+                              >
+                                {option.titleAr}
+                              </Option>
+                            ))
+                          : ''}
                       </Select>
                     </div>
                     <div></div>

@@ -38,7 +38,7 @@ const TableSampleClients = ({ columns }) => {
 
   const clientsPaginated = clients.slice(perPage * currentPage, perPage * (currentPage + 1))
 
-  const numPages = Math.round(clients.length / perPage)
+  const numPages = Math.ceil(clients.length / perPage)
 
   const pagesList = []
   // Date Picker

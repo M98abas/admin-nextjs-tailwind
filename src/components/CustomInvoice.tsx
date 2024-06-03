@@ -41,19 +41,31 @@ const CustomInvoice = ({ invoiceData }: any) => {
         <div className="py-20 relative w-[70vw]">
           <div className="container relative">
             <div className="p-12 bg-white rounded-3xl">
-              <div className="flex flex-wrap items-center justify-between gap-6 mb-4">
-                <h2 className="text-2xl font-semibold"></h2>
+              <div
+                className="flex flex-wrap items-center justify-between gap-6 mb-4 border-b-8 border-black"
+                dir="rtl"
+              >
+                <div className="flex flex-col gap-3 font-tajawal">
+                  <h2 className="text-5xl">صيدلية 1 سيسي</h2>
+                  <h2 className="text-3xl">1CC Pharmacy</h2>
+                </div>
                 <img src="blueLogo.png" alt="" width={300} height={120} />
+                <div className="font-tajawal">
+                  <p>الرقم: 07853001111</p>
+                  <p>العنوان: النجف الاشرف</p>
+                  <p>MOWKE3MOMTAZ.COM</p>
+                </div>
               </div>
-              <hr />
-              <div className="flex flex-wrap items-center justify-between gap-6 py-4" dir="rtl">
-                <h5 className="text-base font-normal">
-                  <span className="font-bold">التاريخ:</span>{' '}
+              {/* <div className="w-full h-2 bg-black"></div> */}
+              <div
+                className="flex flex-col flex-wrap justify-between gap-6 py-4 items-right"
+                dir="rtl"
+              >
+                <h5 className="text-2xl font-bold">الفاتورة : # {invoiceData.id}</h5>
+                <p>
+                  <span className="font-bold">تاريخ الاصدار :</span>{' '}
                   {moment(invoiceData.created_at).format('YYYY/MM/DD')}
-                </h5>
-                {/* <h5 className="text-base font-normal">
-                  <span className="font-bold">Invoice No:</span> {invoiceData.id}
-                </h5> */}
+                </p>
               </div>
               <hr />
               <div className="flex flex-wrap items-center justify-between gap-6 mt-4" dir="rtl">
@@ -70,88 +82,100 @@ const CustomInvoice = ({ invoiceData }: any) => {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full mb-12 text-sm whitespace-pre border-collapse table-auto mt-14">
+                <table
+                  className="w-full mb-12 text-sm whitespace-pre border-collapse table-auto mt-14"
+                  dir="rtl"
+                >
                   <thead>
-                    <tr className="text-center text-black bg-gray-300">
-                      <th className="p-4 text-base font-semibold uppercase border-white border-s-2">
-                        Item Description
+                    <tr className="text-center text-black bg-white ">
+                      <th className="p-4 text-base font-semibold text-right uppercase border-white border-s-2">
+                        الوصف
                       </th>
-                      <th className="p-4 text-base font-semibold uppercase border-white border-s-2">
-                        Price
+                      <th className="p-4 text-base font-semibold text-center uppercase border-white border-s-2">
+                        الكمية
                       </th>
-                      <th className="p-4 text-base font-semibold uppercase border-white border-s-2">
-                        Qty
+                      <th className="p-4 text-base font-semibold text-center uppercase border-white border-s-2">
+                        السعر
                       </th>
-                      <th className="p-4 text-base font-semibold uppercase border-white border-s-2">
-                        Total
+                      <th className="p-4 text-base font-semibold text-center uppercase border-white border-s-2">
+                        الاجمالي
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white">
+                  <tbody className="bg-white" dir="rtl">
                     {invoiceData.order_list.map((order: any, index: any) => {
                       total +=
                         total + parseInt(order.Products.price_cell) * parseInt(order.quantity)
                       return (
-                        <tr className="text-center" key={index}>
-                          <td className="p-5 text-base font-medium border-white border-s-2">
-                            {order.Products.titleEn}
+                        <tr className="border-b-4 border-black" key={index}>
+                          <td className="p-5 text-base text-right border-white font- border-s-2">
+                            {order.Products.titleAr}
                           </td>
-                          <td className="p-5 text-base font-medium border-white border-s-2">
-                            IQD {order.Products.price_cell}
-                          </td>
-                          <td className="p-5 text-base font-medium border-white border-s-2">
+                          <td className="p-5 text-base font-medium text-center border-white border-s-2">
                             {order.quantity}
                           </td>
-                          <td className="p-5 text-base font-medium border-white border-s-2">
-                            IQD {parseInt(order.Products.price_cell) * parseInt(order.quantity)}
+                          <td className="p-5 text-base font-medium text-center border-white border-s-2">
+                            IQD {order.Products.price_cell.toLocaleString()}
+                          </td>
+                          <td className="p-5 text-base font-medium text-center border-white border-s-2">
+                            IQD{' '}
+                            {(
+                              parseInt(order.Products.price_cell) * parseInt(order.quantity)
+                            ).toLocaleString()}
                           </td>
                         </tr>
                       )
                     })}
                     <br />
-
-                    <tr>
-                      <td className="justify-center p-4 pb-4 text-base font-normal align-middle border border-white text-end">
-                        <span className="font-bold pe-12">Total :</span>
-                        {total} IQD
+                  </tbody>
+                  <tfoot className="text-center">
+                    <tr className="justify-center align-middle">
+                      <td></td>
+                      <td></td>
+                      <td className="text-left">
+                        <span>المبلغ الاجمالي : </span>
+                      </td>
+                      <td className="text-center">
+                        <span>{total.toLocaleString()}.00 IQD</span>
                       </td>
                     </tr>
-                  </tbody>
+                    <tr className="justify-center align-middle">
+                      <td></td>
+                      <td></td>
+                      <td className="text-left">
+                        <span>مبلغ الخصم : </span>
+                      </td>
+                      <td className="text-center">
+                        <span>{total - invoiceData.total_price}.00 IQD</span>
+                      </td>
+                    </tr>
+                    <tr className="justify-center align-middle">
+                      <td></td>
+                      <td></td>
+                      <td className="text-left">
+                        <span>المبلغ المستحق : </span>
+                      </td>
+                      <td className="text-center">
+                        <span>{total - (total - invoiceData.total_price)}.00 IQD</span>
+                      </td>
+                    </tr>
+                  </tfoot>
                 </table>
               </div>
 
-              <div className="flex flex-wrap justify-between gap-6 mt-28" dir="rtl">
-                <div>
-                  <span className="text-4xl font-bold size-30 text-[#3aa2da]">امير و مصطفى</span>
-                  <p className="pt-2 text-2xl font-medium text-[#3aa2da] mt-1 mb-3">
-                    المؤسسين التنفيذيين
+              <div className="flex flex-wrap justify-between h-40 gap-6 mt-28" dir="rtl">
+                <div className="flex flex-col gap-2">
+                  <p className="text-x">الاسم : {invoiceData.users.fullName}</p>
+                  <p className="text-x">الرقم : {invoiceData.users.phoneNumber}</p>
+                  <p className="text-x">
+                    العنوان : {invoiceData.Addresses?.district} - {invoiceData.Addresses?.street}
+                    {invoiceData.Addresses?.city}
                   </p>
-                  <div className="flex justify-between w-96">
-                    <div className="flex flex-col gap-3">
-                      <p className="text-sm font-medium">
-                        رقم الهاتف: <span className="font-bold"></span>
-                      </p>
-                      <p className="text-sm font-medium">
-                        ايميل: <span className="font-bold"></span>
-                      </p>
-                    </div>
-                    <p>Sign</p>
-                  </div>
-                  <br />
-                  <div className="flex flex-col gap-3">
-                    <p className="text-sm font-medium">
-                      البريد الالكتروني: <span className="font-bold"></span>
-                    </p>
-                    <p className="text-sm font-medium">
-                      مقر الشركة: <span className="font-bold"></span>
-                    </p>
-                  </div>
-                  {/* <p className="text-sm font-medium">
-                    Bank Account: <span className="font-bold">0123 456 7890</span>
-                  </p> */}
                 </div>
-                <img src="./bllackLogo.png" alt="LOgo" width={400} />
-                <div></div>
+              </div>
+              <br />
+              <div className="h-20 mt-5 text-center align-middle border-t-8 border-black">
+                <h1 className="justify-center mt-4 text-4xl">نتمنى لكم الصحة والعافية</h1>
               </div>
             </div>
           </div>

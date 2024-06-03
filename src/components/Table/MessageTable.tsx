@@ -9,7 +9,10 @@ const TableSampleClients = ({ socket }) => {
   const getData = async () => {
     await ApiGetData('chat', (data: any) => {
       console.log(data)
-
+      if (!data.status) {
+        // setClient([])127
+        setLoading(false)
+      }
       setClient(data)
     })
   }
@@ -217,33 +220,35 @@ const TableSampleClients = ({ socket }) => {
                     />
                   </div>
                 </div>
-                {clients.map((client: any, index: number) => (
-                  <div
-                    key={index}
-                    className="flex items-center p-2 mb-4 rounded-md cursor-pointer hover:bg-gray-100"
-                    onClick={() => {
-                      setInd(index)
-                      setConversation([])
-                      handleClick(client.id)
-                    }}
-                  >
-                    <div className="w-12 h-12 mr-3 bg-gray-300 rounded-full">
-                      <img
-                        src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato"
-                        alt="User Avatar"
-                        className="w-12 h-12 rounded-full"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h2 className="text-lg font-semibold">{client.phoneNumber}</h2>
-                      <p className="text-gray-800">
-                        {client.message.length > 0
-                          ? client.message[client.message.length - 1].content
-                          : ''}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                {clients.length == 0
+                  ? clients.map((client: any, index: number) => (
+                      <div
+                        key={index}
+                        className="flex items-center p-2 mb-4 rounded-md cursor-pointer hover:bg-gray-100"
+                        onClick={() => {
+                          setInd(index)
+                          setConversation([])
+                          handleClick(client.id)
+                        }}
+                      >
+                        <div className="w-12 h-12 mr-3 bg-gray-300 rounded-full">
+                          <img
+                            src="https://placehold.co/200x/ffa8e4/ffffff.svg?text=ʕ•́ᴥ•̀ʔ&font=Lato"
+                            alt="User Avatar"
+                            className="w-12 h-12 rounded-full"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <h2 className="text-lg font-semibold">{client.phoneNumber}</h2>
+                          <p className="text-gray-800">
+                            {client.message.length > 0
+                              ? client.message[client.message.length - 1].content
+                              : ''}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  : ''}
               </div>
             </div>
 

@@ -17,7 +17,7 @@ const SubCategory = () => {
   const router: any = useRouter()
   const { id } = router.query
   console.log(id)
-  
+
   const columns: Array<string> = [
     'img',
     'titleAr',
@@ -153,7 +153,7 @@ const SubCategory = () => {
                 title="Add New"
                 buttonColor="info"
                 buttonLabel="Done"
-                classData="xl:w-8/12"
+                classData="xl:w-8/12 overflow-scroll"
                 disabled={!enabled}
                 isActive={isModalInfoActive}
                 onConfirm={handleModalAction}
@@ -226,7 +226,7 @@ const SubCategory = () => {
                       />
                     </div>
                   </div>
-                  <div className="flex items-center justify-center w-full">
+                  <div className="flex flex-col items-center justify-center w-full gap-3">
                     <label
                       htmlFor="dropzone-file"
                       className="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer h-54 bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
@@ -270,6 +270,8 @@ const SubCategory = () => {
                         onChange={handleImageUpload}
                       />
                     </label>
+
+                    {imgUrl != '' ? <img src={imgUrl} alt="Img" /> : ''}
                   </div>
                 </form>
               </CardBoxModal>

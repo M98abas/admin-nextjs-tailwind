@@ -6,6 +6,9 @@ module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx}', './node_modules/tailwind-datepicker-react/dist/**/*.js'],
   darkMode: 'class', // or 'media' or 'class'
   theme: {
+    fontFamily: {
+      tajawal: ['Tajawal', 'sans-serif'],
+    },
     // invoiceColor: '#3aa2da',
     asideScrollbars: {
       light: 'light',

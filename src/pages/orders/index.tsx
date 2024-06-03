@@ -52,10 +52,10 @@ const TablesPage = () => {
   const [apartment, setApartment] = useState('')
 
   const getData = async () => {
-    await ApiGetData('product', (data: any) => {
+    await ApiGetData('product/api', (data: any) => {
       setProducts(data)
     })
-    await ApiGetData('clinet', (data: any) => {
+    await ApiGetData('clinet/api', (data: any) => {
       setUsers(data)
     })
   }

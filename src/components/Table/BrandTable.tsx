@@ -26,6 +26,8 @@ const TableSampleClients = ({ columns }) => {
   const [descriptionAr, setDescriptionAr] = useState('')
   const [titleEn, setTitleEn] = useState('')
   const [descriptionEn, setDescriptionEn] = useState('')
+  const [isOpen, setIsOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
 
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
   const [isModalTrashActive, setIsModalTrashActive] = useState(false)
@@ -49,21 +51,29 @@ const TableSampleClients = ({ columns }) => {
   for (let i = 0; i < numPages; i++) {
     pagesList.push(i)
   }
-
-  const handelSearchInputChanged = (e) => {
-    if (e.key == 'Enter' && e.target.value != '')
-      clients.map((client, index) => {
-        if (
-          client.id == e.target.value ||
-          client.titleEn == e.target.value ||
-          client.titleAr == e.target.value
-        ) {
-          setInd(index)
-          setIsModalInfoActive(true)
-        }
-      })
-    return
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen)
   }
+
+  const handleItemClick = (id: string) => {
+    const selectedItem = clients.findIndex((client: any) => client.id === id)
+    if (selectedItem !== -1) {
+      // console.log(selectedItem)
+      // Assuming setInd is used to set the selected item or index
+      setInd(selectedItem) // or setInd(clients.indexOf(selectedItem)) if you still need the index
+      setIsModalInfoActive(true)
+    }
+  }
+
+  const filteredItems = clients.filter(
+    (item: any) =>
+      item.titleAr.toLowerCase().includes(searchTerm) ||
+      item.titleEn.toLowerCase().includes(searchTerm)
+  )
+  const handleSearchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value.toLowerCase())
+  }
+
   const handleModalAction = async () => {
     setLoading(true)
 
@@ -213,7 +223,7 @@ const TableSampleClients = ({ columns }) => {
               title={`Update ${clients[ind]?.titleAr}`}
               buttonColor="info"
               buttonLabel="Done"
-              classData="xl:w-8/12"
+              classData="xl:w-8/12 overflow-scroll"
               isActive={isModalInfoActive}
               onConfirm={handleModalAction}
               onCancel={() => setIsModalInfoActive(false)}
@@ -367,32 +377,39 @@ const TableSampleClients = ({ columns }) => {
             <label htmlFor="table-search" className="sr-only">
               Search
             </label>
-            <div className="relative mt-1">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <svg
-                  className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                  />
-                </svg>
+            <input
+              onClick={toggleDropdown}
+              type="button"
+              id="table-search"
+              className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Search for items"
+            />
+            {isOpen && (
+              <div className="right-0 p-1 mt-2 space-y-1 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+                {/* Search input */}
+                <input
+                  onChange={handleSearchInput}
+                  value={searchTerm}
+                  className="block w-full px-4 py-2 text-gray-800 border border-gray-300 rounded-md focus:outline-none"
+                  type="text"
+                  placeholder="Search items"
+                  autoComplete="off"
+                />
+                {/* Dropdown content */}
+                {filteredItems.map((item: any, index: any) => (
+                  <a
+                    key={item.id}
+                    href="#"
+                    onClick={() => {
+                      handleItemClick(item.id)
+                    }}
+                    className="block px-4 py-2 text-gray-700 rounded-md cursor-pointer hover:bg-gray-100 active:bg-blue-100"
+                  >
+                    {item.titleAr} - {item.titleEn}
+                  </a>
+                ))}
               </div>
-              <input
-                onKeyDown={handelSearchInputChanged}
-                type="text"
-                id="table-search"
-                className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Search for items"
-              />
-            </div>
+            )}
           </div>
           <table>
             <thead>
@@ -431,7 +448,7 @@ const TableSampleClients = ({ columns }) => {
                             color="info"
                             icon={mdiSquareEditOutline}
                             onClick={() => {
-                              setInd(index + currentPage * 5)
+                              setInd(index + currentPage * perPage)
                               setid(client.id)
                               setIsModalInfoActive(true)
                             }}
@@ -441,7 +458,7 @@ const TableSampleClients = ({ columns }) => {
                             color="danger"
                             icon={mdiTrashCan}
                             onClick={() => {
-                              setInd(index + currentPage * 5)
+                              setInd(index + currentPage * perPage)
                               setid(client.id)
                               setIsModalTrashActive(true)
                             }}

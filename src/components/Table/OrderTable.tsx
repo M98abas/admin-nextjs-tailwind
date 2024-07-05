@@ -103,21 +103,6 @@ const TableSampleClients = ({ columns }) => {
       item?.id.toLowerCase().includes(searchTerm) || item?.users.phoneNumber.includes(searchTerm)
   )
 
-  /**
-   *
-   * @param e
-   * @returns
-   */
-  const handelSearchInputChanged = (e: any) => {
-    if (e.key == 'Enter' && e.target.value != '')
-      clients.map((client, index) => {
-        if (client.id == e.target.value) {
-          setInd(index)
-          setIsModalInfoActive(true)
-        }
-      })
-    return
-  }
   // Get product
   const getData = async () => {
     await ApiGetData('product/api', (data: any) => {
@@ -204,6 +189,7 @@ const TableSampleClients = ({ columns }) => {
       },
       (data: any) => {
         if (data) setNotificationnActive(true)
+        setIsModalInfoActive(false)
         setLoading(false)
       }
     )
@@ -488,6 +474,7 @@ const TableSampleClients = ({ columns }) => {
                     <MomentP dateValue={clients[ind]?.receivedDate} />
                   </span>
                 </div>
+
                 {clients[ind]?.content.length != 0 ? (
                   <div className="grid gap-6 mb-6 md:grid-cols-3">
                     {/* <span>{`${clients[ind]?.content[0]?.content}`}</span> */}
@@ -519,21 +506,36 @@ const TableSampleClients = ({ columns }) => {
                 ) : (
                   ''
                 )}
+
                 <div>
-                  <label
-                    htmlFor="role"
-                    className="flex justify-between block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    <span>Order list</span>
-                    <Button
-                      color="info"
-                      icon={mdiPlusCircleOutline}
-                      onClick={() => {
-                        setIsModalInfoActiveUpdate(true)
-                      }}
-                      small
-                    />
-                  </label>
+                  <div className="flex justify-between">
+                    <label
+                      htmlFor="role"
+                      className="flex justify-between mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      <span>Order list</span>
+                    </label>
+                    <div className="flex gap-3">
+                      <Button
+                        color="info"
+                        icon={mdiPlusCircleOutline}
+                        onClick={() => {
+                          setIsModalInfoActiveUpdate(true)
+                        }}
+                        small
+                      />
+                      <Button
+                        color="whiteDark"
+                        className="pl-4 pr-4"
+                        icon={mdiDownloadCircleOutline}
+                        onClick={() => {
+                          // setInd(index + 10 * currentPage)
+                          setIsModalStatusActive(true)
+                        }}
+                        small
+                      />
+                    </div>
+                  </div>
                   <table>
                     <thead>
                       <tr>

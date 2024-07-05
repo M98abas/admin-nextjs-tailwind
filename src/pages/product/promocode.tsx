@@ -52,7 +52,7 @@ const TablesPage = () => {
 
   const handleModalAction = async () => {
     setError(false)
-    if (text == '' && target == '' && availableFor == 0) {
+    if (text == '' && availableFor == 0) {
       setError(true)
       return
     }
@@ -61,11 +61,20 @@ const TablesPage = () => {
     if (
       text == '' ||
       availableFor == 0 ||
-      target == '' ||
+      // target == '' ||
       directTo == '' ||
       end_at == '' ||
       minSpent == 0
     ) {
+      console.log(
+        text == '',
+        availableFor == 0,
+        target == '',
+        directTo == '',
+        end_at == '',
+        minSpent == 0
+      )
+
       setNotificationnActiveIssue(true)
       setLoading(!true)
 
@@ -132,7 +141,7 @@ const TablesPage = () => {
                 title="Add Promocode"
                 buttonColor="info"
                 buttonLabel="Done"
-                classData="h-[75vh] xl:w-8/12"
+                classData="h-[75vh] xl:w-8/12 overflow-scroll"
                 isActive={isModalInfoActive}
                 onConfirm={handleModalAction}
                 onCancel={() => setIsModalInfoActive(false)}

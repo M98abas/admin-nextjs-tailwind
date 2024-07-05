@@ -1,15 +1,30 @@
 45.4.172.70 7822
+
 sudo kill -9 $(sudo lsof -t -i:80)
+
 sudo systemctl restart nginx
+
 sudo ss -ltpn | grep :80
+
 sudo lsof -i:80
+
 sudo kill -9 $(sudo lsof -t -i:80) && sudo systemctl restart nginx && sudo systemctl restart apache2
+
 PORT=4000 pm2 start npm --name Back-end -- start --host 0.0.0.0 --interpreter=/root/.nvm/versions/node/v18.12.1/bin/node
+
 PORT=3000 pm2 start npm --name Admin -- start --host 0.0.0.0 --interpreter=/root/.nvm/versions/node/v18.12.1/bin/node
 
 pm2 logs Back-end
 
 # Todo
+
+- Download WebApp from a2Hosting then deploy to cloud ✅
+- config nginx in cloud ✅
+- Build apps and check ✅
+
+<!-- --- -->
+
+# Done
 
 - PromoCode & Discount Value not be zero ✅
 - PromoCode will be zero fine ✅
@@ -27,7 +42,6 @@ pm2 logs Back-end
   الطلب يستقبل صورة
   في حال تاخر الطلب وبقى نفس الحالة يتم تغيير اللون من تاخر ١س اصفر الى  ٢س احمر وارسال ايميل ✅
   اضافة بروموكود اقل مبلغ لكي يتم تقليل مبلغ التوصيل ✅
-- PromoCode to order to check the content promoCodeid
-
-- Tags must deleted from the products
-- Tags containe search
+- PromoCode to order to check the content promoCodeid ✅
+- Tags must deleted from the products ✅
+- Tags containe search ✅

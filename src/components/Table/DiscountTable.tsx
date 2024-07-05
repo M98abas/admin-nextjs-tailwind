@@ -17,36 +17,77 @@ const TableSampleClients = ({ columns }) => {
   const [value, setValue] = useState(0)
   const [end_at, setEnd_at] = useState('')
   const [target, setTarget] = useState('')
+  const [targetTitle, setTargetTitle] = useState('')
   const [show, setShow] = useState(false)
   const [error, setError] = useState(false)
+  const [ind, setInd] = useState(0)
   const [category, setCategory] = useState([])
+  const [brand, setBrand] = useState([])
+  const [product, setProduct] = useState([])
   const [subCategory, setSubCategory] = useState([])
+console.log();
 
   const getData = async () => {
     await ApiGetData('category', (data) => {
       setCategory(data)
+    })
+    await ApiGetData('product', (data) => {
+      setProduct(data)
+    })
+    await ApiGetData('product', (data) => {
+      setProduct(data)
+    })
+    await ApiGetData('brand', (data) => {
+      setBrand(data)
+    })
+    await ApiGetData('subCategory', (data) => {
+      setSubCategory(data)
     })
   }
   useEffect(() => {
     getData()
   }, [])
 
-  const handelChange: any = (index: any) => {
-    if (index) {
-      setSubCategory(category[index].subcategory)
-      setTarget(category[index].titleEn)
+  const SearchData: any = (titleCat: any) => {
+    console.log(titleCat)
+
+    // Define the mappings for each category type
+    const mappings: { [key: string]: any[] } = {
+      Product: product,
+      Category: category,
+      subCategory: subCategory,
+      Brand: brand,
+    }
+
+    // Get the relevant array based on the titleCat
+    const dataArr = mappings[titleCat]
+
+    if (dataArr) {
+      dataArr.forEach((dataProd: any) => {
+        // console.log(clients[ind].target_id === dataProd.id)
+
+        console.log(clients[ind].target_id, dataProd.id)
+        if (clients[ind].target_id === dataProd.id) {
+          setTargetTitle(dataProd.titleAr)
+          return
+        }
+      })
     }
     return
   }
 
+  useEffect(() => {
+    SearchData(clients[ind]?.target)
+  }, [ind])
+
   const [Loading, setLoading] = useState(false)
-  const perPage = 5
+  const perPage = 10
 
   const [currentPage, setCurrentPage] = useState(0)
 
   const clientsPaginated = clients.slice(perPage * currentPage, perPage * (currentPage + 1))
 
-  const numPages = clients.length / perPage
+  const numPages = Math.ceil(clients.length / perPage)
 
   const pagesList = []
 
@@ -55,7 +96,6 @@ const TableSampleClients = ({ columns }) => {
   }
   const [isModalInfoActive, setIsModalInfoActive] = useState(false)
   const [isModalTrashActive, setIsModalTrashActive] = useState(false)
-  const [ind, setInd] = useState(0)
 
   // Date Picker
   const options: any = {
@@ -106,7 +146,7 @@ const TableSampleClients = ({ columns }) => {
     await ApiUpdateData('discount', { id, value, end_at, target, ids }, (data) => {
       console.log('Date Table -->', data)
 
-      if (data) {
+      if (!data) {
         setError(true)
         // setLoading(false)
         // return
@@ -219,42 +259,16 @@ const TableSampleClients = ({ columns }) => {
                   >
                     Select Category(s)
                   </label>
-                  <select
-                    data-te-select-init
-                    defaultValue={clients[ind]?.target}
-                    onChange={(e: any) => handelChange(e.target.value)}
-                    id="countries"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  >
-                    <option value="none">Choose The target</option>
-                    {category?.map((data: any) => (
-                      <option value={data.id} key={data.id}>
-                        {data.titleEn}
-                      </option>
-                    ))}
-                  </select>
+                  <p>{clients[ind]?.target}</p>
                 </div>
                 <div>
                   <label
                     htmlFor="countries"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Select Sub-Category ({clients[ind]?.target})
+                    Select Sub-Category
                   </label>
-                  <select
-                    data-te-select-init
-                    onChange={(e: any) => setIds(e.target.value)}
-                    id="countries"
-                    defaultValue="none"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  >
-                    <option value="none">Choose The target</option>
-                    {subCategory?.map((data: any) => (
-                      <option value={data.id} key={data.id}>
-                        {data.titleEn}
-                      </option>
-                    ))}
-                  </select>
+                  <p>{targetTitle}</p>
                 </div>
               </div>
               {error ? (
@@ -316,10 +330,11 @@ const TableSampleClients = ({ columns }) => {
                             icon={mdiSquareEditOutline}
                             onClick={() => {
                               setInd(index)
-                              console.log(client.id)
+                              // console.log(client.id)
 
                               setid(client.id)
                               setIsModalInfoActive(true)
+                              // SearchData(client.target)
                             }}
                             small
                           />
